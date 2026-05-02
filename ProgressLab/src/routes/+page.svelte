@@ -74,6 +74,26 @@
 	</a>
 </section>
 
+{#if data.templates.length > 0}
+	<section class="routines">
+		<div class="routines-head">
+			<h2>Routinen</h2>
+			<a href="/templates" class="muted small">Verwalten →</a>
+		</div>
+		<div class="routine-row">
+			{#each data.templates.slice(0, 4) as t (t.id)}
+				<a class="routine-card" href={`/workouts/${t.id}`}>
+					<div class="routine-name">{t.name}</div>
+					<div class="routine-meta">
+						{t.exercises.length} Übungen{#if t.description} · {t.description}{/if}
+					</div>
+					<span class="routine-cta">Starten →</span>
+				</a>
+			{/each}
+		</div>
+	</section>
+{/if}
+
 <div class="controls">
 	<FilterTabs
 		bind:value={category}
@@ -166,6 +186,72 @@
 		flex-direction: column;
 		gap: 12px;
 		margin-bottom: 22px;
+	}
+	.routines {
+		margin-bottom: 26px;
+	}
+	.routines-head {
+		display: flex;
+		justify-content: space-between;
+		align-items: baseline;
+		margin-bottom: 10px;
+	}
+	.routines-head h2 {
+		font-size: 16px;
+	}
+	.small {
+		font-size: 12px;
+	}
+	.routine-row {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+		gap: 10px;
+	}
+	.routine-card {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+		padding: 14px 16px;
+		background: var(--c-surface);
+		border: 1px solid var(--c-border);
+		border-radius: var(--radius-md);
+		text-decoration: none;
+		color: var(--c-text);
+		box-shadow: var(--shadow-xs);
+		transition: transform 160ms var(--ease), box-shadow 160ms var(--ease), border-color 160ms var(--ease);
+		position: relative;
+		overflow: hidden;
+	}
+	.routine-card::before {
+		content: '';
+		position: absolute;
+		left: 0;
+		top: 0;
+		bottom: 0;
+		width: 3px;
+		background: var(--c-accent);
+	}
+	.routine-card:hover {
+		transform: translateY(-2px);
+		box-shadow: var(--shadow-md);
+		border-color: var(--c-border-strong);
+	}
+	.routine-name {
+		font-weight: 700;
+		font-size: 14px;
+		padding-left: 6px;
+	}
+	.routine-meta {
+		font-size: 11px;
+		color: var(--c-text-muted);
+		padding-left: 6px;
+	}
+	.routine-cta {
+		font-size: 12px;
+		font-weight: 600;
+		color: var(--c-accent);
+		margin-top: 4px;
+		padding-left: 6px;
 	}
 	.search-row {
 		flex-wrap: wrap;

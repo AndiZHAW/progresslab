@@ -4,6 +4,7 @@ import bcrypt from 'bcryptjs';
 import { Exercise } from '../src/lib/server/models/Exercise.js';
 import { Session } from '../src/lib/server/models/Session.js';
 import { User, SessionToken } from '../src/lib/server/models/User.js';
+import { Template } from '../src/lib/server/models/Template.js';
 
 const MONGODB_URI = process.env.MONGODB_URI;
 if (!MONGODB_URI) {
@@ -30,7 +31,8 @@ async function main() {
 		Exercise.deleteMany({}),
 		Session.deleteMany({}),
 		User.deleteMany({}),
-		SessionToken.deleteMany({})
+		SessionToken.deleteMany({}),
+		Template.deleteMany({})
 	]);
 	console.log('✓ Collections geleert');
 
@@ -105,6 +107,36 @@ async function main() {
 		}
 	}
 	console.log(`✓ ${totalSessions} Demo-Sessions für demo-User erstellt`);
+
+	const templateSeed = [
+		{
+			name: 'Push Day',
+			description: 'Brust + Schulter + Trizeps',
+			exerciseNames: ['Bench Press', 'Overhead Press', 'Incline DB Press']
+		},
+		{
+			name: 'Pull Day',
+			description: 'Rücken + Bizeps',
+			exerciseNames: ['Deadlift', 'Barbell Row', 'Pull-up']
+		},
+		{
+			name: 'Leg Day',
+			description: 'Quads + Hamstrings',
+			exerciseNames: ['Back Squat', 'Romanian Deadlift']
+		}
+	];
+	const templates = await Promise.all(
+		templateSeed.map((t) =>
+			Template.create({
+				userId: demoUser._id,
+				name: t.name,
+				description: t.description,
+				exerciseIds: t.exerciseNames.map((n) => byName[n]._id).filter(Boolean)
+			})
+		)
+	);
+	console.log(`✓ ${templates.length} Routinen für demo-User erstellt`);
+
 	console.log('');
 	console.log('Login zum Testen:');
 	console.log('  demo  / demo1234   (Rolle: user)');

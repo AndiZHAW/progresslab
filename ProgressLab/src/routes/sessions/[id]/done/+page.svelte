@@ -1,9 +1,13 @@
 <script lang="ts">
+	import { page } from '$app/state';
 	import RecommendationCard from '$lib/components/RecommendationCard.svelte';
 	import { formatDate, topWeight, topReps, avgRpe } from '$lib/format';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
+
+	const back = $derived(page.url.searchParams.get('back') ?? '');
+	const safeBack = $derived(back.startsWith('/') && !back.startsWith('//') ? back : '');
 </script>
 
 <svelte:head>
@@ -52,8 +56,13 @@
 	{/if}
 
 	<div class="actions">
-		<a class="btn" href="/">Zum Dashboard</a>
-		<a class="btn btn-secondary" href="/sessions/new">Weitere Übung loggen</a>
+		{#if safeBack}
+			<a class="btn btn-primary" href={safeBack}>Zurück zur Routine →</a>
+			<a class="btn btn-secondary" href="/">Zum Dashboard</a>
+		{:else}
+			<a class="btn btn-primary" href="/">Zum Dashboard</a>
+			<a class="btn btn-secondary" href="/sessions/new">Weitere Übung loggen</a>
+		{/if}
 	</div>
 </div>
 

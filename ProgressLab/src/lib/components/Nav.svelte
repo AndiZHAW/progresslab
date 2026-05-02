@@ -57,6 +57,7 @@
 
 			<nav class="links" class:open={mobileOpen} aria-label="Hauptnavigation">
 				<a href="/" class:active={isActive('/')} onclick={() => (mobileOpen = false)}>Dashboard</a>
+				<a href="/templates" class:active={isActive('/templates') || isActive('/workouts')} onclick={() => (mobileOpen = false)}>Routinen</a>
 				<a href="/stats" class:active={isActive('/stats')} onclick={() => (mobileOpen = false)}>Statistik</a>
 				<a href="/records" class:active={isActive('/records')} onclick={() => (mobileOpen = false)}>Records</a>
 				<a href="/sessions" class:active={isActive('/sessions') && !isActive('/sessions/new')} onclick={() => (mobileOpen = false)}>Sessions</a>

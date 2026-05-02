@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { page } from '$app/state';
 	import RecommendationCard from '$lib/components/RecommendationCard.svelte';
 	import SetLoggerTable from '$lib/components/SetLoggerTable.svelte';
 	import Spinner from '$lib/components/Spinner.svelte';
@@ -8,6 +9,9 @@
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
+
+	const back = $derived(page.url.searchParams.get('back') ?? '');
+	const safeBack = $derived(back.startsWith('/') && !back.startsWith('//') ? back : '');
 
 	const isoDate = new Date().toISOString().slice(0, 10);
 
@@ -66,7 +70,10 @@
 			}
 			const session = await res.json();
 			showToast('Session gespeichert');
-			await goto(`/sessions/${session.id}/done`);
+			const url = safeBack
+				? `/sessions/${session.id}/done?back=${encodeURIComponent(safeBack)}`
+				: `/sessions/${session.id}/done`;
+			await goto(url);
 		} catch {
 			formError = 'Verbindung fehlgeschlagen';
 		} finally {
@@ -80,10 +87,12 @@
 </svelte:head>
 
 <div class="head">
-	<a href="/sessions/new" class="back" aria-label="Zurück">‹</a>
+	<a href={safeBack || '/sessions/new'} class="back" aria-label="Zurück">‹</a>
 	<div>
 		<h1>{data.exercise.name}</h1>
-		<div class="muted small">Schritt 2 von 2 · Sätze erfassen</div>
+		<div class="muted small">
+			{#if safeBack}Workout-Modus · Sätze erfassen{:else}Schritt 2 von 2 · Sätze erfassen{/if}
+		</div>
 	</div>
 </div>
 
