@@ -171,12 +171,33 @@
 		border: 1px solid var(--c-border);
 	}
 	.row-pr.accent {
-		background: linear-gradient(135deg, var(--c-text) 0%, color-mix(in srgb, var(--c-text) 78%, var(--c-accent)) 100%);
-		color: var(--c-bg);
-		border-color: transparent;
+		background: var(--c-accent-soft);
+		border: 1px solid color-mix(in srgb, var(--c-accent) 35%, transparent);
+		position: relative;
+		padding-left: 16px;
+	}
+	.row-pr.accent::before {
+		content: '';
+		position: absolute;
+		left: 0;
+		top: 10px;
+		bottom: 10px;
+		width: 3px;
+		border-radius: 0 2px 2px 0;
+		background: var(--c-accent);
 	}
 	.row-pr.accent .lbl {
-		color: rgba(255, 255, 255, 0.7);
+		color: var(--c-accent-hover);
+	}
+	:global([data-theme='dark']) .row-pr.accent .lbl {
+		color: var(--c-accent);
+	}
+	.row-pr.accent .val {
+		color: var(--c-text);
+	}
+	.row-pr.accent .val small {
+		color: var(--c-text-muted);
+		opacity: 1;
 	}
 	.lbl {
 		font-size: 11px;
@@ -199,7 +220,7 @@
 	.val small {
 		font-size: 11px;
 		font-weight: 500;
-		opacity: 0.7;
+		opacity: 0.75;
 	}
 	footer {
 		display: flex;
