@@ -22,6 +22,7 @@
 7. [Anhang](#7-anhang)
 8. [Setup-Anleitung](#8-setup-anleitung)
 9. [MongoDB-Schema](#9-mongodb-schema)
+10. [Tests](#10-tests)
 
 > **Hinweis:** Massgeblich sind die im **Unterricht** und auf **Moodle** kommunizierten Anforderungen.
 
@@ -266,6 +267,55 @@
 - **Wo umgesetzt:** `ProgressLab/src/app.css` (Design-Tokens, Light + Dark), neue Hero-Section in
   `ProgressLab/src/routes/+page.svelte`, neuer Pitch in `ProgressLab/src/routes/login/+page.svelte`.
 
+### 4.13 Workout-Routinen (Templates) mit geführtem Workout-Modus
+
+- **Beschreibung & Nutzen:** User kann beliebige Übungs-Kombinationen als Routine speichern (z. B.
+  „Push Day", „Pull Day", „Leg Day"). Klick auf eine Routine startet einen geführten Workout-Modus
+  mit Fortschrittsbalken: jede Übung der Routine bekommt einen „Loggen"-Button, bereits in den
+  letzten 4 Stunden geloggte Übungen sind grün markiert. Beim Loggen aus der Routine kommt man
+  über den `?back=`-Parameter zurück zum Workout-Flow.
+- **Wo umgesetzt:**
+  - **Backend:** `ProgressLab/src/lib/server/models/Template.ts`, `template-service.ts`,
+    API-Endpoints `ProgressLab/src/routes/api/templates/*`
+  - **Frontend:** `ProgressLab/src/routes/templates/` (CRUD), `ProgressLab/src/routes/workouts/[id]/`
+    (Workout-Modus mit Progress-Bar), Quick-Start-Cards auf dem Dashboard
+  - **Datenbank:** Collection `templates` mit Unique-Index auf `(userId, name)`
+- **Demo-Daten:** Seed legt automatisch 3 Routinen für demo-User an (Push Day, Pull Day, Leg Day).
+
+### 4.14 Trainings-Heatmap (GitHub-Style)
+
+- **Beschreibung & Nutzen:** Auf der Statistik-Seite eine Year-Heatmap der letzten 12 Monate, die
+  jeden Tag als kleine Zelle mit Farbintensität nach Anzahl Sessions (0–4+) anzeigt. Sofort
+  erkennbar, wann gearbeitet wurde, wo Pausen liegen und ob sich eine Routine etabliert hat.
+- **Wo umgesetzt:** `stats-service.ts` (`heatmapDays` aggregiert in 365 Day-Buckets),
+  `ProgressLab/src/lib/components/TrainingHeatmap.svelte` (CSS-Grid mit color-mix für die
+  Intensitätsstufen), eingebunden in `/stats`.
+
+### 4.15 Progressive Web App (PWA) mit Offline-Cache
+
+- **Beschreibung & Nutzen:** ProgressLab kann als App installiert werden (Edge/Chrome zeigen
+  „Installieren"-Button im Browser, plus eigener Install-Prompt nach erstem Besuch). Service Worker
+  cached statische Assets (`cache-first`) und bedient API-Anfragen mit `network-first` mit Fallback
+  auf den letzten erfolgreichen Response. Bei kompletter Offline-Situation gibt es eine saubere
+  Fehlermeldung.
+- **Wo umgesetzt:**
+  - `ProgressLab/static/manifest.webmanifest` mit Icons und Theme-Color
+  - `ProgressLab/static/icon-{192,512,maskable}.png` (generiert aus `icon.svg` via
+    `npm run icons` mit `sharp`)
+  - `ProgressLab/src/service-worker.ts` (SvelteKit erkennt das automatisch)
+  - `ProgressLab/src/lib/components/InstallPrompt.svelte` für den eigenen Install-Hinweis,
+    eingebunden im Layout
+
+### 4.16 End-to-End-Tests mit Playwright
+
+- **Beschreibung & Nutzen:** 8 automatisierte Tests decken den Hauptworkflow ab: Auth-Redirect,
+  Login, Dashboard, Übungs-Detail (inkl. Chart-Rendering), Stats-Page (mit Heatmap-Sektion),
+  Records, Routinen, vollständiger Session-Workflow (Picker → Logger → Confirmation), Logout.
+  Tests starten den Dev-Server selbständig via `webServer`-Config.
+- **Wo umgesetzt:** `ProgressLab/playwright.config.ts`,
+  `ProgressLab/tests/e2e/main-flow.spec.ts`. Ausführen: `npm run test:e2e` (CLI) oder
+  `npm run test:e2e:ui` (Playwright UI mit Time-Travel-Debugger).
+
 ## 5. Projektorganisation
 
 - **Repository & Struktur:**
@@ -387,3 +437,14 @@ Für Netlify: Repository verbinden, im Dashboard die folgenden Environment-Varia
 | **sessiontokens** | `token` (32-byte hex), `userId`, `expiresAt` (30 Tage TTL) |
 | **exercises** | `name` (uniq), `category` (`push`\|`pull`\|`legs`), `muscleGroup`, `isBodyweight`, `defaultRepTarget` (1–50), `defaultRpeTarget` (1–10), Timestamps |
 | **sessions** | `userId`, `exerciseId`, `date`, `sets: [{weight, reps, rpe}]` (≥ 1 Satz), `note` (≤ 500 Zeichen), Timestamps. Index: `(userId, exerciseId, date desc)` |
+| **templates** | `userId`, `name`, `description`, `exerciseIds: ObjectId[]` (≥ 1, geordnet), Timestamps. Unique-Index: `(userId, name)` |
+
+## 10. Tests
+
+```bash
+cd ProgressLab
+npm run test:e2e       # 8 End-to-End-Tests im Headless-Chromium
+npm run test:e2e:ui    # Playwright UI mit Time-Travel-Debugging
+```
+
+Voraussetzung: Vor dem ersten Lauf einmal `npx playwright install chromium` ausführen.
