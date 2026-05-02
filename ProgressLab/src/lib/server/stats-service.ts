@@ -17,6 +17,7 @@ export type StatsSummary = {
 	weeklyVolume: { weekStart: string; volume: number; sessions: number }[];
 	weeklySessions: { weekStart: string; sessions: number }[];
 	topExercisesByVolume: { exerciseId: string; name: string; volume: number; sessions: number }[];
+	heatmapDays: { date: string; sessions: number }[];
 };
 
 function startOfWeek(d: Date): Date {
@@ -88,7 +89,8 @@ export async function getStats(userId: string): Promise<StatsSummary> {
 			categoryVolume: { push: 0, pull: 0, legs: 0 },
 			weeklyVolume: [],
 			weeklySessions: [],
-			topExercisesByVolume: []
+			topExercisesByVolume: [],
+			heatmapDays: []
 		};
 	}
 
@@ -134,6 +136,22 @@ export async function getStats(userId: string): Promise<StatsSummary> {
 	const totalWeeks = Math.max(1, totalDays / 7);
 	const streak = computeStreak(sessionDates);
 
+	const todayMs = +startOfDay(new Date());
+	const yearAgoMs = todayMs - 364 * 86400000;
+	const sessionsByDay = new Map<number, number>();
+	for (const d of sessionDates) {
+		const k = +startOfDay(d);
+		if (k < yearAgoMs) continue;
+		sessionsByDay.set(k, (sessionsByDay.get(k) ?? 0) + 1);
+	}
+	const heatmapDays: { date: string; sessions: number }[] = [];
+	for (let ms = yearAgoMs; ms <= todayMs; ms += 86400000) {
+		heatmapDays.push({
+			date: new Date(ms).toISOString().slice(0, 10),
+			sessions: sessionsByDay.get(ms) ?? 0
+		});
+	}
+
 	const weeklyEntries = [...weekly.entries()]
 		.sort((a, b) => a[0].localeCompare(b[0]))
 		.map(([weekStart, v]) => ({ weekStart, volume: +v.volume.toFixed(1), sessions: v.sessions }));
@@ -165,6 +183,7 @@ export async function getStats(userId: string): Promise<StatsSummary> {
 			sessions: w.sessions
 		})),
 		weeklySessions: weeklyEntries.map((w) => ({ weekStart: w.weekStart, sessions: w.sessions })),
-		topExercisesByVolume: topExercises
+		topExercisesByVolume: topExercises,
+		heatmapDays
 	};
 }

@@ -2,6 +2,7 @@
 	import StatCard from '$lib/components/StatCard.svelte';
 	import VolumeChart from '$lib/components/VolumeChart.svelte';
 	import CategoryDonut from '$lib/components/CategoryDonut.svelte';
+	import TrainingHeatmap from '$lib/components/TrainingHeatmap.svelte';
 	import { formatDate } from '$lib/format';
 	import type { PageData } from './$types';
 
@@ -56,6 +57,12 @@
 			hint={`${s.uniqueExercises} Übungen`}
 		/>
 	</div>
+
+	<section class="block">
+		<h2>Trainingstage</h2>
+		<p class="muted small">Letzte 12 Monate – jede Zelle ein Tag</p>
+		<TrainingHeatmap days={s.heatmapDays} />
+	</section>
 
 	<section class="block">
 		<h2>Volumen pro Woche</h2>
