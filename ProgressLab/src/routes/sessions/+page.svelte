@@ -1,22 +1,50 @@
 <script lang="ts">
+	import { invalidateAll } from '$app/navigation';
 	import FilterTabs from '$lib/components/FilterTabs.svelte';
 	import { formatDate, topWeight, topReps, avgRpe } from '$lib/format';
+	import { showToast } from '$lib/toast.svelte';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
 
 	let category = $state('all');
+	let pendingDelete = $state<string | null>(null);
+	let optimisticallyRemoved = $state<Set<string>>(new Set());
 
 	const filtered = $derived(
-		data.sessions.filter((s) => category === 'all' || s.category === category)
+		data.sessions.filter(
+			(s) =>
+				!optimisticallyRemoved.has(s.id) && (category === 'all' || s.category === category)
+		)
 	);
 
 	const counts = $derived({
-		all: data.sessions.length,
-		push: data.sessions.filter((s) => s.category === 'push').length,
-		pull: data.sessions.filter((s) => s.category === 'pull').length,
-		legs: data.sessions.filter((s) => s.category === 'legs').length
+		all: data.sessions.filter((s) => !optimisticallyRemoved.has(s.id)).length,
+		push: data.sessions.filter((s) => s.category === 'push' && !optimisticallyRemoved.has(s.id)).length,
+		pull: data.sessions.filter((s) => s.category === 'pull' && !optimisticallyRemoved.has(s.id)).length,
+		legs: data.sessions.filter((s) => s.category === 'legs' && !optimisticallyRemoved.has(s.id)).length
 	});
+
+	async function quickDelete(id: string, name: string) {
+		if (!confirm(`Session "${name}" löschen?`)) return;
+		pendingDelete = id;
+		optimisticallyRemoved = new Set([...optimisticallyRemoved, id]);
+		try {
+			const res = await fetch(`/api/sessions/${id}`, { method: 'DELETE' });
+			if (!res.ok) {
+				const next = new Set(optimisticallyRemoved);
+				next.delete(id);
+				optimisticallyRemoved = next;
+				const body = await res.json().catch(() => ({}));
+				showToast(body.message ?? 'Löschen fehlgeschlagen', 'error');
+				return;
+			}
+			showToast('Session gelöscht', 'info');
+			await invalidateAll();
+		} finally {
+			pendingDelete = null;
+		}
+	}
 </script>
 
 <svelte:head>
@@ -26,9 +54,12 @@
 <div class="head">
 	<div>
 		<h1>Sessions</h1>
-		<p class="muted">Letzte {data.sessions.length} Sessions (max. 100)</p>
+		<p class="muted">{counts.all} Sessions{counts.all === 100 ? ' (max. 100 angezeigt)' : ''}</p>
 	</div>
-	<a class="btn" href="/sessions/new">+ Neue Session</a>
+	<div class="row">
+		<a class="btn btn-secondary" href="/api/sessions/export" download>CSV</a>
+		<a class="btn btn-primary" href="/sessions/new">+ Neue Session</a>
+	</div>
 </div>
 
 <div class="controls">
@@ -46,26 +77,47 @@
 
 {#if filtered.length === 0}
 	<div class="card empty">
-		<h2>Noch keine Sessions</h2>
-		<p class="muted">Starte deine erste Session, um sie hier zu sehen.</p>
-		<a class="btn" href="/sessions/new" style="margin-top:8px;">Session loggen</a>
+		<h2>{counts.all === 0 ? 'Noch keine Sessions' : 'Keine Treffer'}</h2>
+		<p class="muted">
+			{#if counts.all === 0}
+				Starte deine erste Session, um sie hier zu sehen.
+			{:else}
+				In dieser Kategorie ist noch nichts geloggt.
+			{/if}
+		</p>
+		<a class="btn btn-primary" href="/sessions/new" style="margin-top:8px; align-self:center;">
+			+ Session loggen
+		</a>
 	</div>
 {:else}
 	<ul class="list">
 		{#each filtered as s (s.id)}
 			<li>
-				<a href={`/exercises/${s.exerciseId}`}>
-					<div class="row">
-						<div>
-							<div class="name">{s.exerciseName ?? 'Übung'}</div>
-							<div class="muted small">
-								{formatDate(s.date)} · {s.sets.length} Sätze · {topWeight(s.sets)} kg ×
-								{topReps(s.sets)}
-							</div>
+				<div class="row-card">
+					<a class="info" href={`/exercises/${s.exerciseId}`}>
+						<div class="name">{s.exerciseName ?? 'Übung'}</div>
+						<div class="muted small">
+							{formatDate(s.date)} · {s.sets.length} Sätze · {topWeight(s.sets)} kg ×
+							{topReps(s.sets)}
 						</div>
-						<div class="rpe">RPE Ø {avgRpe(s.sets).toFixed(1)}</div>
+					</a>
+					<div class="rpe">RPE Ø {avgRpe(s.sets).toFixed(1)}</div>
+					<div class="actions">
+						<a class="btn btn-ghost small" href={`/sessions/${s.id}/edit`} aria-label="Bearbeiten">
+							Bearbeiten
+						</a>
+						<button
+							type="button"
+							class="btn btn-ghost small icon-btn"
+							aria-label="Löschen"
+							disabled={pendingDelete === s.id}
+							onclick={() => quickDelete(s.id, s.exerciseName ?? 'Session')}
+							title="Schnell-Löschen"
+						>
+							×
+						</button>
 					</div>
-				</a>
+				</div>
 			</li>
 		{/each}
 	</ul>
@@ -77,7 +129,8 @@
 		justify-content: space-between;
 		align-items: flex-start;
 		gap: 16px;
-		margin-bottom: 18px;
+		margin-bottom: 22px;
+		flex-wrap: wrap;
 	}
 	.controls {
 		margin-bottom: 16px;
@@ -90,23 +143,24 @@
 		flex-direction: column;
 		gap: 8px;
 	}
-	.list a {
-		display: block;
+	.row-card {
+		display: grid;
+		grid-template-columns: 1fr auto auto;
+		gap: 14px;
+		align-items: center;
 		background: var(--c-surface);
 		border: 1px solid var(--c-border);
 		border-radius: var(--radius-md);
-		padding: 14px 16px;
-		text-decoration: none;
+		padding: 12px 14px;
+		transition: border-color 120ms var(--ease), box-shadow 120ms var(--ease);
+	}
+	.row-card:hover {
+		border-color: var(--c-border-strong);
+		box-shadow: var(--shadow-sm);
+	}
+	.info {
+		display: block;
 		color: inherit;
-	}
-	.list a:hover {
-		border-color: var(--c-text-muted);
-	}
-	.row {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		gap: 12px;
 	}
 	.name {
 		font-weight: 700;
@@ -117,18 +171,46 @@
 	.rpe {
 		color: var(--c-text-muted);
 		font-size: 13px;
+		font-variant-numeric: tabular-nums;
+	}
+	.actions {
+		display: flex;
+		gap: 4px;
+	}
+	.btn.small {
+		padding: 6px 10px;
+		font-size: 12px;
+	}
+	.icon-btn {
+		font-size: 18px;
+		padding: 4px 10px;
+		line-height: 1;
+		color: var(--c-text-muted);
+	}
+	.icon-btn:hover {
+		color: var(--c-danger);
+		background: var(--c-danger-bg);
 	}
 	.empty {
 		text-align: center;
-		padding: 32px;
+		padding: 36px;
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
 	}
 	@media (max-width: 640px) {
-		.head {
-			flex-direction: column;
+		.row-card {
+			grid-template-columns: 1fr auto;
+			grid-template-rows: auto auto;
 		}
-		.head .btn {
-			align-self: stretch;
-			text-align: center;
+		.rpe {
+			grid-row: 1;
+			grid-column: 2;
+		}
+		.actions {
+			grid-row: 2;
+			grid-column: 1 / 3;
+			justify-content: flex-end;
 		}
 	}
 </style>
