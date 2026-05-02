@@ -22,17 +22,32 @@
 </main>
 
 <footer class="foot">
-	<div>ProgressLab · ZHAW Prototyping FS 2026 · Andi Kadolli</div>
+	<div class="foot-inner">
+		<span>© 2026 ProgressLab</span>
+		<span class="dot">·</span>
+		<span>ZHAW Prototyping FS 2026</span>
+		<span class="dot">·</span>
+		<span>Andi Kadolli</span>
+	</div>
 </footer>
 
 <style>
 	.foot {
-		max-width: 960px;
-		margin: 24px auto 32px;
-		padding: 16px;
+		max-width: 1040px;
+		margin: 16px auto 32px;
+		padding: 18px 20px 0;
 		font-size: 12px;
 		color: var(--c-text-subtle);
-		text-align: center;
 		border-top: 1px solid var(--c-border);
+	}
+	.foot-inner {
+		display: flex;
+		gap: 8px;
+		align-items: center;
+		justify-content: center;
+		flex-wrap: wrap;
+	}
+	.dot {
+		opacity: 0.5;
 	}
 </style>

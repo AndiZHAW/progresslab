@@ -7,7 +7,7 @@
 
 	let category = $state('all');
 	let query = $state('');
-	let sort = $state<'name' | 'trend'>('name');
+	let sort = $state<'name' | 'trend' | 'recent'>('recent');
 
 	const filtered = $derived.by(() => {
 		const q = query.trim().toLowerCase();
@@ -17,13 +17,16 @@
 				return false;
 			return true;
 		});
-		const order = { up: 0, flat: 1, down: 2 } as const;
-		list.sort((a, b) =>
-			sort === 'name'
-				? a.name.localeCompare(b.name)
-				: order[a.recommendation.trend] - order[b.recommendation.trend] ||
+		const trendOrder = { up: 0, flat: 1, down: 2 } as const;
+		list.sort((a, b) => {
+			if (sort === 'name') return a.name.localeCompare(b.name);
+			if (sort === 'trend')
+				return (
+					trendOrder[a.recommendation.trend] - trendOrder[b.recommendation.trend] ||
 					a.name.localeCompare(b.name)
-		);
+				);
+			return b.sessionCount - a.sessionCount || a.name.localeCompare(b.name);
+		});
 		return list;
 	});
 
@@ -33,21 +36,43 @@
 		pull: data.exercises.filter((e) => e.category === 'pull').length,
 		legs: data.exercises.filter((e) => e.category === 'legs').length
 	});
+
+	const totals = $derived({
+		sessions: data.exercises.reduce((s, e) => s + e.sessionCount, 0),
+		prs: data.exercises.filter((e) => e.hasPR).length,
+		untrained: data.exercises.filter((e) => e.sessionCount === 0).length
+	});
+
+	function clearSearch() {
+		query = '';
+	}
 </script>
 
 <svelte:head>
 	<title>Dashboard · ProgressLab</title>
 </svelte:head>
 
-<div class="head">
-	<div>
-		<h1>Dashboard</h1>
+<section class="hero">
+	<div class="hero-text">
+		<h1>Hi {data.user?.username} 👋</h1>
 		<p class="muted">
-			Hallo {data.user?.username} – wähle eine Übung oder starte direkt eine neue Session.
+			{#if totals.sessions === 0}
+				Bereit für deine erste Session? Wähle eine Übung und der Coach schlägt dir Startwerte vor.
+			{:else if totals.prs > 0}
+				Stark — {totals.prs}
+				{totals.prs === 1 ? 'Übung' : 'Übungen'} mit neuem PR diese Woche.
+			{:else}
+				{totals.sessions} Sessions getrackt. Heute weitermachen?
+			{/if}
 		</p>
 	</div>
-	<a class="btn" href="/sessions/new">+ Neue Session</a>
-</div>
+	<a class="btn btn-primary big" href="/sessions/new">
+		<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+			<path d="M12 5v14M5 12h14" />
+		</svg>
+		Neue Session
+	</a>
+</section>
 
 <div class="controls">
 	<FilterTabs
@@ -61,16 +86,26 @@
 		]}
 	/>
 	<div class="row search-row">
-		<input
-			class="input search"
-			type="search"
-			placeholder="Suche nach Übung oder Muskelgruppe…"
-			bind:value={query}
-			aria-label="Suche"
-		/>
+		<div class="search-wrap">
+			<svg class="search-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+				<circle cx="11" cy="11" r="7" />
+				<path d="M21 21l-4.35-4.35" />
+			</svg>
+			<input
+				class="input search"
+				type="search"
+				placeholder="Übung oder Muskelgruppe suchen…"
+				bind:value={query}
+				aria-label="Suche"
+			/>
+			{#if query}
+				<button type="button" class="clear" onclick={clearSearch} aria-label="Suche leeren">×</button>
+			{/if}
+		</div>
 		<select class="select sort" bind:value={sort} aria-label="Sortierung">
-			<option value="name">Sortierung: Name</option>
-			<option value="trend">Sortierung: Trend</option>
+			<option value="recent">Häufigste zuerst</option>
+			<option value="name">Alphabetisch</option>
+			<option value="trend">Nach Trend</option>
 		</select>
 	</div>
 </div>
@@ -94,71 +129,131 @@
 	</div>
 {/if}
 
-<a class="fab" href="/sessions/new" aria-label="Neue Session starten">+</a>
+<a class="fab" href="/sessions/new" aria-label="Neue Session starten">
+	<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round">
+		<path d="M12 5v14M5 12h14" />
+	</svg>
+</a>
 
 <style>
-	.head {
+	.hero {
 		display: flex;
 		justify-content: space-between;
-		align-items: flex-start;
-		gap: 16px;
-		margin-bottom: 18px;
+		align-items: flex-end;
+		gap: 18px;
+		margin-bottom: 28px;
+		flex-wrap: wrap;
+	}
+	.hero-text {
+		flex: 1;
+		min-width: 260px;
+	}
+	.hero h1 {
+		font-size: 30px;
+		margin-bottom: 4px;
+	}
+	.hero .muted {
+		font-size: 15px;
+		max-width: 56ch;
+	}
+	.btn.big {
+		padding: 13px 22px;
+		font-size: 14px;
+		font-weight: 600;
 	}
 	.controls {
 		display: flex;
 		flex-direction: column;
 		gap: 12px;
-		margin-bottom: 18px;
+		margin-bottom: 22px;
 	}
 	.search-row {
 		flex-wrap: wrap;
 	}
-	.search {
+	.search-wrap {
 		flex: 1;
 		min-width: 200px;
+		position: relative;
+		display: flex;
+		align-items: center;
+	}
+	.search-icon {
+		position: absolute;
+		left: 14px;
+		color: var(--c-text-subtle);
+		pointer-events: none;
+	}
+	.search {
+		flex: 1;
+		padding-left: 38px;
+	}
+	.clear {
+		position: absolute;
+		right: 8px;
+		width: 22px;
+		height: 22px;
+		border: none;
+		background: var(--c-bg-alt);
+		border-radius: 50%;
+		font-size: 14px;
+		cursor: pointer;
+		color: var(--c-text-muted);
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		line-height: 1;
+	}
+	.clear:hover {
+		background: var(--c-border);
 	}
 	.sort {
 		flex: 0 0 200px;
 	}
 	.grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+		grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
 		gap: 14px;
 	}
 	.empty {
 		text-align: center;
-		padding: 32px 16px;
+		padding: 44px 20px;
 	}
 	.fab {
 		position: fixed;
-		bottom: 24px;
-		right: 24px;
+		bottom: 28px;
+		right: 28px;
 		width: 56px;
 		height: 56px;
 		border-radius: 50%;
 		background: var(--c-accent);
 		color: var(--c-accent-fg);
-		font-size: 30px;
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		box-shadow: var(--shadow-lg);
+		box-shadow: var(--shadow-xl);
 		text-decoration: none;
 		z-index: 30;
+		transition: transform 160ms var(--ease), box-shadow 160ms var(--ease);
+	}
+	.fab:hover {
+		transform: translateY(-2px) scale(1.05);
 	}
 	.fab:active {
-		transform: scale(0.93);
+		transform: translateY(0) scale(0.97);
 	}
 	@media (max-width: 640px) {
-		.head {
-			flex-direction: column;
+		.hero h1 {
+			font-size: 24px;
 		}
-		.head .btn {
-			align-self: stretch;
-			text-align: center;
+		.btn.big {
+			width: 100%;
 		}
 		.sort {
 			flex-basis: 100%;
+		}
+		.fab {
+			bottom: 18px;
+			right: 18px;
 		}
 	}
 </style>
