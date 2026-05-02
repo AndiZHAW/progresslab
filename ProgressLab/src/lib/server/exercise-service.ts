@@ -2,9 +2,11 @@ import type { Types } from 'mongoose';
 import { connectDB } from './db';
 import { Exercise } from './models/Exercise';
 import { Session } from './models/Session';
-import { buildRecommendation } from './recommendation';
+import { buildRecommendation, computePR, isPRSession } from './recommendation';
 import { toExerciseDTO, toSessionDTO } from './dto';
 import type { ExerciseWithRecDTO } from '../types';
+
+const SEVEN_DAYS = 7 * 24 * 60 * 60 * 1000;
 
 export async function listExercisesWithRecommendation(userId: string): Promise<ExerciseWithRecDTO[]> {
 	await connectDB();
@@ -21,6 +23,8 @@ export async function listExercisesWithRecommendation(userId: string): Promise<E
 		sessionsByExercise.set(k, arr);
 	}
 
+	const sevenDaysAgo = Date.now() - SEVEN_DAYS;
+
 	return exercises.map((ex) => {
 		const exSessions = sessionsByExercise.get(String(ex._id)) ?? [];
 		const rec = buildRecommendation(exSessions, {
@@ -33,6 +37,10 @@ export async function listExercisesWithRecommendation(userId: string): Promise<E
 			.slice(0, 8)
 			.reverse()
 			.map((s) => Math.max(...s.sets.map((x) => x.weight)));
+		const pr = computePR(exSessions, !!ex.isBodyweight);
+		const hasRecentPR = exSessions.some(
+			(s) => +new Date(s.date) >= sevenDaysAgo && isPRSession(s, exSessions, !!ex.isBodyweight)
+		);
 
 		return {
 			...toExerciseDTO(ex as unknown as Parameters<typeof toExerciseDTO>[0]),
@@ -40,7 +48,10 @@ export async function listExercisesWithRecommendation(userId: string): Promise<E
 			lastSession: last
 				? toSessionDTO(last as unknown as Parameters<typeof toSessionDTO>[0])
 				: null,
-			sparkline
+			sparkline,
+			pr,
+			hasPR: hasRecentPR,
+			sessionCount: exSessions.length
 		};
 	});
 }
@@ -56,16 +67,22 @@ export async function getExerciseDetail(userId: string, exerciseId: string) {
 		defaultRepTarget: ex.defaultRepTarget ?? 5,
 		defaultRpeTarget: ex.defaultRpeTarget ?? 7
 	});
+	const pr = computePR(sessions, !!ex.isBodyweight);
+
 	return {
 		exercise: toExerciseDTO(ex as unknown as Parameters<typeof toExerciseDTO>[0]),
 		recommendation: rec,
+		pr,
 		sessions: sessions.map((s) =>
 			toSessionDTO(s as unknown as Parameters<typeof toSessionDTO>[0], ex.name)
 		)
 	};
 }
 
-export async function getRecommendationForExercise(userId: string, exerciseId: string | Types.ObjectId) {
+export async function getRecommendationForExercise(
+	userId: string,
+	exerciseId: string | Types.ObjectId
+) {
 	await connectDB();
 	const ex = await Exercise.findById(exerciseId).lean();
 	if (!ex) return null;

@@ -1,4 +1,4 @@
-import type { Recommendation, Trend } from './server/recommendation';
+import type { Recommendation, Trend, PR } from './server/recommendation';
 
 export type ExerciseDTO = {
 	id: string;
@@ -25,6 +25,9 @@ export type ExerciseWithRecDTO = ExerciseDTO & {
 	recommendation: Recommendation;
 	lastSession: SessionDTO | null;
 	sparkline: number[];
+	pr: PR;
+	hasPR: boolean;
+	sessionCount: number;
 };
 
-export type { Recommendation, Trend };
+export type { Recommendation, Trend, PR };

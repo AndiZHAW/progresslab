@@ -3,6 +3,7 @@
 	import ProgressChart from '$lib/components/ProgressChart.svelte';
 	import SessionList from '$lib/components/SessionList.svelte';
 	import { showToast } from '$lib/toast.svelte';
+	import { formatDate } from '$lib/format';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
@@ -21,26 +22,63 @@
 
 <div class="head">
 	<a href="/" class="back" aria-label="Zurück zum Dashboard">‹</a>
-	<div>
+	<div class="title-block">
 		<h1>{data.exercise.name}</h1>
 		<div class="muted small">
-			{data.exercise.category.toUpperCase()}
+			<span class="cat-tag">{data.exercise.category}</span>
 			{#if data.exercise.muscleGroup} · {data.exercise.muscleGroup}{/if}
 			{#if data.exercise.isBodyweight} · Bodyweight{/if}
+			{#if data.sessions.length > 0} · {data.sessions.length} Sessions{/if}
 		</div>
 	</div>
 	<div class="spacer"></div>
-	<a class="btn" href={`/sessions/new/${data.exercise.id}`}>Session loggen</a>
+	<a class="btn btn-primary" href={`/sessions/new/${data.exercise.id}`}>Session loggen</a>
 </div>
 
 <RecommendationCard recommendation={data.recommendation} />
 
 <div class="actions">
-	<button class="btn" disabled={accepted} onclick={accept}>
+	<button class="btn btn-primary" disabled={accepted} onclick={accept}>
 		{accepted ? '✓ Geplant' : 'Empfehlung akzeptieren'}
 	</button>
 	<a class="btn btn-secondary" href={`/sessions/new/${data.exercise.id}`}>Manuell loggen</a>
 </div>
+
+{#if data.pr.topWeight || data.pr.estimated1RM}
+	<section class="block">
+		<h2>Persönliche Records</h2>
+		<div class="pr-grid">
+			{#if data.pr.topWeight}
+				<div class="pr-mini">
+					<div class="pr-lbl">Top-Gewicht</div>
+					<div class="pr-val">{data.pr.topWeight.weight} kg × {data.pr.topWeight.reps}</div>
+					<div class="pr-date">{formatDate(data.pr.topWeight.date)}</div>
+				</div>
+			{/if}
+			{#if data.pr.estimated1RM}
+				<div class="pr-mini accent">
+					<div class="pr-lbl">Geschätztes 1RM</div>
+					<div class="pr-val">{data.pr.estimated1RM.value} kg</div>
+					<div class="pr-date">aus {data.pr.estimated1RM.weight} × {data.pr.estimated1RM.reps}</div>
+				</div>
+			{/if}
+			{#if data.pr.topReps}
+				<div class="pr-mini">
+					<div class="pr-lbl">Top-Reps</div>
+					<div class="pr-val">{data.pr.topReps.reps} × {data.exercise.isBodyweight ? 'BW' : `${data.pr.topReps.weight} kg`}</div>
+					<div class="pr-date">{formatDate(data.pr.topReps.date)}</div>
+				</div>
+			{/if}
+			{#if data.pr.bestVolume}
+				<div class="pr-mini">
+					<div class="pr-lbl">Bestes Session-Volumen</div>
+					<div class="pr-val">{data.pr.bestVolume.value.toLocaleString('de-CH')} kg</div>
+					<div class="pr-date">{formatDate(data.pr.bestVolume.date)}</div>
+				</div>
+			{/if}
+		</div>
+	</section>
+{/if}
 
 <section class="block">
 	<h2>Verlauf</h2>
@@ -63,22 +101,36 @@
 		display: flex;
 		align-items: center;
 		gap: 14px;
-		margin-bottom: 18px;
+		margin-bottom: 22px;
+		flex-wrap: wrap;
 	}
 	.back {
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		width: 36px;
-		height: 36px;
+		width: 40px;
+		height: 40px;
 		border-radius: 50%;
 		background: var(--c-surface);
 		border: 1px solid var(--c-border);
 		font-size: 22px;
 		color: var(--c-text);
+		flex-shrink: 0;
 	}
 	.back:hover {
-		background: var(--c-bg);
+		background: var(--c-bg-alt);
+	}
+	.title-block {
+		min-width: 0;
+	}
+	.cat-tag {
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		font-weight: 600;
+		font-size: 11px;
+		background: var(--c-bg-alt);
+		padding: 2px 8px;
+		border-radius: var(--radius-pill);
 	}
 	.small {
 		font-size: 12px;
@@ -86,7 +138,7 @@
 	.actions {
 		display: flex;
 		gap: 10px;
-		margin: 16px 0;
+		margin: 18px 0;
 		flex-wrap: wrap;
 	}
 	.actions .btn {
@@ -94,7 +146,7 @@
 		min-width: 180px;
 	}
 	.block {
-		margin-top: 28px;
+		margin-top: 30px;
 	}
 	.block h2 {
 		margin-bottom: 4px;
@@ -102,10 +154,46 @@
 	.block .muted {
 		margin-bottom: 12px;
 	}
+	.pr-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+		gap: 10px;
+	}
+	.pr-mini {
+		background: var(--c-surface);
+		border: 1px solid var(--c-border);
+		border-radius: var(--radius-md);
+		padding: 14px 16px;
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+	}
+	.pr-mini.accent {
+		background: linear-gradient(135deg, var(--c-text) 0%, color-mix(in srgb, var(--c-text) 78%, var(--c-accent)) 100%);
+		color: var(--c-bg);
+		border-color: transparent;
+	}
+	.pr-mini.accent .pr-lbl,
+	.pr-mini.accent .pr-date {
+		color: rgba(255, 255, 255, 0.7);
+	}
+	.pr-lbl {
+		font-size: 10px;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		font-weight: 600;
+		color: var(--c-text-subtle);
+	}
+	.pr-val {
+		font-size: 18px;
+		font-weight: 800;
+		letter-spacing: -0.01em;
+	}
+	.pr-date {
+		font-size: 11px;
+		color: var(--c-text-subtle);
+	}
 	@media (max-width: 640px) {
-		.head {
-			flex-wrap: wrap;
-		}
 		.head .btn {
 			width: 100%;
 		}
