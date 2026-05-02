@@ -156,16 +156,18 @@
 ## 4. Erweiterungen
 
 > Über den Mindestumfang hinaus umgesetzt, klar abgrenzbar.
+> Pfade beziehen sich auf den Projektroot (siehe Abschnitt 5: Code in `ProgressLab/`).
 
 ### 4.1 Authentifizierung mit User- und Admin-Rolle
 
 - **Beschreibung & Nutzen:** Eigenes Konto mit Username/Passwort. Sessions werden pro User getrennt
   gespeichert. Admin-Rolle darf Übungen anlegen und löschen, normale User nicht.
 - **Wo umgesetzt:**
-  - **Backend:** `src/lib/server/auth.ts` (bcrypt-Hashing, Session-Cookies), `src/hooks.server.ts`
-    (User aus Cookie pro Request), API-Endpoints `src/routes/api/auth/*`
-  - **Frontend:** `src/routes/login/`, `src/routes/register/`, Admin-Guard in
-    `src/routes/admin/+layout.server.ts`
+  - **Backend:** `ProgressLab/src/lib/server/auth.ts` (bcrypt-Hashing, Session-Cookies),
+    `ProgressLab/src/hooks.server.ts` (User aus Cookie pro Request),
+    API-Endpoints `ProgressLab/src/routes/api/auth/*`
+  - **Frontend:** `ProgressLab/src/routes/login/`, `ProgressLab/src/routes/register/`,
+    Admin-Guard in `ProgressLab/src/routes/admin/+layout.server.ts`
   - **Datenbank:** Collections `users` und `sessiontokens`
 - **Demo-Accounts:** `demo / demo1234` (User), `admin / admin1234` (Admin) – nach `npm run seed`.
 
@@ -183,57 +185,120 @@
 ### 4.3 Filter, Suche, Sortierung im Dashboard
 
 - **Beschreibung & Nutzen:** Über die Push/Pull/Legs-Tabs hinaus existiert eine Volltextsuche
-  (Übungsname + Muskelgruppe) und eine Sortierung nach Name oder Trend. Damit findet man auch bei
-  vielen Übungen schnell die gewünschte.
-- **Wo umgesetzt:** `src/routes/+page.svelte` (`$derived` mit Filter-/Sortier-Pipeline)
+  (Übungsname + Muskelgruppe) und drei Sortierungen (häufigste zuerst, alphabetisch, nach Trend).
+  Damit findet man auch bei vielen Übungen schnell die gewünschte.
+- **Wo umgesetzt:** `ProgressLab/src/routes/+page.svelte` (`$derived` mit Filter-/Sortier-Pipeline)
 
-### 4.4 Visualisierung mit Chart.js
+### 4.4 Visualisierung mit Chart.js – Verlauf, Volumen, Donut
 
-- **Beschreibung & Nutzen:** Auf der Übungs-Detailseite zeigt ein Dual-Axis-Chart den Verlauf von
-  Top-Gewicht (linke Y-Achse, schwarze Linie) und Ø RPE (rechte Y-Achse, gestrichelt rot). Damit ist
-  auf einen Blick erkennbar, ob die Steigerung mit zumutbarer RPE läuft.
-- **Wo umgesetzt:** `src/lib/components/ProgressChart.svelte` (Chart.js mit Custom-Config), genutzt in
-  `src/routes/exercises/[id]/+page.svelte`
+- **Beschreibung & Nutzen:** Drei Chart-Typen auf zwei Seiten:
+  - **Detail-Page:** Dual-Axis-Linienchart (Top-Gewicht + Ø RPE über alle Sessions)
+  - **Statistik-Page:** Bar-Chart Volumen pro Woche
+  - **Statistik-Page:** Doughnut-Chart der Volumen-Verteilung Push/Pull/Legs
+- **Wo umgesetzt:** `ProgressLab/src/lib/components/ProgressChart.svelte`,
+  `VolumeChart.svelte`, `CategoryDonut.svelte`. Chart-Farben werden zur Laufzeit aus den
+  CSS-Custom-Properties gelesen, damit die Diagramme im Light- und Dark-Mode konsistent aussehen.
 
 ### 4.5 Coach-Empfehlung als eigene Engine
 
 - **Beschreibung & Nutzen:** Die App tippt nicht nur Daten ein, sondern berechnet aus den letzten
-  Sessions eine konkrete Handlungsempfehlung (Gewicht, Reps, Begründung, Trend, Deload-Flag) für die
-  nächste Session. Das ist der eigentliche „Mehrwert" gegenüber bestehenden Logger-Apps.
-- **Wo umgesetzt:** `src/lib/server/recommendation.ts` (reine Funktion, einheitenfest), eingebunden
-  in Dashboard, Detail-Page und Set-Logger (vorbefüllte Werte).
+  Sessions eine konkrete Handlungsempfehlung (Gewicht, Reps, Begründung, Trend, Deload-Flag, e1RM)
+  für die nächste Session. Das ist der eigentliche „Mehrwert" gegenüber bestehenden Logger-Apps.
+- **Wo umgesetzt:** `ProgressLab/src/lib/server/recommendation.ts` (reine Funktion mit Epley-1RM,
+  PR-Detection, RPE-Heuristik), eingebunden in Dashboard, Detail-Page und Set-Logger.
 
 ### 4.6 Responsive Design
 
 - **Beschreibung & Nutzen:** Das Layout funktioniert von schmaler Mobile-Ansicht (≤ 640 px, Tabs
-  brechen um, FAB visible) bis Desktop. Container mit `max-width: 960px`, CSS-Grid für Tile-Layout.
-- **Wo umgesetzt:** Globale CSS-Variablen in `src/app.css`, Media-Queries pro Komponente.
+  brechen um, Hamburger-Menü, FAB visible) bis Desktop. Container mit `max-width: 1040px`,
+  CSS-Grid für Tile-Layout.
+- **Wo umgesetzt:** Globale CSS-Variablen in `ProgressLab/src/app.css`, Media-Queries pro Komponente.
+
+### 4.7 Dark-Mode mit System-Präferenz
+
+- **Beschreibung & Nutzen:** Vollständiges Dark-Theme mit eigener Farb-Palette. Toggle in der Nav,
+  Persistenz via Cookie (1 Jahr), kein Flash-of-Wrong-Theme dank serverseitiger Initialisierung über
+  `transformPageChunk` in `hooks.server.ts`. Auch die Charts respektieren das aktive Theme.
+- **Wo umgesetzt:** `ProgressLab/src/lib/theme.svelte.ts` (Svelte 5 Rune-Store),
+  `ProgressLab/src/app.css` (`[data-theme='dark']`-Variablen),
+  `ProgressLab/src/hooks.server.ts` (initiales Theme aus Cookie ins HTML).
+
+### 4.8 Personal Records mit 1RM-Schätzung (Epley)
+
+- **Beschreibung & Nutzen:** Eigene Records-Seite mit Top-Gewicht, Top-Reps, geschätztem 1-Rep-Max
+  (Epley-Formel `w × (1 + r/30)`) und höchstem Session-Volumen je Übung. Auf Dashboard-Tiles erscheint
+  ein PR-Badge, wenn in den letzten 7 Tagen ein neuer Bestwert aufgestellt wurde.
+- **Wo umgesetzt:** `ProgressLab/src/lib/server/recommendation.ts` (`computePR`, `epley1RM`,
+  `isPRSession`), `ProgressLab/src/lib/server/records-service.ts`,
+  `ProgressLab/src/routes/records/`.
+
+### 4.9 Statistik-Dashboard mit Streak-Tracking
+
+- **Beschreibung & Nutzen:** Eigene Statistik-Seite mit Total-Volumen, Sessions, Sätze, Reps,
+  aktueller und längster Trainings-Streak (zusammenhängende Tage), Trainings/Woche, Top-6-Übungen
+  nach Volumen und den beiden Charts aus 4.4. Streak-Berechnung tagesgenau aus echten Datumswerten.
+- **Wo umgesetzt:** `ProgressLab/src/lib/server/stats-service.ts` (reine Aggregations-Logik),
+  `ProgressLab/src/routes/stats/`.
+
+### 4.10 Sessions vollständig CRUD-fähig (Edit + Delete) mit Optimistic UI
+
+- **Beschreibung & Nutzen:** Sessions können bearbeitet (Datum, Sätze, RPE, Notiz) und gelöscht
+  werden. Auf der Sessions-Liste gibt es einen Schnell-Lösch-Button mit optimistischem Update –
+  der Eintrag verschwindet sofort, der Server-Roundtrip läuft im Hintergrund, bei Fehler wird
+  der Eintrag wiederhergestellt.
+- **Wo umgesetzt:** `ProgressLab/src/routes/api/sessions/[id]/+server.ts` (PUT/DELETE),
+  `ProgressLab/src/routes/sessions/[id]/edit/`,
+  `ProgressLab/src/routes/sessions/+page.svelte` (Optimistic-Removal-Set).
+
+### 4.11 CSV-Export der eigenen Trainings­daten
+
+- **Beschreibung & Nutzen:** Ein Klick auf „CSV exportieren" lädt alle eigenen Sessions als
+  CSV-Datei mit UTF-8-BOM (Excel-kompatibel) herunter – ein Satz pro Zeile, mit Datum, Übung,
+  Kategorie, Satz-Nummer, Gewicht, Reps, RPE und Notiz.
+- **Wo umgesetzt:** `ProgressLab/src/routes/api/sessions/export/+server.ts` (eigener Endpoint mit
+  korrektem `content-disposition`-Header), Download-Button im Stats-Header und der Sessions-Liste.
+
+### 4.12 Cleaneres Visual-Design (Inter-Font, Cream-Palette, weiche Schatten)
+
+- **Beschreibung & Nutzen:** Vollständiges Re-Design mit warmer Cream-Hintergrundfarbe (`#faf7f2`)
+  statt Standard-Grau, Teal-Akzent, weichen Multi-Layer-Shadows, Inter-Variable als Web-Font,
+  Hero-Section auf dem Dashboard, Pitch-Layout auf der Login-Page, abgerundete Tile-Hover-Effekte.
+- **Wo umgesetzt:** `ProgressLab/src/app.css` (Design-Tokens, Light + Dark), neue Hero-Section in
+  `ProgressLab/src/routes/+page.svelte`, neuer Pitch in `ProgressLab/src/routes/login/+page.svelte`.
 
 ## 5. Projektorganisation
 
 - **Repository & Struktur:**
 
   ```
-  /                       SvelteKit-Projektroot
-  ├── src/
-  │   ├── routes/         Pages und API-Endpoints
-  │   ├── lib/
-  │   │   ├── components/ Wiederverwendbare Svelte-Komponenten
-  │   │   ├── server/     Server-Only Logik (db, models, auth, recommendation)
-  │   │   ├── format.ts   Formatierungs-Helpers (Datum, Empfehlung, Aggregate)
-  │   │   ├── toast.svelte.ts  Globaler Toast-State (Svelte 5 Rune)
-  │   │   └── types.ts    Geteilte DTO-Typen (Client + Server)
-  │   ├── app.css         Globale Styles + Design-Tokens
-  │   ├── app.html        HTML-Shell
-  │   ├── app.d.ts        App.Locals (User-Typ)
-  │   └── hooks.server.ts Setzt locals.user pro Request
-  ├── scripts/seed.ts     Datenbank-Seed (Übungen + Demo-User + Demo-Sessions)
-  ├── netlify.toml        Netlify-Build-Konfiguration
-  ├── .env.example        Vorlage für Environment-Variablen
-  └── package.json
+  /                              Repository-Root
+  ├── README.md                  Diese Projektdokumentation
+  ├── netlify.toml               Netlify-CI-Config (base = "ProgressLab")
+  ├── VORLAGE_README.md          Moodle-Vorlage
+  ├── *.pdf, *.png, *.docx, *.mp4   Design-Artefakte (Wochen 8–10)
+  ├── ProgressLab_Prototyp.html  Klickbarer Mockup aus Woche 10
+  └── ProgressLab/               SvelteKit-App
+      ├── src/
+      │   ├── routes/            Pages und API-Endpoints
+      │   ├── lib/
+      │   │   ├── components/    Wiederverwendbare Svelte-Komponenten
+      │   │   ├── server/        Server-Only Logik (db, models, auth, services)
+      │   │   ├── format.ts      Formatierungs-Helpers
+      │   │   ├── theme.svelte.ts Theme-Store (Light/Dark, Svelte 5 Rune)
+      │   │   ├── toast.svelte.ts Globaler Toast-State
+      │   │   └── types.ts       Geteilte DTO-Typen
+      │   ├── app.css            Design-Tokens (Light + Dark)
+      │   ├── app.html           HTML-Shell mit Theme-Slot
+      │   ├── app.d.ts           App.Locals (User-Typ)
+      │   └── hooks.server.ts    Setzt locals.user + Theme pro Request
+      ├── scripts/seed.ts        Datenbank-Seed
+      ├── netlify.toml           Adapter-Config (functions, publish)
+      ├── .env.example           Vorlage für Env-Variablen
+      └── package.json
   ```
 
-- **Commit-Praxis:** Sprechende Commit-Messages, jeweils Mindestumfang oder Erweiterung erkennbar.
+- **Commit-Praxis:** Sprechende Commit-Messages mit Conventional-Prefix
+  (`feat`, `fix`, `chore`, `docs`, `refactor`), jeweils Mindestumfang oder Erweiterung erkennbar.
 
 ## 6. KI-Deklaration
 
@@ -274,13 +339,17 @@ Nach jedem Schritt verifiziert (Build, svelte-check, Browser-Smoke-Test).
 
 ### Lokal starten
 
+Alle SvelteKit-Befehle laufen aus dem `ProgressLab/`-Verzeichnis:
+
 ```bash
+cd ProgressLab
+
 # 1. Abhängigkeiten installieren
 npm install
 
 # 2. .env aus Vorlage anlegen und Connection-String eintragen
 cp .env.example .env
-# dann MONGODB_URI in .env setzen
+# dann MONGODB_URI und SESSION_SECRET in .env setzen
 
 # 3. Datenbank seeden (Übungen + 2 Demo-Accounts + Demo-Sessions)
 npm run seed
