@@ -3,6 +3,7 @@
 	import favicon from '$lib/assets/favicon.svg';
 	import Nav from '$lib/components/Nav.svelte';
 	import Toaster from '$lib/components/Toaster.svelte';
+	import InstallPrompt from '$lib/components/InstallPrompt.svelte';
 	import type { Snippet } from 'svelte';
 	import type { LayoutData } from './$types';
 
@@ -16,6 +17,7 @@
 
 <Nav user={data.user} />
 <Toaster />
+<InstallPrompt />
 
 <main class="container">
 	{@render children()}
