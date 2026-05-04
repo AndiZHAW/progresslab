@@ -23,6 +23,7 @@
 8. [Setup-Anleitung](#8-setup-anleitung)
 9. [MongoDB-Schema](#9-mongodb-schema)
 10. [Tests](#10-tests)
+11. [Methodische Artefakte](#11-methodische-artefakte)
 
 > **Hinweis:** Massgeblich sind die im **Unterricht** und auf **Moodle** kommunizierten Anforderungen.
 
@@ -448,3 +449,21 @@ npm run test:e2e:ui    # Playwright UI mit Time-Travel-Debugging
 ```
 
 Voraussetzung: Vor dem ersten Lauf einmal `npx playwright install chromium` ausführen.
+
+## 11. Methodische Artefakte
+
+Über den Mindestumfang hinaus dokumentieren wir die wichtigsten Architektur-
+Entscheide als **Architecture Decision Records (ADR)** nach dem Format von
+Michael Nygard. Jeder ADR hält Kontext, Entscheidung, Begründung und
+Konsequenzen fest, sodass spätere Reviewer den Entscheid nachvollziehen können.
+
+Übersicht: [`docs/adr/`](docs/adr/README.md)
+
+| Nr. | Titel |
+|---|---|
+| [0001](docs/adr/0001-sveltekit-typescript.md) | SvelteKit + TypeScript als Tech-Stack |
+| [0002](docs/adr/0002-mongodb-mongoose.md) | MongoDB Atlas + Mongoose statt relationaler DB |
+| [0003](docs/adr/0003-eigene-session-auth.md) | Eigene Session-Cookie-Auth statt Lucia/Better-Auth |
+| [0004](docs/adr/0004-recommendation-pure-function.md) | Recommendation-Engine als reine Funktion |
+| [0005](docs/adr/0005-pwa-custom-service-worker.md) | PWA mit Custom Service Worker statt Plugin |
+| [0006](docs/adr/0006-repo-struktur-progresslab-subfolder.md) | Code im `ProgressLab/`-Subfolder, Doku am Root |
