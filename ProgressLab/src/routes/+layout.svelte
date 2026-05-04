@@ -15,11 +15,13 @@
 	<title>ProgressLab</title>
 </svelte:head>
 
+<a href="#main-content" class="skip-link">Zum Hauptinhalt springen</a>
+
 <Nav user={data.user} />
 <Toaster />
 <InstallPrompt />
 
-<main class="container">
+<main id="main-content" class="container" tabindex="-1">
 	{@render children()}
 </main>
 

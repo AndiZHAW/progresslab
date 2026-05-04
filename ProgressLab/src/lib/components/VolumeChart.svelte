@@ -85,7 +85,31 @@
 	{#if weeks.length === 0}
 		<div class="empty">Noch keine Daten.</div>
 	{:else}
-		<canvas bind:this={canvas}></canvas>
+		<!-- svelte-ignore a11y_no_interactive_element_to_noninteractive_role -->
+		<canvas
+			bind:this={canvas}
+			role="img"
+			aria-label={`Wochenvolumen über ${weeks.length} Wochen`}
+		></canvas>
+		<table class="sr-only">
+			<caption>Wochenvolumen (für Screenreader)</caption>
+			<thead>
+				<tr>
+					<th scope="col">Woche ab</th>
+					<th scope="col">Volumen (kg)</th>
+					<th scope="col">Sessions</th>
+				</tr>
+			</thead>
+			<tbody>
+				{#each weeks as w (w.weekStart)}
+					<tr>
+						<td>{labels[weeks.indexOf(w)]}</td>
+						<td>{w.volume}</td>
+						<td>{w.sessions}</td>
+					</tr>
+				{/each}
+			</tbody>
+		</table>
 	{/if}
 </div>
 

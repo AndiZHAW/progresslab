@@ -2,9 +2,15 @@
 	import { toasts } from '$lib/toast.svelte';
 </script>
 
-<div class="toaster" aria-live="polite" aria-atomic="true">
+<div class="toaster">
 	{#each toasts.items as t (t.id)}
-		<div class="toast" data-kind={t.kind}>
+		<div
+			class="toast"
+			data-kind={t.kind}
+			role={t.kind === 'error' ? 'alert' : 'status'}
+			aria-live={t.kind === 'error' ? 'assertive' : 'polite'}
+			aria-atomic="true"
+		>
 			<span class="dot" aria-hidden="true">
 				{#if t.kind === 'success'}✓{:else if t.kind === 'error'}!{:else}i{/if}
 			</span>

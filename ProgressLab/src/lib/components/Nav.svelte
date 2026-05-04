@@ -201,8 +201,14 @@
 		gap: 8px;
 		align-items: center;
 	}
-	.register-cta {
+	.links a.register-cta {
 		padding: 8px 16px;
+		color: var(--c-accent-fg);
+		background: var(--c-accent);
+	}
+	.links a.register-cta:hover {
+		color: var(--c-accent-fg);
+		background: var(--c-accent-hover);
 	}
 	.user {
 		display: flex;

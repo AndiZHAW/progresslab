@@ -81,7 +81,39 @@
 	{#if total === 0}
 		<div class="empty">Noch keine Daten.</div>
 	{:else}
-		<canvas bind:this={canvas}></canvas>
+		<!-- svelte-ignore a11y_no_interactive_element_to_noninteractive_role -->
+		<canvas
+			bind:this={canvas}
+			role="img"
+			aria-label="Volumen-Verteilung nach Push, Pull und Legs"
+		></canvas>
+		<table class="sr-only">
+			<caption>Volumen pro Kategorie (für Screenreader)</caption>
+			<thead>
+				<tr>
+					<th scope="col">Kategorie</th>
+					<th scope="col">Volumen (kg)</th>
+					<th scope="col">Anteil</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>Push</td>
+					<td>{data.push}</td>
+					<td>{Math.round((data.push / total) * 100)} %</td>
+				</tr>
+				<tr>
+					<td>Pull</td>
+					<td>{data.pull}</td>
+					<td>{Math.round((data.pull / total) * 100)} %</td>
+				</tr>
+				<tr>
+					<td>Legs</td>
+					<td>{data.legs}</td>
+					<td>{Math.round((data.legs / total) * 100)} %</td>
+				</tr>
+			</tbody>
+		</table>
 	{/if}
 </div>
 

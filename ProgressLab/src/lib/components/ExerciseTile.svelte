@@ -11,6 +11,13 @@
 				? '↓'
 				: '→'
 	);
+	const trendLabel = $derived(
+		exercise.recommendation.trend === 'up'
+			? 'Trend steigend'
+			: exercise.recommendation.trend === 'down'
+				? 'Trend fallend'
+				: 'Trend stabil'
+	);
 	const trendClass = $derived('trend-' + exercise.recommendation.trend);
 
 	const sparkPath = $derived.by(() => {
@@ -38,10 +45,16 @@
 		<div class="tile-name">
 			{exercise.name}
 			{#if exercise.hasPR}
-				<span class="pr-badge" title="Persönliche Bestleistung in den letzten 7 Tagen">PR</span>
+				<span
+					class="pr-badge"
+					title="Persönliche Bestleistung in den letzten 7 Tagen"
+					aria-label="Neuer Personal Record in den letzten 7 Tagen"
+				>PR</span>
 			{/if}
 		</div>
-		<div class="trend {trendClass}" aria-label={`Trend ${exercise.recommendation.trend}`}>{arrow}</div>
+		<div class="trend {trendClass}" role="img" aria-label={trendLabel}>
+			<span aria-hidden="true">{arrow}</span>
+		</div>
 	</div>
 
 	<div class="meta">

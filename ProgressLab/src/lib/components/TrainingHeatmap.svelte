@@ -68,10 +68,10 @@
 	const totalDays = $derived(days.filter((d) => d.sessions > 0).length);
 </script>
 
-<div class="wrap">
+<div class="wrap" role="figure" aria-label={`Heatmap mit ${totalDays} Trainingstagen in den letzten 12 Monaten`}>
 	<div class="head">
 		<span class="muted small">{totalDays} Trainingstage in den letzten 12 Monaten</span>
-		<div class="legend">
+		<div class="legend" aria-hidden="true">
 			<span class="lbl">Weniger</span>
 			<span class="cell l-0"></span>
 			<span class="cell l-1"></span>
@@ -103,11 +103,16 @@
 					{#each grid.weeks as week, ci (ci)}
 						<div class="week">
 							{#each week as cell (cell.date)}
-								<span
-									class="cell {levelClass(cell.sessions)}"
-									title={formatTooltip(cell)}
-									aria-label={formatTooltip(cell)}
-								></span>
+								{#if cell.sessions < 0}
+									<span class="cell l-empty" aria-hidden="true"></span>
+								{:else}
+									<span
+										class="cell {levelClass(cell.sessions)}"
+										title={formatTooltip(cell)}
+										role="img"
+										aria-label={formatTooltip(cell)}
+									></span>
+								{/if}
 							{/each}
 						</div>
 					{/each}

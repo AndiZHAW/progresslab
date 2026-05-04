@@ -110,7 +110,31 @@
 	{#if sessions.length === 0}
 		<div class="empty">Noch keine Sessions erfasst.</div>
 	{:else}
-		<canvas bind:this={canvas}></canvas>
+		<!-- svelte-ignore a11y_no_interactive_element_to_noninteractive_role -->
+		<canvas
+			bind:this={canvas}
+			role="img"
+			aria-label={`Verlauf von Top-Gewicht und Ø RPE über ${sessions.length} Sessions`}
+		></canvas>
+		<table class="sr-only">
+			<caption>Verlaufsdaten als Tabelle (für Screenreader)</caption>
+			<thead>
+				<tr>
+					<th scope="col">Datum</th>
+					<th scope="col">Top-Gewicht (kg)</th>
+					<th scope="col">Ø RPE</th>
+				</tr>
+			</thead>
+			<tbody>
+				{#each sorted as s, i (s.date)}
+					<tr>
+						<td>{labels[i]}</td>
+						<td>{weights[i]}</td>
+						<td>{rpes[i]}</td>
+					</tr>
+				{/each}
+			</tbody>
+		</table>
 	{/if}
 </div>
 
