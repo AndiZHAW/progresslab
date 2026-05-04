@@ -452,10 +452,12 @@ Voraussetzung: Vor dem ersten Lauf einmal `npx playwright install chromium` ausf
 
 ## 11. Methodische Artefakte
 
+### 11.1 Architecture Decision Records (ADR)
+
 Über den Mindestumfang hinaus dokumentieren wir die wichtigsten Architektur-
-Entscheide als **Architecture Decision Records (ADR)** nach dem Format von
-Michael Nygard. Jeder ADR hält Kontext, Entscheidung, Begründung und
-Konsequenzen fest, sodass spätere Reviewer den Entscheid nachvollziehen können.
+Entscheide als **ADR** nach dem Format von Michael Nygard. Jeder ADR hält
+Kontext, Entscheidung, Begründung und Konsequenzen fest, sodass spätere
+Reviewer den Entscheid nachvollziehen können.
 
 Übersicht: [`docs/adr/`](docs/adr/README.md)
 
@@ -467,3 +469,16 @@ Konsequenzen fest, sodass spätere Reviewer den Entscheid nachvollziehen können
 | [0004](docs/adr/0004-recommendation-pure-function.md) | Recommendation-Engine als reine Funktion |
 | [0005](docs/adr/0005-pwa-custom-service-worker.md) | PWA mit Custom Service Worker statt Plugin |
 | [0006](docs/adr/0006-repo-struktur-progresslab-subfolder.md) | Code im `ProgressLab/`-Subfolder, Doku am Root |
+
+### 11.2 Accessibility-Audit (WCAG 2.1 AA)
+
+Vollständiger A11y-Audit mit **axe-core** über alle 7 Hauptseiten — Bericht in
+[`docs/a11y-audit.md`](docs/a11y-audit.md). Ergebnis: **0 Violations** auf WCAG
+2.1 Level AA. Identifizierte Probleme (Farb-Kontrast, ARIA-Rollen, fehlender
+Skip-Link, Chart-Text-Alternativen) wurden behoben und das Audit ist als
+Playwright-Test (`tests/e2e/a11y.spec.ts`) als Regressions-Schutz im CI-Lauf.
+
+```bash
+cd ProgressLab && npx playwright test tests/e2e/a11y.spec.ts
+# 7 passed (24.1s)
+```
