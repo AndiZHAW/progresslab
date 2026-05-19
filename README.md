@@ -152,10 +152,43 @@
 
 ### 3.5 Validate
 
-- **URL der getesteten Version:** _[wird im Rahmen der Evaluation noch ergänzt]_
-- **Ziele der Prüfung:** Verstehen Nutzer:innen die Empfehlung intuitiv? Ist der Logger schnell genug
-  für „mitten im Training"? Wird die RPE-Eingabe akzeptiert oder als Hürde empfunden?
-- **Vorgehen, Stichprobe, Aufgaben:** _[noch ausstehend – wird in der Validierungs-Übung durchgeführt]_
+- **URL der getesteten Version:** <https://progresslab.netlify.app/> (Commit
+  `_[Hash zum Test-Zeitpunkt nachtragen]_`, identisch mit der live ausgespielten Variante).
+
+- **Ziele der Evaluation:**
+  - Verstehen Nutzer:innen die Coach-Empfehlung intuitiv (Wert + Begründung)?
+  - Ist das Erfassen einer Session schnell genug für „mitten im Training" (Ziel: < 60 s für 3 Sätze)?
+  - Wird das Konzept einer „Routine" auf Anhieb verstanden und genutzt?
+  - Findet sich die Information „mein bisher höchstes Gewicht je Übung" intuitiv?
+  - Werden RPE-Werte als Hürde oder als wertvoller Input empfunden?
+
+- **Vorgehen:** moderiert · on-site · think-aloud · paarweise im Übungsslot mit
+  Mitstudierenden (gegenseitiges Testen). Beobachtungen werden pro Testperson
+  in einem Feedback-Grid protokolliert (Vorlage:
+  [`docs/evaluation/feedback-grid.md`](docs/evaluation/feedback-grid.md)).
+
+- **Stichprobe:** _[Nach dem Test ergänzen: Anzahl Testpersonen, Profil/Hintergrund
+  (Studierende, Erfahrung mit Krafttraining-Apps), Datum]_
+
+- **Aufgaben/Szenarien:** 4 szenario-basierte Aufgaben mit steigender Komplexität,
+  alle in neutraler Sprache ohne UI-Begriffe formuliert. Vollständiger Text:
+  [`docs/evaluation/testaufgaben.md`](docs/evaluation/testaufgaben.md).
+  1. Verlauf einer Übung erkunden und die nächste Empfehlung verstehen.
+  2. Eine Session festhalten (Kniebeugen, 3 × 5 @ 100 kg, RPE 7).
+  3. Eine gespeicherte Routine („Push Day") starten und die erste Übung erfassen.
+  4. Den bisher höchsten Wert einer Übung herausfinden.
+
+- **Kennzahlen & Beobachtungen:** _[Nach dem Test als Issue Map einfügen oder verlinken:
+  `docs/evaluation/issue-map.md`. Pro Aufgabe: Erfolgsquote, Zeitbedarf, qualitative
+  Findings.]_
+
+- **Zusammenfassung der Resultate:** _[2–4 Sätze, was funktioniert hat und wo
+  die kritischsten Probleme liegen.]_
+
+- **Abgeleitete Verbesserungen:** _[Priorisierte Liste der wichtigsten
+  Anpassungen, mit Schweregrad nach Nielsen (0–4) und Begründung. Falls
+  Verbesserungen direkt umgesetzt wurden: in Kapitel 4 als zusätzlicher
+  Eintrag dokumentieren mit Verweis „Aus Evaluation abgeleitet: ja".]_
 
 ## 4. Erweiterungen
 
@@ -474,7 +507,15 @@ Reviewer den Entscheid nachvollziehen können.
 | [0005](docs/adr/0005-pwa-custom-service-worker.md) | PWA mit Custom Service Worker statt Plugin |
 | [0006](docs/adr/0006-repo-struktur-progresslab-subfolder.md) | Code im `ProgressLab/`-Subfolder, Doku am Root |
 
-### 11.2 Phasen-Artefakte aus Wochen 8–10
+### 11.2 Usability-Evaluation-Material
+
+Testaufgaben (szenario-basiert), Feedback-Grid-Vorlage und strukturierte
+Nachfragen liegen vorbereitet unter
+[`docs/evaluation/`](docs/evaluation/README.md). Die ausgefüllten Protokolle
+landen pro Testperson in `docs/evaluation/protokolle/` und werden in der
+Issue Map zusammengeführt.
+
+### 11.3 Phasen-Artefakte aus Wochen 8–10
 
 Eigene Arbeiten aus den vorgelagerten Übungen liegen unter
 [`docs/artefakte/`](docs/artefakte/README.md). Aufgabenstellungen,
@@ -482,7 +523,7 @@ Bewertungs-Rubrik und Walkthrough-Video sind **nicht** im Repo — sie wurden
 in den jeweiligen Moodle-Übungen abgegeben und sind den Dozierenden direkt
 zugänglich.
 
-### 11.3 Accessibility-Audit (WCAG 2.1 AA)
+### 11.4 Accessibility-Audit (WCAG 2.1 AA)
 
 Vollständiger A11y-Audit mit **axe-core** über alle 7 Hauptseiten — Bericht in
 [`docs/a11y-audit.md`](docs/a11y-audit.md). Ergebnis: **0 Violations** auf WCAG
