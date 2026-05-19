@@ -82,14 +82,14 @@
   - Eine konkrete Zahl als Empfehlung („+2.5 kg") senkt die kognitive Last beim Training.
   - Der Verlauf einzelner Übungen ist wichtiger als Gesamtstatistiken.
   - Drei Sätze als Default decken den häufigsten Use-Case ab.
-- **Artefakte:** Siehe `Ideenfindung_ProgressLab_Andi Kadolli.pdf`.
+- **Artefakte:** Siehe [`docs/artefakte/Ideenfindung_ProgressLab_Andi Kadolli.pdf`](docs/artefakte/Ideenfindung_ProgressLab_Andi%20Kadolli.pdf).
 
 ### 3.2 Sketch
 
 - **Variantenüberblick:** In Woche 9 (Crazy 8s, Solution Sketch) wurden mehrere Varianten skizziert:
   klassisches Listen-Layout, Karten-Grid, Wochen-Timeline. Die finale Variante kombiniert Karten-Grid
   (Dashboard) mit Session-Workflow als Modal-Stack.
-- **Skizzen:** Siehe `Woche9_Skizzieren_Andi_Kadolli.docx` und `Woche 9_Aufgabe_Andi Kadolli.pdf`.
+- **Skizzen:** Siehe [`docs/artefakte/Woche9_Skizzieren_Andi_Kadolli.docx`](docs/artefakte/Woche9_Skizzieren_Andi_Kadolli.docx) und [`docs/artefakte/Woche9_Aufgabe_Andi_Kadolli.pdf`](docs/artefakte/Woche9_Aufgabe_Andi_Kadolli.pdf).
 
 ### 3.3 Decide
 
@@ -97,8 +97,8 @@
   „welche Übung trainiere ich heute" zu „welche Empfehlung gibt der Coach" am direktesten unterstützt.
 - **End-to-End-Ablauf:** Dashboard → Übung wählen (Tile oder FAB-Picker) → Set-Logger → Bestätigung mit
   neuer Empfehlung → zurück zum Dashboard mit aktualisierten Tiles.
-- **Mockup:** Klickbarer HTML-Prototyp `ProgressLab_Prototyp.html` (Woche 10),
-  Doku `Woche10_UI-Prototyping_Andi_Kadolli.pdf`.
+- **Mockup:** Klickbarer HTML-Prototyp [`ProgressLab_Prototyp.html`](ProgressLab_Prototyp.html) (Woche 10),
+  Doku [`docs/artefakte/Woche10_UI-Prototyping_Andi_Kadolli.pdf`](docs/artefakte/Woche10_UI-Prototyping_Andi_Kadolli.pdf).
 
 ### 3.4 Prototype
 
@@ -327,9 +327,11 @@
   /                              Repository-Root
   ├── README.md                  Diese Projektdokumentation
   ├── netlify.toml               Netlify-CI-Config (base = "ProgressLab")
-  ├── VORLAGE_README.md          Moodle-Vorlage
-  ├── *.pdf, *.png, *.docx, *.mp4   Design-Artefakte (Wochen 8–10)
   ├── ProgressLab_Prototyp.html  Klickbarer Mockup aus Woche 10
+  ├── docs/                      Methodische Artefakte
+  │   ├── adr/                   Architecture Decision Records
+  │   ├── a11y-audit.md          WCAG 2.1 AA Audit-Bericht
+  │   └── artefakte/             Eigene Phasen-Arbeiten (Wochen 8–10)
   └── ProgressLab/               SvelteKit-App
       ├── src/
       │   ├── routes/            Pages und API-Endpoints
@@ -379,7 +381,7 @@ Nach jedem Schritt verifiziert (Build, svelte-check, Browser-Smoke-Test).
 
 ## 7. Anhang
 
-- **Quellen:** Mockup `ProgressLab_Prototyp.html` und `Woche10_UI-Prototyping_Andi_Kadolli.pdf`
+- **Quellen:** Mockup [`ProgressLab_Prototyp.html`](ProgressLab_Prototyp.html) und [`docs/artefakte/Woche10_UI-Prototyping_Andi_Kadolli.pdf`](docs/artefakte/Woche10_UI-Prototyping_Andi_Kadolli.pdf)
   (eigenständig erstellt). Empfehlungs-Heuristik basierend auf gängigen RPE-basierten
   Auto-Regulations-Schemata (z. B. Rippetoe, Helms).
 
@@ -472,7 +474,15 @@ Reviewer den Entscheid nachvollziehen können.
 | [0005](docs/adr/0005-pwa-custom-service-worker.md) | PWA mit Custom Service Worker statt Plugin |
 | [0006](docs/adr/0006-repo-struktur-progresslab-subfolder.md) | Code im `ProgressLab/`-Subfolder, Doku am Root |
 
-### 11.2 Accessibility-Audit (WCAG 2.1 AA)
+### 11.2 Phasen-Artefakte aus Wochen 8–10
+
+Eigene Arbeiten aus den vorgelagerten Übungen liegen unter
+[`docs/artefakte/`](docs/artefakte/README.md). Aufgabenstellungen,
+Bewertungs-Rubrik und Walkthrough-Video sind **nicht** im Repo — sie wurden
+in den jeweiligen Moodle-Übungen abgegeben und sind den Dozierenden direkt
+zugänglich.
+
+### 11.3 Accessibility-Audit (WCAG 2.1 AA)
 
 Vollständiger A11y-Audit mit **axe-core** über alle 7 Hauptseiten — Bericht in
 [`docs/a11y-audit.md`](docs/a11y-audit.md). Ergebnis: **0 Violations** auf WCAG
