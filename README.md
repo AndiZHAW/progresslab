@@ -3,8 +3,10 @@
 > Webbasierte Trainings-App, die nach jedem Krafttraining-Satz eine evidenzbasierte
 > Empfehlung für die nächste Session liefert. Autoreguliert über RPE statt starrer Pläne.
 
-**Deployte App:** _[Platzhalter – Netlify-URL nach Deployment]_  
-**GitHub-Repository:** _[Platzhalter – Repo-URL nach `git push`]_
+**Deployte App:** <https://progresslab.netlify.app/>  
+**GitHub-Repository:** _[bitte URL nach `git push` ergänzen]_
+
+> **Demo-Login zum Ausprobieren:** `demo` / `demo1234` (oder `admin` / `admin1234` für Admin-Funktionen).
 
 ## Inhaltsverzeichnis
 
@@ -142,7 +144,7 @@
   - `POST /api/auth/{login,register,logout}`
   - `GET/POST /api/exercises` · `GET/PUT/DELETE /api/exercises/[id]`
   - `GET/POST /api/sessions` · `GET/DELETE /api/sessions/[id]`
-- **Deployment:** _[Netlify-URL nach Deployment einfügen]_
+- **Deployment:** <https://progresslab.netlify.app/> (Netlify, automatischer Build aus dem `main`-Branch via `netlify.toml` mit `base = "ProgressLab"`)
 - **Besondere Entscheidungen:**
   - Eigenes minimales Auth statt Lucia/Better-Auth, weil der Scope das nicht rechtfertigt.
   - Recommendation als reine Funktion (`buildRecommendation`) ohne eigene Collection – wird on-the-fly
