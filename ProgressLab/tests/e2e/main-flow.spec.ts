@@ -21,6 +21,17 @@ test.describe('ProgressLab Hauptworkflow', () => {
 		await expect(page.getByRole('link', { name: /Back Squat/i })).toBeVisible();
 	});
 
+	test('Mobile Ansicht zeigt Bottom-Tab-Bar mit Loggen-Aktion', async ({ page }) => {
+		await page.setViewportSize({ width: 390, height: 844 });
+		await login(page);
+
+		const mobileTabs = page.getByRole('navigation', { name: 'Mobile Hauptnavigation' });
+		await expect(mobileTabs).toBeVisible();
+		await expect(page.locator('a.fab')).toBeHidden();
+		await mobileTabs.locator('a[href="/sessions/new"]').click();
+		await expect(page).toHaveURL('/sessions/new');
+	});
+
 	test('Übungs-Detail zeigt Empfehlung und Verlaufschart', async ({ page }) => {
 		await login(page);
 		await page.getByRole('link', { name: /Back Squat/i }).click();

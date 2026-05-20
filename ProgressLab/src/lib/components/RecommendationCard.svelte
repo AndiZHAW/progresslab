@@ -6,7 +6,11 @@
 		recommendation,
 		variant = 'dark',
 		label = 'Empfehlung nächste Session'
-	}: { recommendation: Recommendation; variant?: 'dark' | 'light' | 'accent'; label?: string } = $props();
+	}: {
+		recommendation: Recommendation;
+		variant?: 'dark' | 'light' | 'accent';
+		label?: string;
+	} = $props();
 </script>
 
 <div class="rec" data-variant={variant}>
@@ -31,10 +35,14 @@
 		border-radius: var(--radius-lg);
 		padding: 22px 24px;
 		position: relative;
-		box-shadow: var(--shadow-sm);
+		box-shadow: var(--shadow-card);
 	}
 	.rec[data-variant='dark'] {
-		background: linear-gradient(135deg, var(--c-text) 0%, color-mix(in srgb, var(--c-text) 78%, var(--c-accent)) 100%);
+		background: linear-gradient(
+			135deg,
+			var(--c-text) 0%,
+			color-mix(in srgb, var(--c-text) 76%, var(--c-accent)) 100%
+		);
 		color: var(--c-bg);
 	}
 	.rec[data-variant='light'] {
@@ -58,7 +66,7 @@
 		font-size: 28px;
 		font-weight: 800;
 		margin: 8px 0 6px;
-		letter-spacing: -0.02em;
+		letter-spacing: 0;
 	}
 	.meta {
 		font-size: 12px;

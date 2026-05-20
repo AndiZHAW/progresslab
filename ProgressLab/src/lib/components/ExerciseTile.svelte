@@ -33,7 +33,9 @@
 			const y = 32 - ((v - min) / range) * 26;
 			return [x, y] as const;
 		});
-		const line = points.map((p, i) => `${i === 0 ? 'M' : 'L'}${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ');
+		const line = points
+			.map((p, i) => `${i === 0 ? 'M' : 'L'}${p[0].toFixed(1)},${p[1].toFixed(1)}`)
+			.join(' ');
 		const area =
 			line + ` L${points[points.length - 1][0].toFixed(1)},36 L${points[0][0].toFixed(1)},36 Z`;
 		return { line, area };
@@ -48,8 +50,8 @@
 				<span
 					class="pr-badge"
 					title="Persönliche Bestleistung in den letzten 7 Tagen"
-					aria-label="Neuer Personal Record in den letzten 7 Tagen"
-				>PR</span>
+					aria-label="Neuer Personal Record in den letzten 7 Tagen">PR</span
+				>
 			{/if}
 		</div>
 		<div class="trend {trendClass}" role="img" aria-label={trendLabel}>
@@ -90,21 +92,25 @@
 <style>
 	.tile {
 		background: var(--c-surface);
-		border: 1px solid var(--c-border);
+		border: 1px solid color-mix(in srgb, var(--c-border) 84%, transparent);
 		border-radius: var(--radius-lg);
-		padding: 16px 16px 14px;
+		padding: 17px 17px 15px;
 		display: flex;
 		flex-direction: column;
 		gap: 6px;
 		text-decoration: none;
 		color: var(--c-text);
-		transition: transform 160ms var(--ease), box-shadow 160ms var(--ease), border-color 160ms var(--ease);
+		transition:
+			transform 160ms var(--ease),
+			box-shadow 160ms var(--ease),
+			border-color 160ms var(--ease),
+			background 160ms var(--ease);
 		position: relative;
 		min-height: 168px;
-		box-shadow: var(--shadow-xs);
+		box-shadow: var(--shadow-card);
 	}
 	.tile:hover {
-		box-shadow: var(--shadow-md);
+		box-shadow: var(--shadow-lg);
 		border-color: var(--c-border-strong);
 		transform: translateY(-2px);
 	}
@@ -120,7 +126,7 @@
 	.tile-name {
 		font-weight: 600;
 		font-size: 15px;
-		letter-spacing: -0.01em;
+		letter-spacing: 0;
 		display: inline-flex;
 		gap: 6px;
 		align-items: center;
@@ -181,7 +187,7 @@
 	}
 	.spark-area {
 		fill: var(--c-accent);
-		opacity: 0.08;
+		opacity: 0.1;
 	}
 	.spark-empty {
 		font-size: 11px;

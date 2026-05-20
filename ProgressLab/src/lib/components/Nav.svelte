@@ -27,7 +27,16 @@
 	<div class="inner">
 		<a class="brand" href={user ? '/' : '/login'} aria-label="ProgressLab Startseite">
 			<span class="logo" aria-hidden="true">
-				<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+				<svg
+					viewBox="0 0 24 24"
+					width="18"
+					height="18"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2.4"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+				>
 					<path d="M3 17l4-4 4 4 4-6 6 6" />
 					<circle cx="7" cy="13" r="0.6" fill="currentColor" />
 					<circle cx="11" cy="17" r="0.6" fill="currentColor" />
@@ -46,7 +55,15 @@
 				aria-label="Menü"
 				onclick={() => (mobileOpen = !mobileOpen)}
 			>
-				<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+				<svg
+					viewBox="0 0 24 24"
+					width="22"
+					height="22"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					stroke-linecap="round"
+				>
 					{#if mobileOpen}
 						<path d="M6 6l12 12M18 6l-12 12" />
 					{:else}
@@ -57,12 +74,28 @@
 
 			<nav class="links" class:open={mobileOpen} aria-label="Hauptnavigation">
 				<a href="/" class:active={isActive('/')} onclick={() => (mobileOpen = false)}>Dashboard</a>
-				<a href="/templates" class:active={isActive('/templates') || isActive('/workouts')} onclick={() => (mobileOpen = false)}>Routinen</a>
-				<a href="/stats" class:active={isActive('/stats')} onclick={() => (mobileOpen = false)}>Statistik</a>
-				<a href="/records" class:active={isActive('/records')} onclick={() => (mobileOpen = false)}>Records</a>
-				<a href="/sessions" class:active={isActive('/sessions') && !isActive('/sessions/new')} onclick={() => (mobileOpen = false)}>Sessions</a>
+				<a
+					href="/templates"
+					class:active={isActive('/templates') || isActive('/workouts')}
+					onclick={() => (mobileOpen = false)}>Routinen</a
+				>
+				<a href="/stats" class:active={isActive('/stats')} onclick={() => (mobileOpen = false)}
+					>Statistik</a
+				>
+				<a href="/records" class:active={isActive('/records')} onclick={() => (mobileOpen = false)}
+					>Records</a
+				>
+				<a
+					href="/sessions"
+					class:active={isActive('/sessions') && !isActive('/sessions/new')}
+					onclick={() => (mobileOpen = false)}>Sessions</a
+				>
 				{#if user.role === 'admin'}
-					<a href="/admin/exercises" class:active={isActive('/admin')} onclick={() => (mobileOpen = false)}>Übungen</a>
+					<a
+						href="/admin/exercises"
+						class:active={isActive('/admin')}
+						onclick={() => (mobileOpen = false)}>Übungen</a
+					>
 				{/if}
 			</nav>
 
@@ -71,16 +104,36 @@
 					type="button"
 					class="theme-btn"
 					onclick={toggleTheme}
-					aria-label={theme.value === 'dark' ? 'Helles Design aktivieren' : 'Dunkles Design aktivieren'}
+					aria-label={theme.value === 'dark'
+						? 'Helles Design aktivieren'
+						: 'Dunkles Design aktivieren'}
 					title={theme.value === 'dark' ? 'Helles Design' : 'Dunkles Design'}
 				>
 					{#if theme.value === 'dark'}
-						<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+						<svg
+							viewBox="0 0 24 24"
+							width="16"
+							height="16"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+							stroke-linecap="round"
+						>
 							<circle cx="12" cy="12" r="4" />
-							<path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+							<path
+								d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"
+							/>
 						</svg>
 					{:else}
-						<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+						<svg
+							viewBox="0 0 24 24"
+							width="16"
+							height="16"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+							stroke-linecap="round"
+						>
 							<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
 						</svg>
 					{/if}
@@ -99,19 +152,32 @@
 			</div>
 		{:else}
 			<nav class="links public">
-				<button
-					type="button"
-					class="theme-btn"
-					onclick={toggleTheme}
-					aria-label="Theme wechseln"
-				>
+				<button type="button" class="theme-btn" onclick={toggleTheme} aria-label="Theme wechseln">
 					{#if theme.value === 'dark'}
-						<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+						<svg
+							viewBox="0 0 24 24"
+							width="16"
+							height="16"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+							stroke-linecap="round"
+						>
 							<circle cx="12" cy="12" r="4" />
-							<path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+							<path
+								d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"
+							/>
 						</svg>
 					{:else}
-						<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+						<svg
+							viewBox="0 0 24 24"
+							width="16"
+							height="16"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+							stroke-linecap="round"
+						>
 							<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
 						</svg>
 					{/if}
@@ -123,11 +189,115 @@
 	</div>
 </header>
 
+{#if user}
+	<nav class="mobile-tabs" aria-label="Mobile Hauptnavigation">
+		<a href="/" class:active={isActive('/')} onclick={() => (mobileOpen = false)}>
+			<svg
+				viewBox="0 0 24 24"
+				width="21"
+				height="21"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				aria-hidden="true"
+			>
+				<path d="M3 11.5L12 4l9 7.5" />
+				<path d="M5.5 10.5V20h13v-9.5" />
+			</svg>
+			<span>Home</span>
+		</a>
+		<a
+			href="/templates"
+			class:active={isActive('/templates') || isActive('/workouts')}
+			onclick={() => (mobileOpen = false)}
+		>
+			<svg
+				viewBox="0 0 24 24"
+				width="21"
+				height="21"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				aria-hidden="true"
+			>
+				<path d="M8 6h13M8 12h13M8 18h13" />
+				<path d="M3 6h.01M3 12h.01M3 18h.01" />
+			</svg>
+			<span>Routinen</span>
+		</a>
+		<a
+			href="/sessions/new"
+			class="tab-primary"
+			class:active={isActive('/sessions/new')}
+			onclick={() => (mobileOpen = false)}
+		>
+			<span class="tab-plus" aria-hidden="true">
+				<svg
+					viewBox="0 0 24 24"
+					width="23"
+					height="23"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2.5"
+					stroke-linecap="round"
+				>
+					<path d="M12 5v14M5 12h14" />
+				</svg>
+			</span>
+			<span>Loggen</span>
+		</a>
+		<a href="/stats" class:active={isActive('/stats')} onclick={() => (mobileOpen = false)}>
+			<svg
+				viewBox="0 0 24 24"
+				width="21"
+				height="21"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				aria-hidden="true"
+			>
+				<path d="M4 19V5" />
+				<path d="M8 17v-5M13 17V7M18 17v-8" />
+				<path d="M3 19h18" />
+			</svg>
+			<span>Stats</span>
+		</a>
+		<a
+			href="/sessions"
+			class:active={isActive('/sessions') && !isActive('/sessions/new')}
+			onclick={() => (mobileOpen = false)}
+		>
+			<svg
+				viewBox="0 0 24 24"
+				width="21"
+				height="21"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				aria-hidden="true"
+			>
+				<path d="M7 3v3M17 3v3" />
+				<path d="M4 8h16" />
+				<rect x="4" y="5" width="16" height="16" rx="3" />
+			</svg>
+			<span>Sessions</span>
+		</a>
+	</nav>
+{/if}
+
 <style>
 	.nav {
-		background: color-mix(in srgb, var(--c-surface) 88%, transparent);
-		backdrop-filter: saturate(180%) blur(10px);
-		-webkit-backdrop-filter: saturate(180%) blur(10px);
+		background: var(--c-glass);
+		backdrop-filter: saturate(180%) blur(18px);
+		-webkit-backdrop-filter: saturate(180%) blur(18px);
 		border-bottom: 1px solid var(--c-border);
 		position: sticky;
 		top: 0;
@@ -156,11 +326,11 @@
 		height: 32px;
 		background: var(--c-text);
 		color: var(--c-bg);
-		border-radius: var(--radius-sm);
+		border-radius: 11px;
 	}
 	.name {
 		font-size: 16px;
-		letter-spacing: -0.01em;
+		letter-spacing: 0;
 	}
 	.hamburger {
 		display: none;
@@ -185,7 +355,9 @@
 		font-size: 14px;
 		font-weight: 500;
 		color: var(--c-text-muted);
-		transition: background 120ms var(--ease), color 120ms var(--ease);
+		transition:
+			background 120ms var(--ease),
+			color 120ms var(--ease);
 	}
 	.links a:hover {
 		background: var(--c-bg-alt);
@@ -226,7 +398,9 @@
 		border-radius: var(--radius-pill);
 		cursor: pointer;
 		color: var(--c-text);
-		transition: background 120ms var(--ease), border-color 120ms var(--ease);
+		transition:
+			background 120ms var(--ease),
+			border-color 120ms var(--ease);
 	}
 	.theme-btn:hover {
 		background: var(--c-bg-alt);
@@ -303,20 +477,44 @@
 	.menu button:hover {
 		background: var(--c-bg-alt);
 	}
+	.mobile-tabs {
+		display: none;
+	}
 
 	@media (max-width: 760px) {
+		.nav {
+			border-bottom-color: color-mix(in srgb, var(--c-border) 70%, transparent);
+		}
+		.inner {
+			position: relative;
+			padding: 12px 14px;
+		}
 		.hamburger {
 			display: inline-flex;
 			order: 3;
+			width: 40px;
+			height: 40px;
+			align-items: center;
+			justify-content: center;
+			border-radius: var(--radius-pill);
+			background: var(--c-surface);
 		}
 		.links {
 			display: none;
-			flex-basis: 100%;
-			order: 99;
+			position: absolute;
+			top: calc(100% + 8px);
+			left: 12px;
+			right: 12px;
 			flex-direction: column;
 			align-items: stretch;
-			padding-top: 8px;
+			padding: 8px;
 			margin: 0;
+			background: var(--c-glass);
+			border: 1px solid var(--c-border);
+			border-radius: 20px;
+			box-shadow: var(--shadow-xl);
+			backdrop-filter: saturate(180%) blur(18px);
+			-webkit-backdrop-filter: saturate(180%) blur(18px);
 		}
 		.links.open {
 			display: flex;
@@ -338,6 +536,64 @@
 		}
 		.username {
 			display: none;
+		}
+		.mobile-tabs {
+			position: fixed;
+			left: 12px;
+			right: 12px;
+			bottom: calc(10px + env(safe-area-inset-bottom));
+			z-index: 55;
+			display: grid;
+			grid-template-columns: repeat(5, 1fr);
+			align-items: end;
+			gap: 2px;
+			padding: 7px 8px 8px;
+			background: var(--c-glass);
+			border: 1px solid color-mix(in srgb, var(--c-border) 82%, transparent);
+			border-radius: 26px;
+			box-shadow: var(--shadow-xl);
+			backdrop-filter: saturate(180%) blur(20px);
+			-webkit-backdrop-filter: saturate(180%) blur(20px);
+		}
+		.mobile-tabs a {
+			display: flex;
+			min-width: 0;
+			min-height: 54px;
+			align-items: center;
+			justify-content: center;
+			flex-direction: column;
+			gap: 3px;
+			border-radius: 18px;
+			color: var(--c-text-subtle);
+			font-size: 10px;
+			font-weight: 700;
+			transition:
+				background 140ms var(--ease),
+				color 140ms var(--ease),
+				transform 100ms var(--ease);
+		}
+		.mobile-tabs a.active {
+			background: color-mix(in srgb, var(--c-accent) 11%, transparent);
+			color: var(--c-accent);
+		}
+		.mobile-tabs a:active {
+			transform: scale(0.97);
+		}
+		.mobile-tabs .tab-primary {
+			gap: 2px;
+			color: var(--c-accent);
+		}
+		.tab-plus {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			width: 42px;
+			height: 42px;
+			margin-top: -22px;
+			border-radius: 50%;
+			background: var(--c-accent);
+			color: var(--c-accent-fg);
+			box-shadow: 0 10px 24px -10px color-mix(in srgb, var(--c-accent) 70%, transparent);
 		}
 	}
 </style>

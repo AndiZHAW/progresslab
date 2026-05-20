@@ -22,15 +22,21 @@
 		display: flex;
 		flex-direction: column;
 		gap: 4px;
-		box-shadow: var(--shadow-xs);
-		transition: transform 160ms var(--ease), box-shadow 160ms var(--ease);
+		box-shadow: var(--shadow-card);
+		transition:
+			transform 160ms var(--ease),
+			box-shadow 160ms var(--ease);
 	}
 	.stat:hover {
 		transform: translateY(-2px);
 		box-shadow: var(--shadow-md);
 	}
 	.stat.accent {
-		background: linear-gradient(135deg, var(--c-text) 0%, color-mix(in srgb, var(--c-text) 78%, var(--c-accent)) 100%);
+		background: linear-gradient(
+			135deg,
+			var(--c-text) 0%,
+			color-mix(in srgb, var(--c-text) 78%, var(--c-accent)) 100%
+		);
 		color: var(--c-bg);
 		border-color: transparent;
 	}
@@ -44,7 +50,7 @@
 	.val {
 		font-size: 26px;
 		font-weight: 800;
-		letter-spacing: -0.02em;
+		letter-spacing: 0;
 	}
 	.hint {
 		font-size: 12px;

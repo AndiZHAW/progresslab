@@ -305,13 +305,17 @@
 - **Wo umgesetzt:** `ProgressLab/src/routes/api/sessions/export/+server.ts` (eigener Endpoint mit
   korrektem `content-disposition`-Header), Download-Button im Stats-Header und der Sessions-Liste.
 
-### 4.12 Cleaneres Visual-Design (Inter-Font, Cream-Palette, weiche Schatten)
+### 4.12 Cleaneres Visual-Design (iOS-inspirierte App-Optik)
 
-- **Beschreibung & Nutzen:** Vollständiges Re-Design mit warmer Cream-Hintergrundfarbe (`#faf7f2`)
-  statt Standard-Grau, Teal-Akzent, weichen Multi-Layer-Shadows, Inter-Variable als Web-Font,
-  Hero-Section auf dem Dashboard, Pitch-Layout auf der Login-Page, abgerundete Tile-Hover-Effekte.
-- **Wo umgesetzt:** `ProgressLab/src/app.css` (Design-Tokens, Light + Dark), neue Hero-Section in
-  `ProgressLab/src/routes/+page.svelte`, neuer Pitch in `ProgressLab/src/routes/login/+page.svelte`.
+- **Beschreibung & Nutzen:** Vollständiges Re-Design mit neutraler App-Hintergrundfläche,
+  iOS-inspirierter Mobile-Bottom-Tab-Bar, glasigem Sticky-Header, weicheren Multi-Layer-Shadows,
+  grösseren Touch-Zielen, Segmented Controls, nativer wirkenden Inputs und Inter/SF-kompatibler
+  System-Font-Stack. Die App fühlt sich dadurch auf Mobile stärker wie eine installierte PWA an,
+  bleibt aber auf Desktop weiterhin sauber nutzbar.
+- **Wo umgesetzt:** `ProgressLab/src/app.css` (Design-Tokens, Light + Dark, Controls),
+  `ProgressLab/src/lib/components/Nav.svelte` (Mobile Tab-Bar + Header),
+  `ProgressLab/src/lib/components/FilterTabs.svelte`, `ExerciseTile.svelte`,
+  `SetLoggerTable.svelte`, Dashboard-FAB-Anpassung in `ProgressLab/src/routes/+page.svelte`.
 
 ### 4.13 Workout-Routinen (Templates) mit geführtem Workout-Modus
 
@@ -356,11 +360,12 @@
 
 ### 4.16 End-to-End-Tests mit Playwright
 
-- **Beschreibung & Nutzen:** 10 automatisierte Main-Flow-Tests decken den Hauptworkflow ab: Auth-Redirect,
+- **Beschreibung & Nutzen:** 11 automatisierte Main-Flow-Tests decken den Hauptworkflow ab: Auth-Redirect,
   Login, Dashboard, Übungs-Detail (inkl. Chart-Rendering), Stats-Page (mit Heatmap-Sektion),
   Records, Routinen, vollständiger Session-Workflow (Picker → Logger → Confirmation), Logout.
-  Zusätzlich prüfen sie die RPE-Hilfe, die Next-Step-Führung im Workout-Modus und das Undo beim
-  Löschen von Sessions. Weitere 7 axe-core-Checks prüfen die Hauptseiten auf WCAG-AA-Verstösse.
+  Zusätzlich prüfen sie die mobile Bottom-Tab-Bar, die RPE-Hilfe, die Next-Step-Führung im
+  Workout-Modus und das Undo beim Löschen von Sessions. Weitere 7 axe-core-Checks prüfen die
+  Hauptseiten auf WCAG-AA-Verstösse.
   Tests starten den Dev-Server selbständig via `webServer`-Config.
 - **Wo umgesetzt:** `ProgressLab/playwright.config.ts`,
   `ProgressLab/tests/e2e/main-flow.spec.ts`. Ausführen: `npm run test:e2e` (CLI) oder

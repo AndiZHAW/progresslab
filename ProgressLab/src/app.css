@@ -1,22 +1,24 @@
 @import '@fontsource-variable/inter';
 
 :root {
-	--font-sans: 'Inter Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+	--font-sans:
+		-apple-system, BlinkMacSystemFont, 'Inter Variable', 'Segoe UI', system-ui, sans-serif;
 
 	/* Light theme — warm cream */
-	--c-bg: #faf7f2;
-	--c-bg-alt: #f3efe7;
+	--c-bg: #f6f7fb;
+	--c-bg-alt: #edf1f6;
 	--c-surface: #ffffff;
-	--c-surface-alt: #fffbf5;
-	--c-text: #1a1b23;
-	--c-text-muted: #4d4f5e;
-	--c-text-subtle: #6b6c7c;
-	--c-border: #e8e1d4;
-	--c-border-strong: #d4cbb8;
-	--c-accent: #0f766e;
-	--c-accent-hover: #115e59;
-	--c-accent-soft: #ccfbf1;
-	--c-accent-strong: #115e59;
+	--c-surface-alt: #f9fbfd;
+	--c-glass: rgba(255, 255, 255, 0.78);
+	--c-text: #10131a;
+	--c-text-muted: #4b5565;
+	--c-text-subtle: #5f6876;
+	--c-border: #dfe5ed;
+	--c-border-strong: #c7d1dd;
+	--c-accent: #066f68;
+	--c-accent-hover: #055f59;
+	--c-accent-soft: #d8f4ef;
+	--c-accent-strong: #055f59;
 	--c-accent-fg: #ffffff;
 	--c-on-dark: #ffffff;
 	--c-success: #0d8a52;
@@ -29,11 +31,12 @@
 	--c-trend-flat: #8b8d9e;
 	--c-trend-down: #c2382c;
 
-	--shadow-xs: 0 1px 2px rgba(26, 27, 35, 0.04);
-	--shadow-sm: 0 2px 4px rgba(26, 27, 35, 0.05), 0 1px 2px rgba(26, 27, 35, 0.04);
-	--shadow-md: 0 6px 16px -4px rgba(26, 27, 35, 0.08), 0 2px 6px rgba(26, 27, 35, 0.04);
-	--shadow-lg: 0 16px 40px -8px rgba(26, 27, 35, 0.14), 0 6px 16px rgba(26, 27, 35, 0.06);
-	--shadow-xl: 0 28px 64px -12px rgba(26, 27, 35, 0.22);
+	--shadow-xs: 0 1px 2px rgba(16, 19, 26, 0.035);
+	--shadow-sm: 0 2px 8px rgba(16, 19, 26, 0.055), 0 1px 2px rgba(16, 19, 26, 0.035);
+	--shadow-md: 0 10px 28px -12px rgba(16, 19, 26, 0.18), 0 2px 8px rgba(16, 19, 26, 0.05);
+	--shadow-lg: 0 18px 48px -18px rgba(16, 19, 26, 0.22), 0 8px 20px rgba(16, 19, 26, 0.06);
+	--shadow-xl: 0 28px 72px -24px rgba(16, 19, 26, 0.26);
+	--shadow-card: 0 1px 2px rgba(16, 19, 26, 0.04), 0 10px 30px -22px rgba(16, 19, 26, 0.22);
 
 	--radius-xs: 4px;
 	--radius-sm: 8px;
@@ -51,6 +54,7 @@
 	--c-bg-alt: #15161d;
 	--c-surface: #181a22;
 	--c-surface-alt: #1f2230;
+	--c-glass: rgba(24, 26, 34, 0.78);
 	--c-text: #f5f4f1;
 	--c-text-muted: #b0b1bf;
 	--c-text-subtle: #707283;
@@ -76,6 +80,7 @@
 	--shadow-md: 0 6px 18px -4px rgba(0, 0, 0, 0.5);
 	--shadow-lg: 0 18px 44px -8px rgba(0, 0, 0, 0.6);
 	--shadow-xl: 0 28px 64px -12px rgba(0, 0, 0, 0.7);
+	--shadow-card: 0 1px 2px rgba(0, 0, 0, 0.35), 0 12px 28px -18px rgba(0, 0, 0, 0.75);
 }
 
 * {
@@ -93,7 +98,10 @@ body {
 	line-height: 1.55;
 	-webkit-font-smoothing: antialiased;
 	font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
-	transition: background-color 200ms var(--ease), color 200ms var(--ease);
+	transition:
+		background-color 200ms var(--ease),
+		color 200ms var(--ease);
+	-webkit-tap-highlight-color: transparent;
 }
 
 a {
@@ -121,12 +129,12 @@ h4 {
 	margin: 0;
 	font-weight: 700;
 	line-height: 1.2;
-	letter-spacing: -0.01em;
+	letter-spacing: 0;
 }
 
 h1 {
 	font-size: 28px;
-	letter-spacing: -0.02em;
+	letter-spacing: 0;
 }
 h2 {
 	font-size: 19px;
@@ -189,12 +197,17 @@ h3 {
 	border: 1px solid transparent;
 	background: var(--c-text);
 	color: var(--c-bg);
+	min-height: 44px;
 	padding: 11px 20px;
-	border-radius: var(--radius-md);
-	font-weight: 600;
+	border-radius: var(--radius-pill);
+	font-weight: 700;
 	font-size: 14px;
 	cursor: pointer;
-	transition: transform 80ms var(--ease), box-shadow 160ms var(--ease), background 160ms var(--ease);
+	transition:
+		transform 80ms var(--ease),
+		box-shadow 160ms var(--ease),
+		background 160ms var(--ease),
+		border-color 160ms var(--ease);
 	text-align: center;
 	box-shadow: var(--shadow-sm);
 	text-decoration: none;
@@ -261,11 +274,15 @@ h3 {
 .textarea {
 	width: 100%;
 	border: 1px solid var(--c-border);
-	background: var(--c-surface);
-	border-radius: var(--radius-md);
-	padding: 11px 14px;
+	background: var(--c-surface-alt);
+	border-radius: 14px;
+	min-height: 46px;
+	padding: 12px 15px;
 	color: var(--c-text);
-	transition: border-color 120ms var(--ease), box-shadow 120ms var(--ease), background 120ms var(--ease);
+	transition:
+		border-color 120ms var(--ease),
+		box-shadow 120ms var(--ease),
+		background 120ms var(--ease);
 }
 
 .input::placeholder,
@@ -278,7 +295,8 @@ h3 {
 .textarea:focus {
 	outline: none;
 	border-color: var(--c-accent);
-	box-shadow: 0 0 0 3px var(--c-accent-soft);
+	background: var(--c-surface);
+	box-shadow: 0 0 0 4px color-mix(in srgb, var(--c-accent) 16%, transparent);
 }
 
 .label {
@@ -294,7 +312,7 @@ h3 {
 	border: 1px solid var(--c-border);
 	border-radius: var(--radius-lg);
 	padding: 20px;
-	box-shadow: var(--shadow-xs);
+	box-shadow: var(--shadow-card);
 }
 
 .card-elevated {
@@ -302,7 +320,7 @@ h3 {
 	border: 1px solid var(--c-border);
 	border-radius: var(--radius-lg);
 	padding: 20px;
-	box-shadow: var(--shadow-md);
+	box-shadow: var(--shadow-lg);
 }
 
 .container {
@@ -398,7 +416,7 @@ h3 {
 		font-size: 14px;
 	}
 	.container {
-		padding: 16px 12px 96px;
+		padding: 16px 12px calc(136px + env(safe-area-inset-bottom));
 	}
 	h1 {
 		font-size: 24px;

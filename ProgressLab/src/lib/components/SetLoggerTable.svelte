@@ -1,10 +1,8 @@
 <script lang="ts">
 	import type { SetDTO } from '$lib/types';
 
-	let {
-		sets = $bindable(),
-		isBodyweight = false
-	}: { sets: SetDTO[]; isBodyweight?: boolean } = $props();
+	let { sets = $bindable(), isBodyweight = false }: { sets: SetDTO[]; isBodyweight?: boolean } =
+		$props();
 
 	function addSet() {
 		const last = sets.at(-1);
@@ -105,24 +103,30 @@
 	.input {
 		width: 100%;
 		text-align: center;
+		min-height: 42px;
 		padding: 8px 6px;
-		border: 1px solid var(--c-text-subtle);
-		border-radius: 6px;
-		background: var(--c-surface);
+		border: 1px solid var(--c-border);
+		border-radius: 13px;
+		background: var(--c-surface-alt);
+		font-weight: 700;
+		font-variant-numeric: tabular-nums;
 	}
 	.input:focus {
-		outline: 2px solid var(--c-accent);
-		outline-offset: -1px;
+		outline: none;
 		border-color: var(--c-accent);
+		background: var(--c-surface);
+		box-shadow: 0 0 0 4px color-mix(in srgb, var(--c-accent) 16%, transparent);
 	}
 	.del {
-		background: transparent;
+		width: 32px;
+		height: 32px;
+		background: var(--c-bg-alt);
 		border: none;
 		color: var(--c-text-subtle);
 		font-size: 22px;
 		line-height: 1;
 		cursor: pointer;
-		border-radius: 4px;
+		border-radius: 50%;
 	}
 	.del:hover:not(:disabled) {
 		color: var(--c-danger);
@@ -132,15 +136,28 @@
 		cursor: not-allowed;
 	}
 	.add {
-		border: 1px dashed var(--c-text-subtle);
-		background: transparent;
+		min-height: 44px;
+		border: 1px dashed var(--c-border-strong);
+		background: var(--c-surface-alt);
 		padding: 12px;
-		border-radius: var(--radius-md);
+		border-radius: var(--radius-lg);
 		font-size: 13px;
+		font-weight: 700;
 		cursor: pointer;
 		color: var(--c-text);
 	}
 	.add:hover {
-		background: var(--c-bg);
+		background: var(--c-surface);
+		border-color: var(--c-accent);
+	}
+	@media (max-width: 520px) {
+		.head,
+		.row {
+			grid-template-columns: 26px 1fr 68px 68px 32px;
+			gap: 6px;
+		}
+		.input {
+			padding-inline: 4px;
+		}
 	}
 </style>

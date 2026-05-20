@@ -103,7 +103,8 @@
 	}
 	@media (max-width: 640px) {
 		.banner {
-			bottom: 90px;
+			bottom: calc(104px + env(safe-area-inset-bottom));
+			border-radius: 22px;
 		}
 	}
 </style>

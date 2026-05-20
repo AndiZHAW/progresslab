@@ -54,4 +54,9 @@
 	.dot {
 		opacity: 0.5;
 	}
+	@media (max-width: 640px) {
+		.foot {
+			margin-bottom: calc(104px + env(safe-area-inset-bottom));
+		}
+	}
 </style>

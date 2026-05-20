@@ -8,7 +8,7 @@
 </script>
 
 <div class="tabs" role="tablist" aria-label={ariaLabel}>
-	{#each options as opt}
+	{#each options as opt (opt.value)}
 		<button
 			type="button"
 			role="tab"
@@ -24,26 +24,52 @@
 <style>
 	.tabs {
 		display: flex;
+		align-items: center;
 		flex-wrap: wrap;
-		gap: 8px;
+		gap: 2px;
+		width: fit-content;
+		max-width: 100%;
+		padding: 4px;
+		background: var(--c-bg-alt);
+		border: 1px solid color-mix(in srgb, var(--c-border) 72%, transparent);
+		border-radius: var(--radius-pill);
 	}
 	button {
-		padding: 8px 16px;
+		min-height: 34px;
+		padding: 7px 15px;
 		border-radius: var(--radius-pill);
-		border: 1px solid var(--c-text-subtle);
-		background: var(--c-surface);
-		color: var(--c-text);
+		border: 0;
+		background: transparent;
+		color: var(--c-text-muted);
 		font-size: 13px;
-		font-weight: 600;
+		font-weight: 700;
 		cursor: pointer;
-		transition: background 120ms ease;
+		white-space: nowrap;
+		transition:
+			background 120ms var(--ease),
+			color 120ms var(--ease),
+			box-shadow 120ms var(--ease);
 	}
 	button:hover {
-		background: var(--c-bg);
+		color: var(--c-text);
 	}
 	button.active {
-		background: var(--c-accent);
-		color: var(--c-accent-fg);
-		border-color: var(--c-accent);
+		background: var(--c-surface);
+		color: var(--c-text);
+		box-shadow: var(--shadow-xs);
+	}
+	@media (max-width: 640px) {
+		.tabs {
+			width: 100%;
+			overflow-x: auto;
+			flex-wrap: nowrap;
+			scrollbar-width: none;
+		}
+		.tabs::-webkit-scrollbar {
+			display: none;
+		}
+		button {
+			flex: 1 0 auto;
+		}
 	}
 </style>

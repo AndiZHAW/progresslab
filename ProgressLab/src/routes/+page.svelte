@@ -67,7 +67,15 @@
 		</p>
 	</div>
 	<a class="btn btn-primary big" href="/sessions/new">
-		<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+		<svg
+			viewBox="0 0 24 24"
+			width="16"
+			height="16"
+			fill="none"
+			stroke="currentColor"
+			stroke-width="2.5"
+			stroke-linecap="round"
+		>
 			<path d="M12 5v14M5 12h14" />
 		</svg>
 		Neue Session
@@ -85,7 +93,8 @@
 				<a class="routine-card" href={`/workouts/${t.id}`}>
 					<div class="routine-name">{t.name}</div>
 					<div class="routine-meta">
-						{t.exercises.length} Übungen{#if t.description} · {t.description}{/if}
+						{t.exercises.length} Übungen{#if t.description}
+							· {t.description}{/if}
 					</div>
 					<span class="routine-cta">Starten →</span>
 				</a>
@@ -107,7 +116,16 @@
 	/>
 	<div class="row search-row">
 		<div class="search-wrap">
-			<svg class="search-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+			<svg
+				class="search-icon"
+				viewBox="0 0 24 24"
+				width="14"
+				height="14"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+			>
 				<circle cx="11" cy="11" r="7" />
 				<path d="M21 21l-4.35-4.35" />
 			</svg>
@@ -119,7 +137,9 @@
 				aria-label="Suche"
 			/>
 			{#if query}
-				<button type="button" class="clear" onclick={clearSearch} aria-label="Suche leeren">×</button>
+				<button type="button" class="clear" onclick={clearSearch} aria-label="Suche leeren"
+					>×</button
+				>
 			{/if}
 		</div>
 		<select class="select sort" bind:value={sort} aria-label="Sortierung">
@@ -150,7 +170,15 @@
 {/if}
 
 <a class="fab" href="/sessions/new" aria-label="Neue Session starten">
-	<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round">
+	<svg
+		viewBox="0 0 24 24"
+		width="22"
+		height="22"
+		fill="none"
+		stroke="currentColor"
+		stroke-width="2.6"
+		stroke-linecap="round"
+	>
 		<path d="M12 5v14M5 12h14" />
 	</svg>
 </a>
@@ -218,7 +246,10 @@
 		text-decoration: none;
 		color: var(--c-text);
 		box-shadow: var(--shadow-xs);
-		transition: transform 160ms var(--ease), box-shadow 160ms var(--ease), border-color 160ms var(--ease);
+		transition:
+			transform 160ms var(--ease),
+			box-shadow 160ms var(--ease),
+			border-color 160ms var(--ease);
 		position: relative;
 		overflow: hidden;
 	}
@@ -319,7 +350,9 @@
 		box-shadow: var(--shadow-xl);
 		text-decoration: none;
 		z-index: 30;
-		transition: transform 160ms var(--ease), box-shadow 160ms var(--ease);
+		transition:
+			transform 160ms var(--ease),
+			box-shadow 160ms var(--ease);
 	}
 	.fab:hover {
 		transform: translateY(-2px) scale(1.05);
@@ -338,8 +371,7 @@
 			flex-basis: 100%;
 		}
 		.fab {
-			bottom: 18px;
-			right: 18px;
+			display: none;
 		}
 	}
 </style>
