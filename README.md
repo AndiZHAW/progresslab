@@ -4,7 +4,7 @@
 > Empfehlung für die nächste Session liefert. Autoreguliert über RPE statt starrer Pläne.
 
 **Deployte App:** <https://progresslab.netlify.app/>  
-**GitHub-Repository:** _[bitte URL nach `git push` ergänzen]_
+**GitHub-Repository:** <https://github.com/AndiZHAW/progresslab>
 
 > **Demo-Login zum Ausprobieren:** `demo` / `demo1234` (oder `admin` / `admin1234` für Admin-Funktionen).
 
@@ -64,12 +64,12 @@
 - **Annahmen:**
   - Nutzer:innen kennen das Konzept der Rate of Perceived Exertion (RPE 1–10).
   - Eine einfache regelbasierte Empfehlung schlägt das fehlende Strukturgefühl beim Training „nach Gefühl".
-  - Single-Tenant pro User reicht – keine Trainingspläne, keine Templates, keine Programme.
+  - Pro User reicht ein persönlicher Datenraum; Routinen bilden wiederkehrende Workouts ab, aber keine komplexe Periodisierung.
 - **Abgrenzung:**
   - Kein Cardio-Tracking, keine Dehnübungen, kein Kalorien-/Ernährungs-Modul.
   - Keine Mobile-App; die Web-App ist responsive.
-  - Keine Trainingspläne („3-Tage-Split", „Push-Pull-Legs-Programm" usw.) – Nutzer:in wählt pro
-    Session frei.
+  - Keine mehrwöchigen Programme mit Periodisierung oder automatischer Kalenderplanung; Nutzer:innen
+    können Sessions frei oder über einfache Routinen starten.
 
 ## 3. Vorgehen & Artefakte
 
@@ -112,6 +112,10 @@
   - `/sessions/new` – Übungs-Picker (Schritt 1 von 2)
   - `/sessions/new/[exerciseId]` – Set-Logger (Schritt 2 von 2)
   - `/sessions/[id]/done` – Bestätigungs-Screen
+  - `/stats` – Statistik-Dashboard mit Volumen, Streak und Heatmap
+  - `/records` – persönliche Bestwerte je Übung
+  - `/templates` – Routinen erstellen und starten
+  - `/workouts/[id]` – geführter Workout-Modus für eine Routine
   - `/admin/exercises` – Admin-only: Übungen anlegen/löschen
 - **User Interface Design:** Schwarz-Weiss-Design analog Mockup, Empfehlungs-Karte als zentrales
   Element (dunkel oder hell je Kontext), Sparklines aus dem Mockup übernommen, Chart.js-Verlaufschart
@@ -143,7 +147,8 @@
   REST-artige API-Routes:
   - `POST /api/auth/{login,register,logout}`
   - `GET/POST /api/exercises` · `GET/PUT/DELETE /api/exercises/[id]`
-  - `GET/POST /api/sessions` · `GET/DELETE /api/sessions/[id]`
+  - `GET/POST /api/sessions` · `GET/PUT/DELETE /api/sessions/[id]` · `GET /api/sessions/export`
+  - `GET/POST /api/templates` · `GET/PUT/DELETE /api/templates/[id]`
 - **Deployment:** <https://progresslab.netlify.app/> (Netlify, automatischer Build aus dem `main`-Branch via `netlify.toml` mit `base = "ProgressLab"`)
 - **Besondere Entscheidungen:**
   - Eigenes minimales Auth statt Lucia/Better-Auth, weil der Scope das nicht rechtfertigt.
@@ -243,6 +248,8 @@
 - **Beschreibung & Nutzen:** Die App tippt nicht nur Daten ein, sondern berechnet aus den letzten
   Sessions eine konkrete Handlungsempfehlung (Gewicht, Reps, Begründung, Trend, Deload-Flag, e1RM)
   für die nächste Session. Das ist der eigentliche „Mehrwert" gegenüber bestehenden Logger-Apps.
+  Seit dem Review unterscheidet die Engine zwischen grossen Grundübungen (`+2.5 kg`) und kleineren
+  Isolationsübungen, die zuerst über Wiederholungen und danach feiner über `+1 kg` gesteigert werden.
 - **Wo umgesetzt:** `ProgressLab/src/lib/server/recommendation.ts` (reine Funktion mit Epley-1RM,
   PR-Detection, RPE-Heuristik), eingebunden in Dashboard, Detail-Page und Set-Logger.
 
@@ -282,9 +289,9 @@
 ### 4.10 Sessions vollständig CRUD-fähig (Edit + Delete) mit Optimistic UI
 
 - **Beschreibung & Nutzen:** Sessions können bearbeitet (Datum, Sätze, RPE, Notiz) und gelöscht
-  werden. Auf der Sessions-Liste gibt es einen Schnell-Lösch-Button mit optimistischem Update –
-  der Eintrag verschwindet sofort, der Server-Roundtrip läuft im Hintergrund, bei Fehler wird
-  der Eintrag wiederhergestellt.
+  werden. Auf der Sessions-Liste gibt es einen Schnell-Lösch-Button mit optimistischem Update und
+  Undo-Fenster: der Eintrag verschwindet sofort, der Server-Delete wird aber erst nach wenigen
+  Sekunden ausgeführt. Bei Undo oder Serverfehler wird der Eintrag wiederhergestellt.
 - **Wo umgesetzt:** `ProgressLab/src/routes/api/sessions/[id]/+server.ts` (PUT/DELETE),
   `ProgressLab/src/routes/sessions/[id]/edit/`,
   `ProgressLab/src/routes/sessions/+page.svelte` (Optimistic-Removal-Set).
@@ -293,7 +300,8 @@
 
 - **Beschreibung & Nutzen:** Ein Klick auf „CSV exportieren" lädt alle eigenen Sessions als
   CSV-Datei mit UTF-8-BOM (Excel-kompatibel) herunter – ein Satz pro Zeile, mit Datum, Übung,
-  Kategorie, Satz-Nummer, Gewicht, Reps, RPE und Notiz.
+  Kategorie, Satz-Nummer, Gewicht, Reps, RPE und Notiz. Textfelder werden gegen CSV-Formula-Injection
+  geschützt, damit Excel keine Notizen als Formeln interpretiert.
 - **Wo umgesetzt:** `ProgressLab/src/routes/api/sessions/export/+server.ts` (eigener Endpoint mit
   korrektem `content-disposition`-Header), Download-Button im Stats-Header und der Sessions-Liste.
 
@@ -310,8 +318,10 @@
 - **Beschreibung & Nutzen:** User kann beliebige Übungs-Kombinationen als Routine speichern (z. B.
   „Push Day", „Pull Day", „Leg Day"). Klick auf eine Routine startet einen geführten Workout-Modus
   mit Fortschrittsbalken: jede Übung der Routine bekommt einen „Loggen"-Button, bereits in den
-  letzten 4 Stunden geloggte Übungen sind grün markiert. Beim Loggen aus der Routine kommt man
-  über den `?back=`-Parameter zurück zum Workout-Flow.
+  letzten 4 Stunden geloggte Übungen sind grün markiert. Die nächste offene Übung wird hervorgehoben,
+  ein „Weiter loggen"-CTA führt direkt zum passenden Logger, und nach Abschluss erscheint ein
+  Abschlussstatus. Beim Loggen aus der Routine kommt man über den `?back=`-Parameter zurück zum
+  Workout-Flow.
 - **Wo umgesetzt:**
   - **Backend:** `ProgressLab/src/lib/server/models/Template.ts`, `template-service.ts`,
     API-Endpoints `ProgressLab/src/routes/api/templates/*`
@@ -333,9 +343,9 @@
 
 - **Beschreibung & Nutzen:** ProgressLab kann als App installiert werden (Edge/Chrome zeigen
   „Installieren"-Button im Browser, plus eigener Install-Prompt nach erstem Besuch). Service Worker
-  cached statische Assets (`cache-first`) und bedient API-Anfragen mit `network-first` mit Fallback
-  auf den letzten erfolgreichen Response. Bei kompletter Offline-Situation gibt es eine saubere
-  Fehlermeldung.
+  cached nur statische Assets (`cache-first`). API- und HTML-Requests bleiben `network-only`, damit
+  keine user-spezifischen Daten nach Login/Logout aus einem alten Cache angezeigt werden. Bei
+  kompletter Offline-Situation gibt es eine saubere Fehlermeldung.
 - **Wo umgesetzt:**
   - `ProgressLab/static/manifest.webmanifest` mit Icons und Theme-Color
   - `ProgressLab/static/icon-{192,512,maskable}.png` (generiert aus `icon.svg` via
@@ -346,9 +356,11 @@
 
 ### 4.16 End-to-End-Tests mit Playwright
 
-- **Beschreibung & Nutzen:** 8 automatisierte Tests decken den Hauptworkflow ab: Auth-Redirect,
+- **Beschreibung & Nutzen:** 10 automatisierte Main-Flow-Tests decken den Hauptworkflow ab: Auth-Redirect,
   Login, Dashboard, Übungs-Detail (inkl. Chart-Rendering), Stats-Page (mit Heatmap-Sektion),
   Records, Routinen, vollständiger Session-Workflow (Picker → Logger → Confirmation), Logout.
+  Zusätzlich prüfen sie die RPE-Hilfe, die Next-Step-Führung im Workout-Modus und das Undo beim
+  Löschen von Sessions. Weitere 7 axe-core-Checks prüfen die Hauptseiten auf WCAG-AA-Verstösse.
   Tests starten den Dev-Server selbständig via `webServer`-Config.
 - **Wo umgesetzt:** `ProgressLab/playwright.config.ts`,
   `ProgressLab/tests/e2e/main-flow.spec.ts`. Ausführen: `npm run test:e2e` (CLI) oder

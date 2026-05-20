@@ -54,20 +54,51 @@ test.describe('ProgressLab Hauptworkflow', () => {
 		await expect(page.getByRole('heading', { name: 'Push Day' })).toBeVisible();
 	});
 
-	test('Session-Logging End-to-End: Übung wählen → Sätze loggen → Confirmation', async ({ page }) => {
+	test('Workout-Modus hebt die nächste offene Übung hervor', async ({ page }) => {
+		await login(page);
+		await page.getByRole('link', { name: 'Routinen', exact: true }).click();
+		await page.locator('article:has(h3:has-text("Push Day")) a[href^="/workouts/"]').click();
+
+		await expect(page).toHaveURL(/\/workouts\/.+/);
+		await expect(page.getByText('Nächste Übung').first()).toBeVisible();
+		await expect(page.getByRole('link', { name: 'Weiter loggen' })).toBeVisible();
+	});
+
+	test('Session-Logging End-to-End: Übung wählen → Sätze loggen → Confirmation', async ({
+		page
+	}) => {
 		await login(page);
 		await page.locator('a.fab').click();
 		await expect(page).toHaveURL('/sessions/new');
 
-		await page.getByRole('option', { name: /Bench Press/i }).first().click();
+		await page
+			.getByRole('option', { name: /Bench Press/i })
+			.first()
+			.click();
 		await page.getByRole('button', { name: /Weiter/i }).click();
 
 		await expect(page.getByRole('heading', { level: 1 })).toContainText(/Bench Press/i);
+		await expect(page.getByRole('heading', { name: 'RPE kurz erklärt' })).toBeVisible();
+		await expect(page.getByText(/RPE 7 = ca\. 3 Reps in Reserve/i)).toBeVisible();
 		await page.getByRole('button', { name: 'Session speichern' }).click();
 
 		await expect(page).toHaveURL(/\/sessions\/.+\/done/);
 		await expect(page.getByRole('heading', { name: 'Session gespeichert' })).toBeVisible();
 		await expect(page.getByText(/Empfehlung aktualisiert/i)).toBeVisible();
+	});
+
+	test('Session-Löschen kann rückgängig gemacht werden', async ({ page }) => {
+		await login(page);
+		await page.getByRole('link', { name: 'Sessions', exact: true }).click();
+		await expect(page).toHaveURL('/sessions');
+
+		const firstSession = page.locator('.row-card').first();
+		const sessionName = await firstSession.locator('.name').innerText();
+		await firstSession.getByRole('button', { name: 'Löschen' }).click();
+
+		await expect(page.locator('.undo-banner')).toContainText('wird in wenigen Sekunden gelöscht');
+		await page.getByRole('button', { name: 'Rückgängig' }).click();
+		await expect(page.locator('.row-card').filter({ hasText: sessionName }).first()).toBeVisible();
 	});
 
 	test('Logout führt zurück auf /login', async ({ page }) => {

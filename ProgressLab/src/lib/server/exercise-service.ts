@@ -8,7 +8,9 @@ import type { ExerciseWithRecDTO } from '../types';
 
 const SEVEN_DAYS = 7 * 24 * 60 * 60 * 1000;
 
-export async function listExercisesWithRecommendation(userId: string): Promise<ExerciseWithRecDTO[]> {
+export async function listExercisesWithRecommendation(
+	userId: string
+): Promise<ExerciseWithRecDTO[]> {
 	await connectDB();
 	const [exercises, sessions] = await Promise.all([
 		Exercise.find().sort({ name: 1 }).lean(),
@@ -30,7 +32,10 @@ export async function listExercisesWithRecommendation(userId: string): Promise<E
 		const rec = buildRecommendation(exSessions, {
 			isBodyweight: !!ex.isBodyweight,
 			defaultRepTarget: ex.defaultRepTarget ?? 5,
-			defaultRpeTarget: ex.defaultRpeTarget ?? 7
+			defaultRpeTarget: ex.defaultRpeTarget ?? 7,
+			name: ex.name,
+			muscleGroup: ex.muscleGroup,
+			category: ex.category
 		});
 		const last = exSessions[0];
 		const sparkline = exSessions
@@ -65,7 +70,10 @@ export async function getExerciseDetail(userId: string, exerciseId: string) {
 	const rec = buildRecommendation(sessions, {
 		isBodyweight: !!ex.isBodyweight,
 		defaultRepTarget: ex.defaultRepTarget ?? 5,
-		defaultRpeTarget: ex.defaultRpeTarget ?? 7
+		defaultRpeTarget: ex.defaultRpeTarget ?? 7,
+		name: ex.name,
+		muscleGroup: ex.muscleGroup,
+		category: ex.category
 	});
 	const pr = computePR(sessions, !!ex.isBodyweight);
 
@@ -90,6 +98,9 @@ export async function getRecommendationForExercise(
 	return buildRecommendation(sessions, {
 		isBodyweight: !!ex.isBodyweight,
 		defaultRepTarget: ex.defaultRepTarget ?? 5,
-		defaultRpeTarget: ex.defaultRpeTarget ?? 7
+		defaultRpeTarget: ex.defaultRpeTarget ?? 7,
+		name: ex.name,
+		muscleGroup: ex.muscleGroup,
+		category: ex.category
 	});
 }

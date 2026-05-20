@@ -22,7 +22,65 @@ export type PR = {
 
 type SessionLite = Pick<SessionDoc, 'sets' | 'date'>;
 
+type RecommendationOptions = {
+	isBodyweight: boolean;
+	defaultRepTarget: number;
+	defaultRpeTarget: number;
+	name?: string;
+	muscleGroup?: string;
+	category?: 'push' | 'pull' | 'legs';
+};
+
 const avg = (xs: number[]) => (xs.length ? xs.reduce((s, x) => s + x, 0) / xs.length : 0);
+
+function isSmallStepExercise(opts: RecommendationOptions): boolean {
+	const text = `${opts.name ?? ''} ${opts.muscleGroup ?? ''}`.toLowerCase();
+	return [
+		'raise',
+		'curl',
+		'pushdown',
+		'face pull',
+		'lateral',
+		'hammer',
+		'triceps',
+		'biceps',
+		'waden',
+		'calf',
+		'leg curl',
+		'leg extension',
+		'seitheben',
+		'flies'
+	].some((marker) => text.includes(marker));
+}
+
+function progressionForWeightedExercise(
+	opts: RecommendationOptions,
+	lastTopWeight: number,
+	lastTopReps: number,
+	lastAvgRpe: number
+): Pick<Recommendation, 'weight' | 'reps' | 'reason'> {
+	if (!isSmallStepExercise(opts)) {
+		return {
+			weight: +(lastTopWeight + 2.5).toFixed(1),
+			reps: lastTopReps,
+			reason: `RPE ${lastAvgRpe.toFixed(1)} – +2.5 kg`
+		};
+	}
+
+	if (lastTopReps < opts.defaultRepTarget + 3) {
+		return {
+			weight: lastTopWeight,
+			reps: lastTopReps + 1,
+			reason: `RPE ${lastAvgRpe.toFixed(1)} – +1 Rep (kleine Übung)`
+		};
+	}
+
+	return {
+		weight: +(lastTopWeight + 1).toFixed(1),
+		reps: opts.defaultRepTarget,
+		reason: `RPE ${lastAvgRpe.toFixed(1)} – +1 kg (kleine Übung)`
+	};
+}
 
 export function epley1RM(weight: number, reps: number): number {
 	if (reps <= 0 || weight <= 0) return 0;
@@ -32,7 +90,7 @@ export function epley1RM(weight: number, reps: number): number {
 
 export function buildRecommendation(
 	sessions: SessionLite[],
-	opts: { isBodyweight: boolean; defaultRepTarget: number; defaultRpeTarget: number }
+	opts: RecommendationOptions
 ): Recommendation {
 	if (sessions.length === 0) {
 		return {
@@ -93,11 +151,17 @@ export function buildRecommendation(
 				estimated1RM: null
 			};
 		}
+		const progression = progressionForWeightedExercise(
+			opts,
+			lastTopWeight,
+			lastTopReps,
+			lastAvgRpe
+		);
 		return {
-			weight: +(lastTopWeight + 2.5).toFixed(1),
-			reps: lastTopReps,
+			weight: progression.weight,
+			reps: progression.reps,
 			rpeTarget: opts.defaultRpeTarget,
-			reason: `RPE ${lastAvgRpe.toFixed(1)} – +2.5 kg`,
+			reason: progression.reason,
 			trend,
 			isBodyweight: false,
 			deload: false,

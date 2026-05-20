@@ -10,25 +10,27 @@
 	let category = $state('all');
 	let pendingDelete = $state<string | null>(null);
 	let optimisticallyRemoved = $state<Set<string>>(new Set());
+	let undoSession = $state<{ id: string; name: string } | null>(null);
+	let deleteTimer: ReturnType<typeof setTimeout> | null = null;
 
 	const filtered = $derived(
 		data.sessions.filter(
-			(s) =>
-				!optimisticallyRemoved.has(s.id) && (category === 'all' || s.category === category)
+			(s) => !optimisticallyRemoved.has(s.id) && (category === 'all' || s.category === category)
 		)
 	);
 
 	const counts = $derived({
 		all: data.sessions.filter((s) => !optimisticallyRemoved.has(s.id)).length,
-		push: data.sessions.filter((s) => s.category === 'push' && !optimisticallyRemoved.has(s.id)).length,
-		pull: data.sessions.filter((s) => s.category === 'pull' && !optimisticallyRemoved.has(s.id)).length,
-		legs: data.sessions.filter((s) => s.category === 'legs' && !optimisticallyRemoved.has(s.id)).length
+		push: data.sessions.filter((s) => s.category === 'push' && !optimisticallyRemoved.has(s.id))
+			.length,
+		pull: data.sessions.filter((s) => s.category === 'pull' && !optimisticallyRemoved.has(s.id))
+			.length,
+		legs: data.sessions.filter((s) => s.category === 'legs' && !optimisticallyRemoved.has(s.id))
+			.length
 	});
 
-	async function quickDelete(id: string, name: string) {
-		if (!confirm(`Session "${name}" löschen?`)) return;
+	async function commitDelete(id: string) {
 		pendingDelete = id;
-		optimisticallyRemoved = new Set([...optimisticallyRemoved, id]);
 		try {
 			const res = await fetch(`/api/sessions/${id}`, { method: 'DELETE' });
 			if (!res.ok) {
@@ -43,7 +45,33 @@
 			await invalidateAll();
 		} finally {
 			pendingDelete = null;
+			if (undoSession?.id === id) undoSession = null;
+			deleteTimer = null;
 		}
+	}
+
+	function quickDelete(id: string, name: string) {
+		if (undoSession) {
+			showToast('Bitte erst den offenen Löschvorgang abschliessen oder rückgängig machen.', 'info');
+			return;
+		}
+		optimisticallyRemoved = new Set([...optimisticallyRemoved, id]);
+		undoSession = { id, name };
+		showToast('Session entfernt. Undo ist kurz möglich.', 'info');
+		deleteTimer = setTimeout(() => {
+			void commitDelete(id);
+		}, 5000);
+	}
+
+	function undoDelete() {
+		if (!undoSession) return;
+		if (deleteTimer) clearTimeout(deleteTimer);
+		const next = new Set(optimisticallyRemoved);
+		next.delete(undoSession.id);
+		optimisticallyRemoved = next;
+		undoSession = null;
+		deleteTimer = null;
+		showToast('Löschen rückgängig gemacht', 'info');
 	}
 </script>
 
@@ -74,6 +102,13 @@
 		]}
 	/>
 </div>
+
+{#if undoSession}
+	<div class="undo-banner" role="status">
+		<span>„{undoSession.name}“ wird in wenigen Sekunden gelöscht.</span>
+		<button type="button" class="btn btn-secondary small" onclick={undoDelete}>Rückgängig</button>
+	</div>
+{/if}
 
 {#if filtered.length === 0}
 	<div class="card empty">
@@ -110,7 +145,7 @@
 							type="button"
 							class="btn btn-ghost small icon-btn"
 							aria-label="Löschen"
-							disabled={pendingDelete === s.id}
+							disabled={pendingDelete === s.id || undoSession !== null}
 							onclick={() => quickDelete(s.id, s.exerciseName ?? 'Session')}
 							title="Schnell-Löschen"
 						>
@@ -135,6 +170,19 @@
 	.controls {
 		margin-bottom: 16px;
 	}
+	.undo-banner {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 12px;
+		margin-bottom: 14px;
+		padding: 12px 14px;
+		border: 1px solid var(--c-border-strong);
+		border-radius: var(--radius-md);
+		background: var(--c-surface);
+		box-shadow: var(--shadow-sm);
+		font-size: 13px;
+	}
 	.list {
 		list-style: none;
 		padding: 0;
@@ -152,7 +200,9 @@
 		border: 1px solid var(--c-border);
 		border-radius: var(--radius-md);
 		padding: 12px 14px;
-		transition: border-color 120ms var(--ease), box-shadow 120ms var(--ease);
+		transition:
+			border-color 120ms var(--ease),
+			box-shadow 120ms var(--ease);
 	}
 	.row-card:hover {
 		border-color: var(--c-border-strong);
@@ -199,6 +249,13 @@
 		gap: 6px;
 	}
 	@media (max-width: 640px) {
+		.undo-banner {
+			align-items: stretch;
+			flex-direction: column;
+		}
+		.undo-banner .btn {
+			width: 100%;
+		}
 		.row-card {
 			grid-template-columns: 1fr auto;
 			grid-template-rows: auto auto;

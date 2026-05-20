@@ -98,6 +98,16 @@
 
 <RecommendationCard recommendation={data.recommendation} variant="light" label="Empfehlung" />
 
+<section class="rpe-help" aria-labelledby="rpe-help-title">
+	<div>
+		<h2 id="rpe-help-title">RPE kurz erklärt</h2>
+		<p class="muted small">
+			RPE 7 = ca. 3 Reps in Reserve, RPE 8 = 2, RPE 9 = 1, RPE 10 = keine Reserve.
+		</p>
+	</div>
+	<span class="rpe-pill">1-10</span>
+</section>
+
 <form onsubmit={save} novalidate>
 	<div class="block">
 		<label for="date" class="label">Datum</label>
@@ -166,6 +176,33 @@
 		flex-direction: column;
 		gap: 18px;
 		margin-top: 18px;
+	}
+	.rpe-help {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 16px;
+		margin-top: 12px;
+		padding: 14px 16px;
+		border: 1px solid var(--c-border);
+		border-radius: var(--radius-md);
+		background: var(--c-surface);
+	}
+	.rpe-help h2 {
+		margin: 0 0 3px;
+		font-size: 14px;
+	}
+	.rpe-help p {
+		margin: 0;
+	}
+	.rpe-pill {
+		flex-shrink: 0;
+		padding: 6px 10px;
+		border-radius: var(--radius-pill);
+		background: var(--c-accent-soft);
+		color: var(--c-text);
+		font-weight: 700;
+		font-size: 12px;
 	}
 	.block {
 		display: flex;

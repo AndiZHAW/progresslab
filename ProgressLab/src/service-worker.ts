@@ -8,12 +8,14 @@ import { build, files, version } from '$service-worker';
 const sw = self as unknown as ServiceWorkerGlobalScope;
 
 const STATIC_CACHE = `pl-static-${version}`;
-const RUNTIME_CACHE = `pl-runtime-${version}`;
 const ASSETS = [...build, ...files];
 
 sw.addEventListener('install', (event) => {
 	event.waitUntil(
-		caches.open(STATIC_CACHE).then((cache) => cache.addAll(ASSETS)).then(() => sw.skipWaiting())
+		caches
+			.open(STATIC_CACHE)
+			.then((cache) => cache.addAll(ASSETS))
+			.then(() => sw.skipWaiting())
 	);
 });
 
@@ -22,7 +24,11 @@ sw.addEventListener('activate', (event) => {
 		(async () => {
 			const keys = await caches.keys();
 			await Promise.all(
-				keys.filter((k) => k !== STATIC_CACHE && k !== RUNTIME_CACHE).map((k) => caches.delete(k))
+				keys
+					.filter(
+						(k) => k !== STATIC_CACHE && (k.startsWith('pl-static-') || k.startsWith('pl-runtime-'))
+					)
+					.map((k) => caches.delete(k))
 			);
 			await sw.clients.claim();
 		})()
@@ -45,7 +51,7 @@ sw.addEventListener('fetch', (event) => {
 	if (url.origin !== sw.location.origin) return;
 
 	if (isApi(url)) {
-		event.respondWith(networkFirst(req));
+		event.respondWith(networkOnly(req, true));
 		return;
 	}
 
@@ -54,7 +60,7 @@ sw.addEventListener('fetch', (event) => {
 		return;
 	}
 
-	event.respondWith(networkFirst(req));
+	event.respondWith(networkOnly(req, false));
 });
 
 async function cacheFirst(request: Request): Promise<Response> {
@@ -72,23 +78,20 @@ async function cacheFirst(request: Request): Promise<Response> {
 	}
 }
 
-async function networkFirst(request: Request): Promise<Response> {
+async function networkOnly(request: Request, apiRequest: boolean): Promise<Response> {
 	try {
-		const response = await fetch(request);
-		if (response.ok && request.method === 'GET') {
-			const cache = await caches.open(RUNTIME_CACHE);
-			cache.put(request, response.clone());
-		}
-		return response;
+		return await fetch(request);
 	} catch (e) {
-		const cached = await caches.match(request);
-		if (cached) return cached;
-		return new Response(
-			JSON.stringify({ message: 'Du bist offline. Bitte später erneut versuchen.' }),
-			{
+		const message = 'Du bist offline. Bitte später erneut versuchen.';
+		if (!apiRequest) {
+			return new Response(message, {
 				status: 503,
-				headers: { 'content-type': 'application/json; charset=utf-8' }
-			}
-		);
+				headers: { 'content-type': 'text/plain; charset=utf-8' }
+			});
+		}
+		return new Response(JSON.stringify({ message }), {
+			status: 503,
+			headers: { 'content-type': 'application/json; charset=utf-8' }
+		});
 	}
 }

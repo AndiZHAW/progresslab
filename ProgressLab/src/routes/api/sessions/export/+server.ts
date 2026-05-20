@@ -5,7 +5,8 @@ import { Session } from '$lib/server/models/Session';
 import { Exercise } from '$lib/server/models/Exercise';
 
 function csvEscape(value: string | number): string {
-	const str = String(value);
+	const str =
+		typeof value === 'string' && /^[=+\-@]/.test(value.trimStart()) ? `'${value}` : String(value);
 	if (/[",\n]/.test(str)) return `"${str.replace(/"/g, '""')}"`;
 	return str;
 }
