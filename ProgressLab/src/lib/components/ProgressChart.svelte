@@ -126,7 +126,7 @@
 				</tr>
 			</thead>
 			<tbody>
-				{#each sorted as s, i (s.date)}
+				{#each sorted as s, i (s.id ?? i)}
 					<tr>
 						<td>{labels[i]}</td>
 						<td>{weights[i]}</td>
