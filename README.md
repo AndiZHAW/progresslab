@@ -153,7 +153,9 @@
 ### 3.5 Validate
 
 - **URL der getesteten Version:** <https://progresslab.netlify.app/> (Commit
-  `_[Hash zum Test-Zeitpunkt nachtragen]_`, identisch mit der live ausgespielten Variante).
+  `8017267`, identisch mit der live ausgespielten Variante).
+  Screenshots der getesteten Version liegen unter
+  [`docs/evaluation/screenshots/`](docs/evaluation/screenshots/README.md).
 
 - **Ziele der Evaluation:**
   - Verstehen Nutzer:innen die Coach-Empfehlung intuitiv (Wert + Begründung)?
