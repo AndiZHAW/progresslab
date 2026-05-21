@@ -650,6 +650,18 @@ async function main() {
 			name: 'Upper Body',
 			description: 'Schnelles Ganzkörper-Oberkörper-Workout',
 			exerciseNames: ['Incline Bench Press', 'Cable Row', 'Dips', 'Hammer Curl', 'Face Pull']
+		},
+		{
+			name: 'Lower Body',
+			description: 'Quads + Hamstrings + Glutes + Waden',
+			exerciseNames: [
+				'Back Squat',
+				'Romanian Deadlift',
+				'Leg Press',
+				'Hip Thrust',
+				'Leg Curl',
+				'Standing Calf Raise'
+			]
 		}
 	];
 	const templates = await Promise.all(

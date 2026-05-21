@@ -346,7 +346,8 @@
   - **Frontend:** `ProgressLab/src/routes/templates/` (CRUD), `ProgressLab/src/routes/workouts/[id]/`
     (Workout-Modus mit Progress-Bar), Quick-Start-Cards auf dem Dashboard
   - **Datenbank:** Collection `templates` mit Unique-Index auf `(userId, name)`
-- **Demo-Daten:** Seed legt automatisch 3 Routinen für demo-User an (Push Day, Pull Day, Leg Day).
+- **Demo-Daten:** Seed legt automatisch 5 Routinen für demo-User an (Push Day, Pull Day, Leg Day,
+  Upper Body, Lower Body).
 
 ### 4.14 Trainings-Heatmap (GitHub-Style)
 
