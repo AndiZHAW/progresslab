@@ -31,7 +31,7 @@ adressiert beides.
 
 ## Ergebnis
 
-**Status final: 7/7 Routes ohne axe-violation auf WCAG 2.1 AA.**
+**Status final: 8/8 Routes ohne axe-violation auf WCAG 2.1 AA.**
 
 ```
 > playwright test tests/e2e/a11y.spec.ts
@@ -42,10 +42,15 @@ adressiert beides.
   ok 4 Stats:    keine kritischen WCAG-AA-Violations
   ok 5 Records:  keine kritischen WCAG-AA-Violations
   ok 6 Templates: keine kritischen WCAG-AA-Violations
-  ok 7 Sessions: keine kritischen WCAG-AA-Violations
+  ok 7 Profile:  keine kritischen WCAG-AA-Violations
+  ok 8 Sessions: keine kritischen WCAG-AA-Violations
 
-  7 passed (24.1s)
+  8 passed (21.6s)
 ```
+
+Die `/profile`-Page (Coach-ID, siehe Erweiterung 4.16) wurde nach ihrer
+Einführung mit denselben Regeln getestet — Forms mit `<label for>`,
+Submit-Feedback über `role="status"`, Fehler-Banner mit `role="alert"`.
 
 ## Identifizierte Probleme & Fixes
 
