@@ -10,6 +10,7 @@ methodische Hartung der App vor der finalen Abgabe.
 | Datei | Datum | Zweck |
 |---|---|---|
 | [`audit-2026-05-21.md`](audit-2026-05-21.md) | 2026-05-21 | Voll-Audit nach `prompts/ULTIMATE_AUDIT_PROMPT.md`, lieferte 12 Findings + Roadmap zur Note 6 |
+| [`audit-codex-2026-05-21.md`](audit-codex-2026-05-21.md) | 2026-05-21 | Ergänzungs-Audit durch Codex nach den Vor-Audit-Fixes; prüft lokalen Stand vs. GitHub/Netlify und neue Rest-Risiken |
 
 ## Prompts
 
