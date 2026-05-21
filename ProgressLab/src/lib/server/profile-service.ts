@@ -116,19 +116,58 @@ function clampInteger(value: unknown, fallback: number, min: number, max: number
 	return Math.min(Math.max(Math.trunc(parsed), min), max);
 }
 
-function optionalNumber(value: unknown, min: number, max: number): number | null {
-	if (value === '' || value === null || value === undefined) return null;
-	const parsed = Number(value);
-	if (!Number.isFinite(parsed)) return null;
-	return Math.min(Math.max(Math.round(parsed * 10) / 10, min), max);
-}
-
 function enumValue<T extends readonly string[]>(
 	value: unknown,
 	allowed: T,
 	fallback: T[number]
 ): T[number] {
 	return typeof value === 'string' && allowed.includes(value) ? value : fallback;
+}
+
+// --- Strict validators for user input (used in normalizeProfileInput).
+// Sie werfen 400er-Errors mit klaren Hinweisen, damit das UI Banner anzeigen kann
+// statt dass der User stumm geclamped wird.
+
+function strictOptionalNumber(
+	value: unknown,
+	field: string,
+	min: number,
+	max: number
+): number | null {
+	if (value === '' || value === null || value === undefined) return null;
+	const parsed = Number(value);
+	if (!Number.isFinite(parsed)) {
+		throw error(400, `${field} muss eine Zahl sein.`);
+	}
+	if (parsed < min || parsed > max) {
+		throw error(400, `${field} muss zwischen ${min} und ${max} liegen.`);
+	}
+	return Math.round(parsed * 10) / 10;
+}
+
+function strictInteger(value: unknown, field: string, min: number, max: number): number {
+	if (value === '' || value === null || value === undefined) {
+		throw error(400, `${field} ist erforderlich.`);
+	}
+	const parsed = Number(value);
+	if (!Number.isInteger(parsed)) {
+		throw error(400, `${field} muss eine ganze Zahl sein.`);
+	}
+	if (parsed < min || parsed > max) {
+		throw error(400, `${field} muss zwischen ${min} und ${max} liegen.`);
+	}
+	return parsed;
+}
+
+function strictEnumValue<T extends readonly string[]>(
+	value: unknown,
+	field: string,
+	allowed: T
+): T[number] {
+	if (typeof value !== 'string' || !allowed.includes(value)) {
+		throw error(400, `${field}: erlaubt sind ${allowed.join(', ')}.`);
+	}
+	return value as T[number];
 }
 
 function toProfileDTO(doc: unknown): AthleteProfileDTO {
@@ -151,19 +190,24 @@ function toProfileDTO(doc: unknown): AthleteProfileDTO {
 
 export function normalizeProfileInput(input: unknown): AthleteProfileDTO {
 	if (!isRecord(input)) throw error(400, 'Profil-Daten erforderlich');
+	const limitations =
+		input.limitations === '' || input.limitations === null || input.limitations === undefined
+			? ''
+			: typeof input.limitations === 'string'
+				? input.limitations.trim().slice(0, 300)
+				: (() => {
+						throw error(400, 'Einschränkungen müssen Text sein.');
+					})();
+
 	return {
-		heightCm: optionalNumber(input.heightCm, 120, 230),
-		bodyWeightKg: optionalNumber(input.bodyWeightKg, 30, 250),
-		experience: enumValue(input.experience, PROFILE_EXPERIENCES, DEFAULT_PROFILE.experience),
-		goal: enumValue(input.goal, PROFILE_GOALS, DEFAULT_PROFILE.goal),
-		trainingDays: clampInteger(input.trainingDays, DEFAULT_PROFILE.trainingDays, 2, 6),
-		splitPreference: enumValue(
-			input.splitPreference,
-			PROFILE_SPLITS,
-			DEFAULT_PROFILE.splitPreference
-		),
-		equipment: enumValue(input.equipment, PROFILE_EQUIPMENT, DEFAULT_PROFILE.equipment),
-		limitations: typeof input.limitations === 'string' ? input.limitations.trim().slice(0, 300) : ''
+		heightCm: strictOptionalNumber(input.heightCm, 'Körpergrösse (cm)', 120, 230),
+		bodyWeightKg: strictOptionalNumber(input.bodyWeightKg, 'Körpergewicht (kg)', 30, 250),
+		experience: strictEnumValue(input.experience, 'Erfahrungslevel', PROFILE_EXPERIENCES),
+		goal: strictEnumValue(input.goal, 'Trainingsziel', PROFILE_GOALS),
+		trainingDays: strictInteger(input.trainingDays, 'Trainingstage/Woche', 2, 6),
+		splitPreference: strictEnumValue(input.splitPreference, 'Split-Präferenz', PROFILE_SPLITS),
+		equipment: strictEnumValue(input.equipment, 'Equipment', PROFILE_EQUIPMENT),
+		limitations
 	};
 }
 
