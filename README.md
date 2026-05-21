@@ -9,6 +9,20 @@
 > **Demo-Login zum Ausprobieren:** `demo` / `demo1234`. Der Demo-Admin `admin` / `admin1234`
 > ist lokal nach `npm run seed` voll nutzbar; auf der Live-App ist er aus Sicherheitsgründen read-only.
 
+## TL;DR — Was zeigt diese App?
+
+ProgressLab ist ein Web-Trainings-Coach: jeder Krafttraining-Satz wird mit Gewicht, Reps und
+RPE (Anstrengungs-Skala 1–10) erfasst, und die App schlägt für die nächste Session konkrete
+Werte vor. Highlights:
+
+- **Coach-Empfehlung pro Übung** (`+2.5 kg`, halten oder Deload) basierend auf den letzten Sessions
+- **Routinen + geführter Workout-Modus** mit Fortschrittsbalken
+- **Statistik-Dashboard** mit Volumen pro Woche, Trainings-Streak und Heatmap der letzten 12 Monate
+- **Personal Records** inklusive Epley-1RM-Schätzung
+- **Coach-ID** generiert personalisierte Pläne aus Ziel/Erfahrung/Equipment/Einschränkungen
+- **iOS-inspirierte UI**, Dark-Mode, PWA-installierbar, WCAG 2.1 AA verifiziert
+- **17 Erweiterungen** (siehe §4), **20 E2E-Tests + 6 Unit-Tests** grün im CI
+
 ## Inhaltsverzeichnis
 
 1. [Ausgangslage](#1-ausgangslage)
@@ -79,6 +93,15 @@
 - **Zielgruppenverständnis:** Hobby-Kraftsportler:in trainiert 2–4×/Woche, kennt RPE als Konzept, möchte
   kontinuierlich progredieren, scheitert aber an der Frage „soll ich heute mehr Gewicht ansetzen?".
   Bestehende Apps (Strong, Hevy, FitNotes) loggen, beraten aber nicht.
+
+- **Proto-Persona Marc, 27:**
+  Marketing-Angestellter, trainiert 3×/Woche im Quartier-Studio (Mo/Mi/Fr abends, je 60–75 min).
+  Aktuelle Bestwerte: Bench Press 80 kg × 5, Squat 100 kg × 5, Deadlift 130 kg × 5. Ziel: in
+  6 Monaten 100 kg Bench, ohne sich kaputt zu machen. Frustriert davon, dass er nach 3 Monaten
+  „5×5"-Programm bei Bench stagniert und nicht weiss, ob er pushen oder runterfahren soll.
+  Will im Training schnell tippen, **vor und nach jedem Satz** die Hände frei haben (Hantel-Griff,
+  Magnesium) und nicht 2 Min durch eine UI scrollen.
+
 - **Wesentliche Erkenntnisse:**
   - Eine konkrete Zahl als Empfehlung („+2.5 kg") senkt die kognitive Last beim Training.
   - Der Verlauf einzelner Übungen ist wichtiger als Gesamtstatistiken.
