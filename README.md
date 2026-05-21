@@ -444,27 +444,89 @@
 
 ### 6.1 KI-Tools
 
-- **Eingesetzte Tools:** Claude und OpenAI Codex für Codegenerierung, Architektur-Sparring,
-  Review, Refactoring, Testautomatisierung, Screenshot-Erstellung und Dokumentation.
-- **Zweck & Umfang:** KI unterstützte bei SvelteKit-Pages, Mongoose-Modellen, Komponenten,
-  Seed-Skript, UX-Iterationen, Security-Härtungen, Playwright-Tests und README-Struktur.
-  Vorgegeben wurden die Anforderungen, das Mockup, die Tech-Stack-Wahl, die Datenmodell-Skizze
-  und die Empfehlungs-Heuristik.
-- **Eigene Leistung:** Anforderungsanalyse, Ableitung der Datenmodelle aus dem Mockup, Wahl der
-  Empfehlungs-Logik, Auswahl der Erweiterungen, Verifikation der Funktion, Dokumentation.
+- **Eingesetzte Tools:**
+  - **Anthropic Claude (Sonnet 4.7)** als Haupt-Sparringpartner für Architektur,
+    Implementierung der ersten Version, Iterations-Reviews und Audit-Berichte.
+    Eingesetzt über die Claude-Code-CLI im VS Code.
+  - **OpenAI Codex** für gezielte Code-Reviews, Refactoring-Runden und
+    UI-Polish (insbesondere iOS-inspiriertes Mobile-Design, Profile-Feature,
+    Security-Härtung mit Rate-Limit/Demo-Guard, Screenshot-Erstellung).
+- **Zweck & Umfang:** KI hat den überwiegenden Teil des Boilerplate-Codes geschrieben
+  (SvelteKit-Pages, Mongoose-Models, Komponenten, Seed-Skript, Playwright-Tests). Die
+  finalen Audits sowie die KI-übergreifende Konsistenz (z. B. dass Claude die
+  Codex-Ergebnisse re-verifizieren musste) wurden ebenfalls KI-gestützt durchgeführt,
+  die Befunde aber pro Schritt menschlich abgenommen.
 
 ### 6.2 Prompt-Vorgehen
 
-Iterativ: Zuerst Plan einfordern (Routen, Komponenten, Datenmodell), Plan kontrollieren, dann
-Implementierung in klar abgegrenzten Schritten (Setup → Modelle → API → Pages → Erweiterungen).
-Nach jedem Schritt verifiziert (Build, svelte-check, Browser-Smoke-Test).
+Iterativ in klar abgegrenzten Phasen, jedes Mal vorab Plan einfordern und freigeben,
+danach in Schritten implementieren:
 
-### 6.3 Reflexion
+- **Setup-Phase:** Tech-Stack-Wahl, Repo-Struktur, ADR-0001/0006.
+- **Modelle:** Datenmodell aus dem Mockup ableiten, ADR-0002, ADR-0003.
+- **Workflow:** Hauptworkflow End-to-End, dann Erweiterungen Stück für Stück.
+- **Härtung:** zwei Review-Runden (Codex-Prompt + Audit-Prompt) mit gezielten Findings,
+  jeweils lokal verifiziert via `npm run check / lint / test:unit / test:e2e`.
 
-- **Nutzen:** Massive Beschleunigung bei Setup und Boilerplate; gute Vorschläge bei Mongoose-ESM-Quirks.
-- **Grenzen:** Domänenwissen (RPE-Heuristik, sinnvolle Default-Werte) muss menschlich validiert werden.
-- **Qualitätssicherung:** `npm run check`, `npm run lint`, `npm run build`, `npm run test:unit`
-  und `npm run test:e2e` als lokale und CI-relevante Checks.
+Nach jeder Phase: Browser-Smoke-Test (lokal oder live), `git status` prüfen, Commits
+mit sprechenden Messages (Conventional Prefixes).
+
+### 6.3 Reflexion (Eigenleistung vs. KI-Beitrag)
+
+**Was KI gemacht hat:**
+
+- Boilerplate-Code (Komponenten-Strukturen, CRUD-Endpoints, Mongoose-Schemas).
+- Anpassung von Code an SvelteKit-/Svelte-5-Konventionen (Runes, `+server.ts`-Patterns).
+- Erste Vorschläge für UI-Strukturen, Toasts, Charts, A11y-Setup.
+- Test-Code für Playwright + Unit-Tests, Seed-Daten mit realistischen Werten.
+
+**Was bei mir lag (inhaltliche Entscheidungen):**
+
+- **Idee und Scope:** ProgressLab als RPE-basierter Krafttraining-Logger statt der
+  ursprünglich angedachten Lernplaner-App; Abgrenzung „kein Cardio, keine Periodisierung".
+- **Empfehlungs-Heuristik:** RPE-Bänder (≤7 → +2.5 kg, 7–8.9 → halten, ≥9 → Deload −10 %)
+  und Epley-Formel für 1RM-Schätzung — domänen-validiert basierend auf gängiger
+  Powerlifting-/Hypertrophie-Literatur (Rippetoe, Helms).
+- **Datenmodell-Entscheid:** Sätze als embedded Array in `sessions` statt separater
+  Set-Collection — bewusst für atomare Schreibvorgänge (siehe ADR-0002).
+- **Architektur-Entscheide:** Eigene Auth statt Lucia/Better-Auth (ADR-0003), Pure-
+  Function-Recommendation ohne Cache-Collection (ADR-0004), Service-Worker
+  `network-only` für API/HTML statt `network-first` (ADR-0007) — jeweils Trade-offs
+  abgewogen und im ADR begründet.
+- **Auswahl/Reihenfolge der 17 Erweiterungen:** Welche reinkommen, welche bewusst
+  weggelassen werden (z. B. kein Pausentimer, kein Onboarding-Tutorial im
+  Prototyp-Scope), und welche zu Note 6 beitragen (A11y-Audit, ADRs, Plan-Generation).
+- **Issue-Triage in der Usability-Evaluation:** welche der 5 Findings mit welcher
+  Priorität umgesetzt werden — und welche als „spätere Erweiterung" markiert
+  werden (siehe `docs/evaluation/issue-map.md`).
+
+**Wo KI-Vorschläge korrigiert oder abgelehnt wurden:**
+
+- Codex schlug ursprünglich einen `RUNTIME_CACHE` für API-Antworten vor (ADR-0005). Nach
+  Diskussion mit Claude über Multi-User-Leak-Szenarien wurde das auf `network-only`
+  zurückgesetzt (ADR-0007).
+- Mehrere generische UI-Empfehlungen („Dashboard-Cards mit Stock-Foto-Hintergrund")
+  wurden zugunsten der ruhigeren iOS-inspirierten Sprache verworfen.
+- Demo-Daten der ersten Iteration enthielten nur 3 Übungen pro Routine — auf
+  Hinweis hin auf 5–6 Übungen erweitert (commit `8017267`).
+
+**Grenzen:**
+
+- Domänenwissen (RPE-Bänder, sinnvolle Default-Werte für Übungen, realistische
+  Demo-Gewichte) muss menschlich validiert werden — KI generiert oft falsche
+  Reps-Ranges oder zu hohe Default-Gewichte.
+- Plan-Generierung im Profile-Service hat einige Spezialfälle (Kniebeschwerden →
+  keine Lunges) die KI nicht vorgeschlagen hätte, ohne dass ich sie als
+  Anforderung formuliert hätte.
+- Bewertungsrubrik-Mapping (was zählt wie viel Punkte) — die KI tendiert dazu,
+  Wunschdenken statt strenger Bewertung zu liefern. Das Audit-Dokument
+  `docs/audit/audit-2026-05-21.md` ist daher mit explizit eingebauten Severity-
+  Kriterien geschrieben, um optimistische Selbstbewertung zu vermeiden.
+
+**Qualitätssicherung:** `npm run check`, `npm run lint`, `npm run build`,
+`npm run test:unit` und `npm run test:e2e` als lokale Checks; identische Befehle
+laufen in GitHub Actions ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) bei
+jedem Push, sodass Regressionen früh erkannt werden.
 
 ## 7. Anhang
 
@@ -564,6 +626,7 @@ Reviewer den Entscheid nachvollziehen können.
 | [0004](docs/adr/0004-recommendation-pure-function.md) | Recommendation-Engine als reine Funktion |
 | [0005](docs/adr/0005-pwa-custom-service-worker.md) | PWA mit Custom Service Worker statt Plugin |
 | [0006](docs/adr/0006-repo-struktur-progresslab-subfolder.md) | Code im `ProgressLab/`-Subfolder, Doku am Root |
+| [0007](docs/adr/0007-service-worker-network-only-fuer-api.md) | Service Worker: `network-only` für API und HTML (verfeinert 0005) |
 
 ### 11.2 Usability-Evaluation-Material
 
@@ -583,7 +646,7 @@ zugänglich.
 
 ### 11.4 Accessibility-Audit (WCAG 2.1 AA)
 
-Vollständiger A11y-Audit mit **axe-core** über alle 7 Hauptseiten — Bericht in
+Vollständiger A11y-Audit mit **axe-core** über alle 8 Hauptseiten — Bericht in
 [`docs/a11y-audit.md`](docs/a11y-audit.md). Ergebnis: **0 Violations** auf WCAG
 2.1 Level AA. Identifizierte Probleme (Farb-Kontrast, ARIA-Rollen, fehlender
 Skip-Link, Chart-Text-Alternativen) wurden behoben und das Audit ist als
@@ -591,5 +654,5 @@ Playwright-Test (`tests/e2e/a11y.spec.ts`) als Regressions-Schutz im CI-Lauf.
 
 ```bash
 cd ProgressLab && npx playwright test tests/e2e/a11y.spec.ts
-# 7 passed (24.1s)
+# 8 passed (≈ 22 s)
 ```
