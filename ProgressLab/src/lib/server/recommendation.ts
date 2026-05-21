@@ -33,6 +33,18 @@ type RecommendationOptions = {
 
 const avg = (xs: number[]) => (xs.length ? xs.reduce((s, x) => s + x, 0) / xs.length : 0);
 
+// Heuristik: Isolations- und Akzessorien-Übungen ("kleine" Übungen) progressieren in
+// kleineren Sprüngen als Compound-Hauptübungen. Statt einem +2.5-kg-Sprung wie bei
+// Bench Press oder Back Squat steigert die Engine bei diesen Übungen zuerst die
+// Wiederholungen und danach in +1-kg-Schritten — das spiegelt typische
+// Powerlifting-/Hypertrophie-Schemata wieder (z. B. Helms, Rippetoe).
+//
+// Bewusst einfaches Substring-Matching auf den Übungs-Namen / die Muskelgruppe.
+// Der Trade-off: schnell zu lesen, kein zusätzliches DB-Feld nötig, deckt die im
+// Seed gepflegten 24 Übungen sauber ab. Ein falsches Match (z. B. ein hypothetisches
+// "Heavy Calf Raise" wäre eigentlich keine Isolation) ist im Prototyp-Use-Case
+// akzeptabel; für die produktive Version wäre ein explizites Schema-Feld
+// `progressionType: 'compound' | 'isolation'` der saubere Weg.
 function isSmallStepExercise(opts: RecommendationOptions): boolean {
 	const text = `${opts.name ?? ''} ${opts.muscleGroup ?? ''}`.toLowerCase();
 	return [
