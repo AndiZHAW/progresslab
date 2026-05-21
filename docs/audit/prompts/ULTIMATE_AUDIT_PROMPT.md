@@ -30,6 +30,89 @@
 
 ---
 
+## 0.5. STAND DER VOR-AUDITS (BEREITS ADRESSIERT — NICHT DOPPELT ZÄHLEN)
+
+> **Stand:** 21.05.2026, Commit-Range `97a8c45..fc96c3e` auf lokalem `main`,
+> **noch nicht gepusht**. Quellbericht: [`docs/audit/audit-2026-05-21.md`](../audit-2026-05-21.md).
+
+Dieser Prompt wurde bereits einmal (von Claude) durchlaufen. Das Audit hat **12 Findings**
+identifiziert; **11 davon sind in 11 lokalen Commits** umgesetzt — siehe Tabelle unten.
+Bevor du eigene Findings notierst: prüfe pro Punkt, ob dein Befund schon hier steht.
+
+### Adressiert (lokale Commits, noch nicht gepusht)
+
+| ID | Severity | Titel | Commit | Verifizierbar via |
+|---|---|---|---|---|
+| FIND-001 | High | ADR-0005 widersprach Code (network-only vs. network-first) | `97a8c45` | Lies `docs/adr/0005-pwa-custom-service-worker.md` (Status revidiert) + neuer `docs/adr/0007-service-worker-network-only-fuer-api.md` |
+| FIND-002 | High | A11y-Audit-Bericht zeigte 7/7, Spec hat 8 Pages | `50e4889` | `docs/a11y-audit.md` zeigt 8/8 inkl. Profile |
+| FIND-004 | High | KI-Deklaration §6.3 zu generisch | `c7b8d83` | README §6.3 hat jetzt konkrete Eigenleistung + Tool-Aufteilung + 3 abgelehnte KI-Vorschläge |
+| FIND-005 | Medium | Tab-Favicon zeigte Svelte-Default statt ProgressLab-Logo | `b12c43e` | `ProgressLab/src/lib/assets/favicon.svg` hat jetzt das Teal-Logo |
+| FIND-006 | Medium | `/api/plan/generate` ohne Rate-Limit | `9fc71f8` | `checkRateLimit(`plan:${userId}`, 5, 60_000)` aktiv |
+| FIND-007 | Medium | Profile-PUT clampte silent statt 400 | `dfec359` | `profile-service.normalizeProfileInput` nutzt jetzt `strict*`-Validators mit 400-Errors |
+| FIND-008 | Medium | Audit-Prompts lagen ungetracked am Repo-Root | `60b3d69` | jetzt in `docs/audit/prompts/`, Index in `docs/audit/README.md` |
+| FIND-009 | Low | `npm run seed` ohne Warnung vor `deleteMany({})` | `599e325` | seed-Skript verlangt `PL_SEED_CONFIRM=1` (CI in `.github/workflows/ci.yml` ist angepasst) |
+| FIND-010 | Low | Keine TL;DR-Übersicht im README | `73115a2` | README hat 7-Punkt-Block direkt nach Titel |
+| FIND-011 | Low | Phase 3.1 ohne konkrete Persona | `73115a2` | Proto-Persona „Marc, 27, Marketing" im README §3.1 |
+| FIND-012 | Nit | `isSmallStepExercise` Heuristik ohne Erklärung | `fc96c3e` | Codekommentar in `recommendation.ts` über Trade-off + produktivem Folge-Schritt |
+
+### Noch offen
+
+| ID | Severity | Titel | Warum offen | Empfohlene Aktion |
+|---|---|---|---|---|
+| **FIND-003** | High | **Walkthrough-Video fehlt komplett** | Muss Andi selbst aufnehmen (Bildschirm, Voice-over). | 5–10 min Walkthrough mit allen 17 Erweiterungen, in finaler Abgabe-PR mitliefern. Keine Code-Action für dich. |
+
+### Sekundär-Effekte, die du als Codex prüfen kannst (nicht im ersten Audit aufgenommen)
+
+1. **Type-Check / Lint / Tests sind sauber nach allen 11 Commits** (`npm run check`, `npm run lint`,
+   `npm run test:unit`, `npm run test:e2e` lokal alle grün). Wenn du etwas anderes findest, ist
+   das ein neuer Befund.
+2. **Strict-Profile-Validator (FIND-007) ändert API-Verhalten:** ungültige Eingaben werfen jetzt 400
+   statt 200 mit gecaptem Wert. Falls ein Frontend-Stelle implizit auf das alte clamp-Verhalten
+   vertraut hat (z. B. eine Form, die einen User „still" speichert), wäre das ein Folge-Bug —
+   gerne prüfen.
+3. **Seed-Bestätigung (FIND-009)** erfordert `PL_SEED_CONFIRM=1`. CI ist angepasst, lokale Setup-
+   Doku im README ebenfalls. Falls Andis lokale Dev-Aliases / VS-Code-Tasks existieren, die `npm
+   run seed` ohne Env aufrufen, würden sie jetzt mit Exit 2 abbrechen — checken.
+4. **ADR-0007 ist neu** und sollte mit dem Code-Verhalten (Service-Worker `network-only` für API
+   und HTML) konsistent sein. Verifiziere mit Browser-DevTools → Application → Service Workers.
+5. **README ist auf 17 Erweiterungen + TL;DR-Block + neue Persona angewachsen.** Anker im
+   Inhaltsverzeichnis prüfen, ob alle Links noch zielen.
+
+### Konkrete Marschroute für dich (Codex)
+
+1. **Lies erst `docs/audit/audit-2026-05-21.md` durch** — kompletter Befundbericht der ersten Runde.
+2. **Verifiziere stichprobenartig 2–3 Fixes aus der Tabelle oben** (öffne die Dateien, prüfe
+   ob die Behauptung im Code wirklich steht). Notiere als „bestätigt" oder als neues Finding,
+   falls etwas nicht passt.
+3. **Suche gezielt nach** den oben genannten Sekundär-Effekten.
+4. **Suche neue Befunde** in den Bereichen, die der erste Audit nicht oder nur leicht abgedeckt
+   hat:
+   - **Performance:** Lighthouse-Run gegen Live-URL (read-only) + lokaler Build-Size-Check.
+   - **Mongoose-Aggregation-Pipelines:** `stats-service.ts`, `records-service.ts` —
+     N+1, ungetypte Pipelines, Sort-Keys.
+   - **Service Worker:** Cache-Strategie unter Last (`/_app/immutable/*`-Hash-Wechsel beim
+     nächsten Build), Stale-Asset nach Logout/Login.
+   - **UI:** Mobile-Bottom-Tab-Bar bei Browser-Notch (`env(safe-area-inset-bottom)`)
+     bereits drin — manuell auf iPhone-Simulator gegenchecken.
+   - **Coach-ID-Generierung:** Limitations-Substring-Matching ist brittle wie
+     `isSmallStepExercise` — gleiches Trade-off, vielleicht ähnlich kommentieren.
+5. **Liefere deinen Bericht ergänzend, nicht parallel.** Schreibe ihn nach
+   `docs/audit/audit-codex-YYYY-MM-DD.md`, mit Verweis auf den ersten Bericht. Halte dich an das
+   §7-Format (Executive Summary → Befund-Liste → Kriterien-Checkliste → Roadmap), aber lass
+   alle erledigten Findings aus — referenziere stattdessen die Tabelle oben.
+6. **Push/Deploy:** keine. Punkt. Auch keine `git push`-Vorbereitung im Hintergrund. Andis
+   Final-Deploy ist gebündelt geplant, nachdem das Video fertig ist.
+
+### Wenn du etwas Widersprüchliches findest
+
+- Wenn dieser Prompt mit `docs/audit/audit-2026-05-21.md` kollidiert: der **Code/Repo-Stand**
+  ist die Wahrheit, beide Berichte sind Beobachtungen darauf.
+- Wenn dein Befund einen bereits gefixten Finding **anders** beurteilt (z. B. „die strict-Validation
+  ist zu hart, sollte aussagekräftigere Fehler-IDs liefern"): trage es als **neuen Befund mit
+  Verweis auf die Vor-Audit-ID** ein, **nicht** als „erledigt".
+
+---
+
 ## 1. ROLLE & ZIEL
 
 Du bist **Senior Engineering Lead + akademischer Reviewer** für eine Studienarbeit im Modul

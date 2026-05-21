@@ -21,4 +21,4 @@ durchgeführt wurden.
 | Prompt | Verwendung |
 |---|---|
 | [`CODEX_REVIEW_PROMPT.md`](prompts/CODEX_REVIEW_PROMPT.md) | Ursprünglicher Review-Prompt für Codex; lieferte die UX-/Security-Härtungs-Runde (Commits `76801b5`, `ebeb668`, `0fda8fb`) |
-| [`ULTIMATE_AUDIT_PROMPT.md`](prompts/ULTIMATE_AUDIT_PROMPT.md) | Voll-Audit-Prompt für Claude; lieferte den Bericht `audit-2026-05-21.md` |
+| [`ULTIMATE_AUDIT_PROMPT.md`](prompts/ULTIMATE_AUDIT_PROMPT.md) | Voll-Audit-Prompt für Claude; lieferte den Bericht `audit-2026-05-21.md`. Enthält in §0.5 den **Stand der Vor-Audits**, damit ein nachfolgender Agent (Codex) nicht doppelt zählt. |
