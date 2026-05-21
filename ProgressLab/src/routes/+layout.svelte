@@ -4,10 +4,15 @@
 	import Nav from '$lib/components/Nav.svelte';
 	import Toaster from '$lib/components/Toaster.svelte';
 	import InstallPrompt from '$lib/components/InstallPrompt.svelte';
+	import { onMount } from 'svelte';
 	import type { Snippet } from 'svelte';
 	import type { LayoutData } from './$types';
 
 	let { children, data }: { children: Snippet; data: LayoutData } = $props();
+
+	onMount(() => {
+		document.documentElement.dataset.progresslabReady = 'true';
+	});
 </script>
 
 <svelte:head>

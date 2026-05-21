@@ -15,6 +15,16 @@
 	function removeSet(index: number) {
 		sets = sets.filter((_, i) => i !== index);
 	}
+
+	function updateSet(index: number, field: keyof SetDTO, event: Event) {
+		const input = event.currentTarget as HTMLInputElement;
+		const current = sets[index];
+		if (!current) return;
+
+		sets = sets.map((set, i) =>
+			i === index ? { ...set, [field]: input.value === '' ? Number.NaN : Number(input.value) } : set
+		);
+	}
 </script>
 
 <div class="wrap">
@@ -35,7 +45,8 @@
 				max="1000"
 				step="0.5"
 				inputmode="decimal"
-				bind:value={set.weight}
+				value={set.weight}
+				oninput={(event) => updateSet(i, 'weight', event)}
 				aria-label={`Satz ${i + 1} Gewicht`}
 			/>
 			<input
@@ -45,7 +56,8 @@
 				max="100"
 				step="1"
 				inputmode="numeric"
-				bind:value={set.reps}
+				value={set.reps}
+				oninput={(event) => updateSet(i, 'reps', event)}
 				aria-label={`Satz ${i + 1} Reps`}
 			/>
 			<input
@@ -55,7 +67,8 @@
 				max="10"
 				step="0.5"
 				inputmode="decimal"
-				bind:value={set.rpe}
+				value={set.rpe}
+				oninput={(event) => updateSet(i, 'rpe', event)}
 				aria-label={`Satz ${i + 1} RPE`}
 			/>
 			<button

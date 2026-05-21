@@ -11,8 +11,8 @@
 		return data.profile;
 	}
 
-	let heightCm = $state(initialProfile().heightCm?.toString() ?? '');
-	let bodyWeightKg = $state(initialProfile().bodyWeightKg?.toString() ?? '');
+	let heightCm = $state<string | number>(initialProfile().heightCm?.toString() ?? '');
+	let bodyWeightKg = $state<string | number>(initialProfile().bodyWeightKg?.toString() ?? '');
 	let experience = $state(initialProfile().experience);
 	let goal = $state(initialProfile().goal);
 	let trainingDays = $state(initialProfile().trainingDays);
@@ -43,10 +43,15 @@
 		}[goal]
 	);
 
+	function optionalNumber(value: string | number): number | null {
+		const text = String(value).trim();
+		return text ? Number(text) : null;
+	}
+
 	function profilePayload() {
 		return {
-			heightCm: heightCm.trim() ? Number(heightCm) : null,
-			bodyWeightKg: bodyWeightKg.trim() ? Number(bodyWeightKg) : null,
+			heightCm: optionalNumber(heightCm),
+			bodyWeightKg: optionalNumber(bodyWeightKg),
 			experience,
 			goal,
 			trainingDays,
@@ -56,9 +61,30 @@
 		};
 	}
 
+	function validateProfileInput(): string {
+		const height = optionalNumber(heightCm);
+		const bodyWeight = optionalNumber(bodyWeightKg);
+
+		if (height !== null && (!Number.isFinite(height) || height < 120 || height > 230)) {
+			return 'Körpergrösse (cm) muss zwischen 120 und 230 liegen.';
+		}
+		if (
+			bodyWeight !== null &&
+			(!Number.isFinite(bodyWeight) || bodyWeight < 30 || bodyWeight > 250)
+		) {
+			return 'Körpergewicht (kg) muss zwischen 30 und 250 liegen.';
+		}
+		return '';
+	}
+
 	async function saveProfile(showSuccess = true) {
 		formError = '';
 		successMessage = '';
+		const validationError = validateProfileInput();
+		if (validationError) {
+			formError = validationError;
+			return false;
+		}
 		saving = true;
 		try {
 			const res = await fetch('/api/profile', {
