@@ -21,10 +21,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	const newRec = await getRecommendationForExercise(locals.user.id, session.exerciseId);
 
 	return {
-		session: toSessionDTO(
-			session as unknown as Parameters<typeof toSessionDTO>[0],
-			exercise.name
-		),
+		session: toSessionDTO(session as unknown as Parameters<typeof toSessionDTO>[0], exercise.name),
 		exercise: toExerciseDTO(exercise as unknown as Parameters<typeof toExerciseDTO>[0]),
 		newRecommendation: newRec
 	};

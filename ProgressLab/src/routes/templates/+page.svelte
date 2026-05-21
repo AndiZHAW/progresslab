@@ -166,7 +166,11 @@
 		<p class="muted">
 			Erstelle deine erste Routine, um wiederkehrende Workouts mit einem Klick zu starten.
 		</p>
-		<button class="btn btn-primary" onclick={() => (creating = true)} style="margin-top:8px; align-self:center;">
+		<button
+			class="btn btn-primary"
+			onclick={() => (creating = true)}
+			style="margin-top:8px; align-self:center;"
+		>
 			+ Erste Routine anlegen
 		</button>
 	</div>
@@ -198,9 +202,7 @@
 					{/each}
 				</ul>
 				<footer>
-					<a class="btn btn-primary small" href={`/workouts/${t.id}`}>
-						Workout starten →
-					</a>
+					<a class="btn btn-primary small" href={`/workouts/${t.id}`}> Workout starten → </a>
 				</footer>
 			</article>
 		{/each}
@@ -246,7 +248,9 @@
 		text-align: left;
 		font-size: 13px;
 		color: var(--c-text);
-		transition: border-color 120ms var(--ease), background 120ms var(--ease);
+		transition:
+			border-color 120ms var(--ease),
+			background 120ms var(--ease);
 	}
 	.ex-chip:hover {
 		border-color: var(--c-text-muted);

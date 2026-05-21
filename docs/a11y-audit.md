@@ -1,6 +1,6 @@
 # Accessibility-Audit (WCAG 2.1 AA)
 
-- **Datum:** 2026-05-04
+- **Datum:** 2026-05-21
 - **Auditor:** Andi Kadolli
 - **Tooling:** [axe-core](https://github.com/dequelabs/axe-core) v4.11
   ausgeführt via `@axe-core/playwright` gegen alle relevanten Routen.
@@ -163,10 +163,9 @@ Veröffentlichung nötig:
   (`transform: translateY(-2px)`) sind via globaler
   `@media (prefers-reduced-motion: reduce)`-Regel deaktiviert, aber das ist
   nicht explizit pro Komponente getestet.
-- **Touch-Target-Sizes:** WCAG 2.5.5 Level AAA verlangt 44×44 px für
-  Touch-Targets. Die meisten Buttons sind ≥ 36 px hoch (über padding); für
-  AAA müssten einige IconButtons noch vergrößert werden — explizit nur
-  AA-Konformität ist hier das gesteckte Ziel.
+- **Touch-Target-Sizes:** Die wichtigsten Buttons und Mobile-Navigationselemente
+  sind nach dem iOS-inspirierten Redesign auf mindestens 44 px Zielhöhe ausgelegt.
+  WCAG-AA verlangt dies nicht überall, unterstützt aber die mobile Bedienbarkeit.
 - **Color-Only-Information bei Sparklines:** Die Spark-Lines im
   Dashboard-Tile zeigen einen Trend-Verlauf nur visuell. Sie sind
   `aria-hidden`, weil der Trend-Pfeil und die Empfehlungs-Zeile die gleiche

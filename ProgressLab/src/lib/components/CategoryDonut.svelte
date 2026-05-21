@@ -1,12 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import {
-		Chart,
-		DoughnutController,
-		ArcElement,
-		Tooltip,
-		Legend
-	} from 'chart.js';
+	import { Chart, DoughnutController, ArcElement, Tooltip, Legend } from 'chart.js';
 
 	Chart.register(DoughnutController, ArcElement, Tooltip, Legend);
 
@@ -82,10 +76,7 @@
 		<div class="empty">Noch keine Daten.</div>
 	{:else}
 		<!-- svelte-ignore a11y_no_interactive_element_to_noninteractive_role -->
-		<canvas
-			bind:this={canvas}
-			role="img"
-			aria-label="Volumen-Verteilung nach Push, Pull und Legs"
+		<canvas bind:this={canvas} role="img" aria-label="Volumen-Verteilung nach Push, Pull und Legs"
 		></canvas>
 		<table class="sr-only">
 			<caption>Volumen pro Kategorie (für Screenreader)</caption>

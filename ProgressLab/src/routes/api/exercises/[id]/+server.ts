@@ -4,8 +4,10 @@ import mongoose from 'mongoose';
 import { connectDB } from '$lib/server/db';
 import { Exercise, EXERCISE_CATEGORIES } from '$lib/server/models/Exercise';
 import { Session } from '$lib/server/models/Session';
+import { Template } from '$lib/server/models/Template';
 import { getExerciseDetail } from '$lib/server/exercise-service';
 import { toExerciseDTO } from '$lib/server/dto';
+import { assertAdminCanMutate } from '$lib/server/demo-guard';
 
 export const GET: RequestHandler = async ({ params, locals }) => {
 	if (!locals.user) throw error(401, 'Nicht angemeldet');
@@ -17,7 +19,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 
 export const PUT: RequestHandler = async ({ params, request, locals }) => {
 	if (!locals.user) throw error(401, 'Nicht angemeldet');
-	if (locals.user.role !== 'admin') throw error(403, 'Nur Admins dürfen Übungen ändern');
+	assertAdminCanMutate(locals.user);
 	if (!mongoose.isValidObjectId(params.id)) throw error(400, 'Ungültige ID');
 
 	const body = await request.json().catch(() => null);
@@ -42,13 +44,17 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 
 export const DELETE: RequestHandler = async ({ params, locals }) => {
 	if (!locals.user) throw error(401, 'Nicht angemeldet');
-	if (locals.user.role !== 'admin') throw error(403, 'Nur Admins dürfen Übungen löschen');
+	assertAdminCanMutate(locals.user);
 	if (!mongoose.isValidObjectId(params.id)) throw error(400, 'Ungültige ID');
 
 	await connectDB();
 	const sessionsLinked = await Session.countDocuments({ exerciseId: params.id });
 	if (sessionsLinked > 0) {
 		throw error(409, `Übung hat ${sessionsLinked} verknüpfte Session(s) – Löschen abgelehnt`);
+	}
+	const templatesLinked = await Template.countDocuments({ exerciseIds: params.id });
+	if (templatesLinked > 0) {
+		throw error(409, `Übung wird in ${templatesLinked} Routine(n) verwendet – Löschen abgelehnt`);
 	}
 	const doc = await Exercise.findByIdAndDelete(params.id);
 	if (!doc) throw error(404, 'Übung nicht gefunden');

@@ -33,8 +33,12 @@
 {#if s.totalSessions === 0}
 	<div class="card empty">
 		<h2>Starte deine erste Session</h2>
-		<p class="muted">Sobald du Trainings loggst, erscheinen hier Auswertungen, Trends und Records.</p>
-		<a class="btn btn-primary" href="/sessions/new" style="margin-top:8px; align-self:center;">+ Erste Session loggen</a>
+		<p class="muted">
+			Sobald du Trainings loggst, erscheinen hier Auswertungen, Trends und Records.
+		</p>
+		<a class="btn btn-primary" href="/sessions/new" style="margin-top:8px; align-self:center;"
+			>+ Erste Session loggen</a
+		>
 	</div>
 {:else}
 	<div class="grid">

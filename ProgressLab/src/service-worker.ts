@@ -73,7 +73,7 @@ async function cacheFirst(request: Request): Promise<Response> {
 			cache.put(request, response.clone());
 		}
 		return response;
-	} catch (e) {
+	} catch {
 		return cached ?? Response.error();
 	}
 }
@@ -81,7 +81,7 @@ async function cacheFirst(request: Request): Promise<Response> {
 async function networkOnly(request: Request, apiRequest: boolean): Promise<Response> {
 	try {
 		return await fetch(request);
-	} catch (e) {
+	} catch {
 		const message = 'Du bist offline. Bitte später erneut versuchen.';
 		if (!apiRequest) {
 			return new Response(message, {

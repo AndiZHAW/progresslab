@@ -8,14 +8,18 @@ Material für den Usability-Test im Rahmen der Übung „Usability Evaluation"
 | Datei | Zweck |
 |---|---|
 | [`testaufgaben.md`](testaufgaben.md) | 4 szenario-basierte Aufgaben, der Testperson zum Lesen vorlegen |
+| [`Testaufgaben_ProgressLab.docx`](Testaufgaben_ProgressLab.docx) | druck-/abgabefreundliche DOCX-Version der Testaufgaben |
 | [`nachfragen.md`](nachfragen.md) | Strukturierte Fragen pro Aufgabe + Abschlussfragen, nur für den Testleiter |
 | [`feedback-grid.md`](feedback-grid.md) | Leere Vorlage zum Protokollieren während des Tests (1× pro Testperson ausdrucken oder digital ausfüllen) |
+| [`Feedback-Grid_ProgressLab.docx`](Feedback-Grid_ProgressLab.docx) | druck-/abgabefreundliche DOCX-Vorlage |
 
 ## Nach dem Test
 
 Pro Testperson ein ausgefülltes Feedback-Grid in `protokolle/` ablegen
-(Dateiname: `feedback-{name-oder-code}.md`). Erkenntnisse anschließend in die
-**Issue Map** und die **README Phase 3.5** überführen.
+(Dateiname: `feedback-{name-oder-code}.docx`). Die zwei durchgeführten Tests
+liegen als `feedback-TP01-AdiLama.docx` und `feedback-TP02-DonartImeri.docx`
+vor. Die zusammengeführten Erkenntnisse stehen in [`issue-map.md`](issue-map.md)
+und sind in README Phase 3.5 verdichtet.
 
 ## Vorgehen am Test-Tag
 

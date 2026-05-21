@@ -26,9 +26,12 @@
 		<h1>{data.exercise.name}</h1>
 		<div class="muted small">
 			<span class="cat-tag">{data.exercise.category}</span>
-			{#if data.exercise.muscleGroup} · {data.exercise.muscleGroup}{/if}
-			{#if data.exercise.isBodyweight} · Bodyweight{/if}
-			{#if data.sessions.length > 0} · {data.sessions.length} Sessions{/if}
+			{#if data.exercise.muscleGroup}
+				· {data.exercise.muscleGroup}{/if}
+			{#if data.exercise.isBodyweight}
+				· Bodyweight{/if}
+			{#if data.sessions.length > 0}
+				· {data.sessions.length} Sessions{/if}
 		</div>
 	</div>
 	<div class="spacer"></div>
@@ -65,7 +68,11 @@
 			{#if data.pr.topReps}
 				<div class="pr-mini">
 					<div class="pr-lbl">Top-Reps</div>
-					<div class="pr-val">{data.pr.topReps.reps} × {data.exercise.isBodyweight ? 'BW' : `${data.pr.topReps.weight} kg`}</div>
+					<div class="pr-val">
+						{data.pr.topReps.reps} × {data.exercise.isBodyweight
+							? 'BW'
+							: `${data.pr.topReps.weight} kg`}
+					</div>
 					<div class="pr-date">{formatDate(data.pr.topReps.date)}</div>
 				</div>
 			{/if}

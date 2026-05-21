@@ -117,7 +117,7 @@
 	<div class="block">
 		<div class="label">Sätze</div>
 		<SetLoggerTable bind:sets isBodyweight={data.exercise.isBodyweight} />
-		{#each setErrors as err, i}
+		{#each setErrors as err, i (i)}
 			{#if err}
 				<div class="error-banner small" role="alert">{err}</div>
 			{/if}

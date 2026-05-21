@@ -6,7 +6,8 @@
 	const dayMs = 86400000;
 
 	const grid = $derived.by(() => {
-		if (days.length === 0) return { weeks: [] as Day[][], months: [] as { label: string; col: number }[] };
+		if (days.length === 0)
+			return { weeks: [] as Day[][], months: [] as { label: string; col: number }[] };
 
 		const cellsByDate = new Map(days.map((d) => [d.date, d]));
 		const first = new Date(days[0].date);
@@ -17,7 +18,20 @@
 		const totalCols = Math.ceil((days.length + dow) / 7);
 		const weeks: Day[][] = [];
 		const months: { label: string; col: number }[] = [];
-		const monthNames = ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'];
+		const monthNames = [
+			'Jan',
+			'Feb',
+			'Mär',
+			'Apr',
+			'Mai',
+			'Jun',
+			'Jul',
+			'Aug',
+			'Sep',
+			'Okt',
+			'Nov',
+			'Dez'
+		];
 		let lastMonth = -1;
 
 		for (let col = 0; col < totalCols; col++) {
@@ -68,7 +82,11 @@
 	const totalDays = $derived(days.filter((d) => d.sessions > 0).length);
 </script>
 
-<div class="wrap" role="figure" aria-label={`Heatmap mit ${totalDays} Trainingstagen in den letzten 12 Monaten`}>
+<div
+	class="wrap"
+	role="figure"
+	aria-label={`Heatmap mit ${totalDays} Trainingstagen in den letzten 12 Monaten`}
+>
 	<div class="head">
 		<span class="muted small">{totalDays} Trainingstage in den letzten 12 Monaten</span>
 		<div class="legend" aria-hidden="true">
@@ -85,7 +103,7 @@
 	<div class="scroll">
 		<div class="grid-wrap">
 			<div class="months" style:grid-template-columns={`repeat(${grid.weeks.length}, 14px)`}>
-				{#each grid.months as m}
+				{#each grid.months as m (m.col)}
 					<span class="month" style:grid-column-start={m.col + 1}>{m.label}</span>
 				{/each}
 			</div>

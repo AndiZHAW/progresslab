@@ -86,10 +86,7 @@
 		<div class="empty">Noch keine Daten.</div>
 	{:else}
 		<!-- svelte-ignore a11y_no_interactive_element_to_noninteractive_role -->
-		<canvas
-			bind:this={canvas}
-			role="img"
-			aria-label={`Wochenvolumen über ${weeks.length} Wochen`}
+		<canvas bind:this={canvas} role="img" aria-label={`Wochenvolumen über ${weeks.length} Wochen`}
 		></canvas>
 		<table class="sr-only">
 			<caption>Wochenvolumen (für Screenreader)</caption>

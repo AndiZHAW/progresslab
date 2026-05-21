@@ -36,9 +36,7 @@
 {#if data.records.length === 0}
 	<div class="card empty">
 		<h2>Noch keine Records</h2>
-		<p class="muted">
-			Logge deine erste Session, um persönliche Bestleistungen zu erfassen.
-		</p>
+		<p class="muted">Logge deine erste Session, um persönliche Bestleistungen zu erfassen.</p>
 		<a class="btn btn-primary" href="/sessions/new" style="margin-top:8px; align-self:center;">
 			+ Erste Session loggen
 		</a>

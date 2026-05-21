@@ -18,10 +18,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	if (!exercise) throw error(404, 'Übung nicht gefunden');
 
 	return {
-		session: toSessionDTO(
-			session as unknown as Parameters<typeof toSessionDTO>[0],
-			exercise.name
-		),
+		session: toSessionDTO(session as unknown as Parameters<typeof toSessionDTO>[0], exercise.name),
 		exercise: toExerciseDTO(exercise as unknown as Parameters<typeof toExerciseDTO>[0])
 	};
 };

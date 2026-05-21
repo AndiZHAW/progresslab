@@ -22,7 +22,7 @@ const sessionTokenSchema = new Schema(
 	{
 		token: { type: String, required: true, unique: true, index: true },
 		userId: { type: Schema.Types.ObjectId, ref: 'User', required: true, index: true },
-		expiresAt: { type: Date, required: true, index: true }
+		expiresAt: { type: Date, required: true, expires: 0 }
 	},
 	{ timestamps: true }
 );
@@ -33,8 +33,7 @@ export type SessionTokenDoc = InferSchemaType<typeof sessionTokenSchema> & {
 };
 
 export const User =
-	(mongoose.models.User as mongoose.Model<UserDoc>) ||
-	mongoose.model<UserDoc>('User', userSchema);
+	(mongoose.models.User as mongoose.Model<UserDoc>) || mongoose.model<UserDoc>('User', userSchema);
 export const SessionToken =
 	(mongoose.models.SessionToken as mongoose.Model<SessionTokenDoc>) ||
 	mongoose.model<SessionTokenDoc>('SessionToken', sessionTokenSchema);

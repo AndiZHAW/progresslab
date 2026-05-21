@@ -49,10 +49,7 @@
 	</div>
 
 	{#if data.newRecommendation}
-		<RecommendationCard
-			recommendation={data.newRecommendation}
-			label="Empfehlung aktualisiert"
-		/>
+		<RecommendationCard recommendation={data.newRecommendation} label="Empfehlung aktualisiert" />
 	{/if}
 
 	<div class="actions">

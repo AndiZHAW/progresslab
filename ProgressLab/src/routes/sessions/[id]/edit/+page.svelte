@@ -103,7 +103,11 @@
 			{#if deleting}<Spinner />{/if}
 			Session löschen
 		</button>
-		<button class="btn btn-primary" type="submit" disabled={saving || deleting || sets.length === 0}>
+		<button
+			class="btn btn-primary"
+			type="submit"
+			disabled={saving || deleting || sets.length === 0}
+		>
 			{#if saving}<Spinner />{/if}
 			Änderungen speichern
 		</button>

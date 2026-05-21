@@ -5,6 +5,7 @@ import { connectDB } from '$lib/server/db';
 import { Session } from '$lib/server/models/Session';
 import { Exercise } from '$lib/server/models/Exercise';
 import { toSessionDTO } from '$lib/server/dto';
+import { parseSessionSets } from '$lib/server/validation';
 
 export const GET: RequestHandler = async ({ params, locals }) => {
 	if (!locals.user) throw error(401, 'Nicht angemeldet');
@@ -25,21 +26,7 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 	if (!body) throw error(400, 'Body erforderlich');
 
 	const { date, sets, note } = body;
-	if (!Array.isArray(sets) || sets.length === 0)
-		throw error(400, 'Mindestens ein Satz erforderlich');
-
-	const cleanSets = sets.map((s, i) => {
-		const weight = Number(s.weight);
-		const reps = Number(s.reps);
-		const rpe = Number(s.rpe);
-		if (!Number.isFinite(weight) || weight < 0 || weight > 1000)
-			throw error(400, `Satz ${i + 1}: Gewicht muss zwischen 0 und 1000 kg liegen`);
-		if (!Number.isInteger(reps) || reps < 1 || reps > 100)
-			throw error(400, `Satz ${i + 1}: Reps müssen 1–100 sein`);
-		if (!Number.isFinite(rpe) || rpe < 1 || rpe > 10)
-			throw error(400, `Satz ${i + 1}: RPE muss 1–10 sein`);
-		return { weight, reps, rpe };
-	});
+	const cleanSets = parseSessionSets(sets);
 
 	const update: Record<string, unknown> = { sets: cleanSets };
 	if (date) {
@@ -50,11 +37,10 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 	if (typeof note === 'string') update.note = note.slice(0, 500);
 
 	await connectDB();
-	const doc = await Session.findOneAndUpdate(
-		{ _id: params.id, userId: locals.user.id },
-		update,
-		{ new: true, runValidators: true }
-	).lean();
+	const doc = await Session.findOneAndUpdate({ _id: params.id, userId: locals.user.id }, update, {
+		new: true,
+		runValidators: true
+	}).lean();
 	if (!doc) throw error(404, 'Session nicht gefunden');
 
 	const exercise = await Exercise.findById(doc.exerciseId).select('name').lean();

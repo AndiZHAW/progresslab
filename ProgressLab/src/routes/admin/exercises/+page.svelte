@@ -159,8 +159,10 @@
 					<div class="name">{ex.name}</div>
 					<div class="muted small">
 						{ex.category.toUpperCase()}
-						{#if ex.muscleGroup} · {ex.muscleGroup}{/if}
-						{#if ex.isBodyweight} · BW{/if}
+						{#if ex.muscleGroup}
+							· {ex.muscleGroup}{/if}
+						{#if ex.isBodyweight}
+							· BW{/if}
 						· Default {ex.defaultRepTarget} Reps @ RPE {ex.defaultRpeTarget}
 					</div>
 				</div>

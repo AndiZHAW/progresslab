@@ -6,7 +6,8 @@
 **Deployte App:** <https://progresslab.netlify.app/>  
 **GitHub-Repository:** <https://github.com/AndiZHAW/progresslab>
 
-> **Demo-Login zum Ausprobieren:** `demo` / `demo1234` (oder `admin` / `admin1234` für Admin-Funktionen).
+> **Demo-Login zum Ausprobieren:** `demo` / `demo1234`. Der Demo-Admin `admin` / `admin1234`
+> ist lokal nach `npm run seed` voll nutzbar; auf der Live-App ist er aus Sicherheitsgründen read-only.
 
 ## Inhaltsverzeichnis
 
@@ -117,9 +118,10 @@
   - `/templates` – Routinen erstellen und starten
   - `/workouts/[id]` – geführter Workout-Modus für eine Routine
   - `/admin/exercises` – Admin-only: Übungen anlegen/löschen
-- **User Interface Design:** Schwarz-Weiss-Design analog Mockup, Empfehlungs-Karte als zentrales
-  Element (dunkel oder hell je Kontext), Sparklines aus dem Mockup übernommen, Chart.js-Verlaufschart
-  auf der Detail-Page (Erweiterung gegenüber dem statischen SVG des Mockups).
+- **User Interface Design:** iOS-inspirierte App-Optik mit neutralem Hintergrund, glasigem Header,
+  Mobile-Bottom-Tab-Bar, klaren Cards, Segmented Controls und grossen Touch-Zielen. Die
+  Empfehlungs-Karte bleibt das zentrale Element; Sparklines und Chart.js-Verlaufscharts übernehmen
+  die visuelle Idee aus dem Mockup.
 - **Designentscheidungen:**
   - **Single-Spalten-Layout** statt Phone-Frame: Web-App soll auf Desktop und Mobile gleich gut
     funktionieren, deshalb Container mit `max-width: 960px`.
@@ -143,7 +145,7 @@
   - Server-Logik in `src/lib/server/`: `db.ts` (Mongoose-Connection-Singleton),
     `models/`, `auth.ts`, `recommendation.ts`, `exercise-service.ts`, `dto.ts`
   - Globaler Toast-State über `src/lib/toast.svelte.ts` (Svelte 5 Rune)
-- **Daten & Schnittstellen:** MongoDB mit drei Hauptcollections (Schema-Übersicht weiter unten).
+- **Daten & Schnittstellen:** MongoDB mit fünf Collections (Schema-Übersicht weiter unten).
   REST-artige API-Routes:
   - `POST /api/auth/{login,register,logout}`
   - `GET/POST /api/exercises` · `GET/PUT/DELETE /api/exercises/[id]`
@@ -157,8 +159,8 @@
 
 ### 3.5 Validate
 
-- **URL der getesteten Version:** <https://progresslab.netlify.app/> (Commit
-  `8017267`, identisch mit der live ausgespielten Variante).
+- **URL der getesteten Version:** <https://progresslab.netlify.app/> (Stand 20.05.2026,
+  aktuelle `main`-Version plus nachfolgende Review-Härtungen).
   Screenshots der getesteten Version liegen unter
   [`docs/evaluation/screenshots/`](docs/evaluation/screenshots/README.md).
 
@@ -174,8 +176,9 @@
   in einem Feedback-Grid protokolliert (Vorlage:
   [`docs/evaluation/feedback-grid.md`](docs/evaluation/feedback-grid.md)).
 
-- **Stichprobe:** _[Nach dem Test ergänzen: Anzahl Testpersonen, Profil/Hintergrund
-  (Studierende, Erfahrung mit Krafttraining-Apps), Datum]_
+- **Stichprobe:** 2 Testpersonen aus dem IT-Studium, beide mit grundlegender Web-App-Erfahrung
+  und unterschiedlicher Nähe zu Krafttraining. Durchführung am 20.05.2026 im moderierten
+  Think-Aloud-Setting mit Laptop/Chrome.
 
 - **Aufgaben/Szenarien:** 4 szenario-basierte Aufgaben mit steigender Komplexität,
   alle in neutraler Sprache ohne UI-Begriffe formuliert. Vollständiger Text:
@@ -185,17 +188,22 @@
   3. Eine gespeicherte Routine („Push Day") starten und die erste Übung erfassen.
   4. Den bisher höchsten Wert einer Übung herausfinden.
 
-- **Kennzahlen & Beobachtungen:** _[Nach dem Test als Issue Map einfügen oder verlinken:
-  `docs/evaluation/issue-map.md`. Pro Aufgabe: Erfolgsquote, Zeitbedarf, qualitative
-  Findings.]_
+- **Kennzahlen & Beobachtungen:** Siehe [`docs/evaluation/issue-map.md`](docs/evaluation/issue-map.md).
+  Aufgabe 1, 2 und 4 wurden von beiden Testpersonen abgeschlossen; Aufgabe 3 (geführte Routine)
+  wurde nur teilweise ohne Hilfe gefunden. Die wichtigsten Probleme waren die Sichtbarkeit der
+  Routinen, fehlende RPE-Erklärung für weniger erfahrene Nutzer:innen und die Einordnung der
+  vorbefüllten Empfehlungswerte.
 
-- **Zusammenfassung der Resultate:** _[2–4 Sätze, was funktioniert hat und wo
-  die kritischsten Probleme liegen.]_
+- **Zusammenfassung der Resultate:** Dashboard, Filter, Übungsdetails, Charts und konkrete
+  Coach-Empfehlungen wurden schnell verstanden und positiv bewertet. Der grösste Usability-Bruch
+  lag beim Einstieg in den Routine-/Workout-Modus, weil „Routine" nicht sofort als geführtes
+  Training verstanden wurde. RPE ist für trainierende Nutzer:innen wertvoll, braucht aber eine
+  kurze Erklärung für Einsteiger:innen.
 
-- **Abgeleitete Verbesserungen:** _[Priorisierte Liste der wichtigsten
-  Anpassungen, mit Schweregrad nach Nielsen (0–4) und Begründung. Falls
-  Verbesserungen direkt umgesetzt wurden: in Kapitel 4 als zusätzlicher
-  Eintrag dokumentieren mit Verweis „Aus Evaluation abgeleitet: ja".]_
+- **Abgeleitete Verbesserungen:** Aus der Evaluation wurden die RPE-Hilfe im Logger, der
+  deutlichere „Nächste Übung"-Block im Workout-Modus, die prominente Mobile-Tab-Bar mit
+  Loggen-Aktion sowie das cleanere iOS-inspirierte Design priorisiert umgesetzt. Weitere
+  Ideen wie Pausentimer, Kalenderansicht und Onboarding bleiben als spätere Erweiterungen offen.
 
 ## 4. Erweiterungen
 
@@ -214,6 +222,7 @@
     Admin-Guard in `ProgressLab/src/routes/admin/+layout.server.ts`
   - **Datenbank:** Collections `users` und `sessiontokens`
 - **Demo-Accounts:** `demo / demo1234` (User), `admin / admin1234` (Admin) – nach `npm run seed`.
+  Auf der Live-App ist der öffentliche Demo-Admin read-only; lokale Admin-CRUD-Tests bleiben möglich.
 
 ### 4.2 Komplexe Validierung (Client + Server)
 
@@ -255,9 +264,9 @@
 
 ### 4.6 Responsive Design
 
-- **Beschreibung & Nutzen:** Das Layout funktioniert von schmaler Mobile-Ansicht (≤ 640 px, Tabs
-  brechen um, Hamburger-Menü, FAB visible) bis Desktop. Container mit `max-width: 1040px`,
-  CSS-Grid für Tile-Layout.
+- **Beschreibung & Nutzen:** Das Layout funktioniert von schmaler Mobile-Ansicht (≤ 640 px,
+  Bottom-Tab-Bar mit zentraler Loggen-Aktion) bis Desktop. Container mit `max-width: 1040px`,
+  CSS-Grid für Tile-Layout und fixe Touch-Ziele verhindern Layout-Sprünge.
 - **Wo umgesetzt:** Globale CSS-Variablen in `ProgressLab/src/app.css`, Media-Queries pro Komponente.
 
 ### 4.7 Dark-Mode mit System-Präferenz
@@ -411,10 +420,12 @@
 
 ### 6.1 KI-Tools
 
-- **Eingesetzte Tools:** Claude (Anthropic, Modell Opus 4.7) für Codegenerierung und Architektur-Sparring.
-- **Zweck & Umfang:** KI hat den Boilerplate der SvelteKit-Pages, Mongoose-Modelle, Komponenten und
-  das Seed-Skript erstellt. Vorgegeben wurden die Anforderungen, das Mockup, die Tech-Stack-Wahl, die
-  Datenmodell-Skizze und die Empfehlungs-Heuristik.
+- **Eingesetzte Tools:** Claude und OpenAI Codex für Codegenerierung, Architektur-Sparring,
+  Review, Refactoring, Testautomatisierung, Screenshot-Erstellung und Dokumentation.
+- **Zweck & Umfang:** KI unterstützte bei SvelteKit-Pages, Mongoose-Modellen, Komponenten,
+  Seed-Skript, UX-Iterationen, Security-Härtungen, Playwright-Tests und README-Struktur.
+  Vorgegeben wurden die Anforderungen, das Mockup, die Tech-Stack-Wahl, die Datenmodell-Skizze
+  und die Empfehlungs-Heuristik.
 - **Eigene Leistung:** Anforderungsanalyse, Ableitung der Datenmodelle aus dem Mockup, Wahl der
   Empfehlungs-Logik, Auswahl der Erweiterungen, Verifikation der Funktion, Dokumentation.
 
@@ -428,8 +439,8 @@ Nach jedem Schritt verifiziert (Build, svelte-check, Browser-Smoke-Test).
 
 - **Nutzen:** Massive Beschleunigung bei Setup und Boilerplate; gute Vorschläge bei Mongoose-ESM-Quirks.
 - **Grenzen:** Domänenwissen (RPE-Heuristik, sinnvolle Default-Werte) muss menschlich validiert werden.
-- **Qualitätssicherung:** `npm run check` ohne Errors, `npm run build` erfolgreich, manuelle
-  Browser-Verifikation der Hauptworkflows.
+- **Qualitätssicherung:** `npm run check`, `npm run lint`, `npm run build`, `npm run test:unit`
+  und `npm run test:e2e` als lokale und CI-relevante Checks.
 
 ## 7. Anhang
 
@@ -456,7 +467,7 @@ npm install
 
 # 2. .env aus Vorlage anlegen und Connection-String eintragen
 cp .env.example .env
-# dann MONGODB_URI und SESSION_SECRET in .env setzen
+# dann MONGODB_URI in .env setzen
 
 # 3. Datenbank seeden (Übungen + 2 Demo-Accounts + Demo-Sessions)
 npm run seed
@@ -472,6 +483,9 @@ App läuft auf <http://localhost:5173>.
 - **User:** `demo` / `demo1234`
 - **Admin:** `admin` / `admin1234`
 
+Hinweis: Der öffentliche Demo-Admin ist auf der Live-App read-only. Lokal nach `npm run seed`
+kann der Admin-CRUD vollständig getestet werden.
+
 ### Build & Deployment
 
 ```bash
@@ -482,7 +496,6 @@ npm run preview    # lokale Vorschau des Production-Builds
 Für Netlify: Repository verbinden, im Dashboard die folgenden Environment-Variablen setzen:
 
 - `MONGODB_URI` – Atlas Connection-String mit Datenbank-Name `progresslab`
-- `SESSION_SECRET` – beliebiger zufälliger String (≥ 32 Zeichen)
 
 `netlify.toml` ist im Repo enthalten.
 
@@ -500,7 +513,8 @@ Für Netlify: Repository verbinden, im Dashboard die folgenden Environment-Varia
 
 ```bash
 cd ProgressLab
-npm run test:e2e       # 8 End-to-End-Tests im Headless-Chromium
+npm run test:unit      # Unit-Tests für die Recommendation-Engine
+npm run test:e2e       # 18 Tests: 11 Main-Flow + 7 axe-core-A11y-Checks
 npm run test:e2e:ui    # Playwright UI mit Time-Travel-Debugging
 ```
 
