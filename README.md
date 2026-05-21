@@ -579,7 +579,11 @@ cp .env.example .env
 # dann MONGODB_URI in .env setzen
 
 # 3. Datenbank seeden (Übungen + 2 Demo-Accounts + Demo-Sessions)
-npm run seed
+# Das Skript löscht alle bestehenden Daten und legt anschliessend
+# die Demo-Daten an. Die explizite Bestätigung verhindert versehentliche
+# Läufe gegen produktive Daten:
+PL_SEED_CONFIRM=1 npm run seed
+# PowerShell: $env:PL_SEED_CONFIRM=1; npm run seed
 
 # 4. Dev-Server starten
 npm run dev

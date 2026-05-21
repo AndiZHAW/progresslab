@@ -17,6 +17,10 @@ jobs:
         working-directory: ProgressLab
     env:
       MONGODB_URI: mongodb://127.0.0.1:27017/progresslab_ci
+      # Seed-Skript erwartet eine bewusste Bestätigung, damit Produktiv-DBs
+      # nicht versehentlich gelöscht werden (siehe scripts/seed.ts). In der
+      # ephemeren CI-Mongo ist das Bestätigen explizit gewollt.
+      PL_SEED_CONFIRM: '1'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

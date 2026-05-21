@@ -219,6 +219,28 @@ const exerciseSeed = [
 ];
 
 async function main() {
+	console.log('');
+	console.log('⚠️  ProgressLab Seed-Script');
+	console.log('   Dieses Skript LÖSCHT alle Daten ALLER User in der Ziel-DB');
+	console.log('   (Exercises, Sessions, Users, SessionTokens, Templates, Profiles)');
+	console.log('   und stellt anschliessend die Demo-Daten her.');
+	console.log('   Nur in Demo-/Test-Umgebungen ausführen – niemals gegen Produktivdaten.');
+	console.log('');
+	console.log('   Ziel-DB:', MONGODB_URI?.replace(/:[^@]+@/, ':***@'));
+
+	if (process.env.PL_SEED_CONFIRM !== '1' && process.env.NODE_ENV !== 'test') {
+		// Im CI/lokal explizit absichtlich machen müssen, um Produktiv-DB-Unfälle
+		// auszuschliessen. Test-Umgebung wird automatisch erlaubt, weil dort kein
+		// echter User-Datensatz existiert.
+		console.log('');
+		console.log('   Abbruch: bitte PL_SEED_CONFIRM=1 setzen, um wirklich zu seeden.');
+		console.log('   Beispiel (PowerShell): $env:PL_SEED_CONFIRM=1; npm run seed');
+		console.log('   Beispiel (bash):       PL_SEED_CONFIRM=1 npm run seed');
+		console.log('');
+		process.exit(2);
+	}
+	console.log('');
+
 	await mongoose.connect(MONGODB_URI as string);
 	console.log('✓ Verbunden mit MongoDB');
 
