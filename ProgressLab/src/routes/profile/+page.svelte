@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto, invalidateAll } from '$app/navigation';
+	import { tick } from 'svelte';
 	import Spinner from '$lib/components/Spinner.svelte';
 	import { showToast } from '$lib/toast.svelte';
 	import type { PageData } from './$types';
@@ -21,6 +22,8 @@
 	let saving = $state(false);
 	let generating = $state(false);
 	let formError = $state('');
+	let successMessage = $state('');
+	let resultPanel: HTMLElement | undefined = $state();
 	let generatedTemplates = $state<Array<{ id: string; name: string; exerciseCount: number }>>([]);
 
 	const goalCopy = $derived(
@@ -55,6 +58,7 @@
 
 	async function saveProfile(showSuccess = true) {
 		formError = '';
+		successMessage = '';
 		saving = true;
 		try {
 			const res = await fetch('/api/profile', {
@@ -67,9 +71,15 @@
 				formError = body.message ?? 'Profil konnte nicht gespeichert werden';
 				return false;
 			}
-			if (showSuccess) showToast('Coach-ID gespeichert');
+			if (showSuccess) {
+				successMessage = 'Profil gespeichert. Deine Coach-ID ist aktuell.';
+				showToast('Coach-ID gespeichert');
+			}
 			await invalidateAll();
 			return true;
+		} catch {
+			formError = 'Verbindung fehlgeschlagen. Bitte Seite neu laden und erneut versuchen.';
+			return false;
 		} finally {
 			saving = false;
 		}
@@ -85,6 +95,7 @@
 		if (!saved) return;
 		generating = true;
 		formError = '';
+		successMessage = '';
 		try {
 			const res = await fetch('/api/plan/generate', { method: 'POST' });
 			const body = await res.json().catch(() => ({}));
@@ -93,8 +104,13 @@
 				return;
 			}
 			generatedTemplates = body.templates ?? [];
+			successMessage = `${generatedTemplates.length} Coach-Routinen erstellt. Du findest sie jetzt unter Routinen.`;
 			showToast(`${generatedTemplates.length} Coach-Routinen erstellt`);
 			await invalidateAll();
+			await tick();
+			resultPanel?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+		} catch {
+			formError = 'Verbindung fehlgeschlagen. Bitte Seite neu laden und erneut versuchen.';
 		} finally {
 			generating = false;
 		}
@@ -245,6 +261,10 @@
 			<div class="error-banner" role="alert">{formError}</div>
 		{/if}
 
+		{#if successMessage}
+			<div class="success-banner" role="status">{successMessage}</div>
+		{/if}
+
 		<div class="actions">
 			<button class="btn btn-secondary" type="submit" disabled={saving || generating}>
 				{#if saving}<Spinner />{/if}
@@ -275,7 +295,7 @@
 		</div>
 
 		{#if generatedTemplates.length > 0}
-			<div class="card generated">
+			<div class="card generated" bind:this={resultPanel}>
 				<h2>Generiert</h2>
 				<ul>
 					{#each generatedTemplates as template (template.id)}
