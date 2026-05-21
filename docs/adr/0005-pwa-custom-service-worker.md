@@ -1,6 +1,7 @@
 # ADR-0005: PWA mit Custom Service Worker statt vite-plugin-pwa
 
-- **Status:** Accepted
+- **Status:** Accepted (Cache-Strategie für API/HTML revidiert — siehe
+  [ADR-0007](0007-service-worker-network-only-fuer-api.md))
 - **Datum:** 2026-05-02
 - **Beteiligte:** Andi Kadolli
 
@@ -27,11 +28,14 @@ Anforderungen für den Prototyp:
 **Custom `src/service-worker.ts` mit eigenem Cache-Layer + statisches
 `static/manifest.webmanifest`.**
 
-- 2 Caches (`pl-static-${version}` und `pl-runtime-${version}`).
-- Strategie:
-  - `/api/*` → `networkFirst` mit Fallback auf RUNTIME-Cache, sonst 503-JSON.
+- Ursprüngliche Strategie (May 2026):
+  - `/api/*` → `networkFirst` mit Fallback auf einen `RUNTIME_CACHE`, sonst 503-JSON.
   - `/_app/*` und vorgegebene Assets → `cacheFirst`.
   - Alle anderen GET-Requests (HTML-Pages) → `networkFirst`.
+- **Aktualisierte Strategie (siehe ADR-0007):**
+  - `/api/*` und HTML-Pages → `networkOnly` (kein Cache-Fallback, keine
+    Mehr-User-Leaks).
+  - `/_app/*` und vorgegebene Assets → `cacheFirst` (unverändert).
 - Auf `install`: `caches.open(STATIC_CACHE).addAll([...build, ...files])`.
 - Auf `activate`: alte Caches der Vor-Version löschen, `clients.claim()`.
 

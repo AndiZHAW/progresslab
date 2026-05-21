@@ -18,8 +18,9 @@ Entscheid nachvollziehen können.
 | [0002](0002-mongodb-mongoose.md) | MongoDB Atlas + Mongoose statt relationaler DB | Accepted |
 | [0003](0003-eigene-session-auth.md) | Eigene Session-Cookie-Auth statt Lucia/Better-Auth | Accepted |
 | [0004](0004-recommendation-pure-function.md) | Recommendation-Engine als reine Funktion | Accepted |
-| [0005](0005-pwa-custom-service-worker.md) | PWA mit Custom Service Worker statt Plugin | Accepted |
+| [0005](0005-pwa-custom-service-worker.md) | PWA mit Custom Service Worker statt Plugin | Accepted (Cache-Strategie revidiert in ADR-0007) |
 | [0006](0006-repo-struktur-progresslab-subfolder.md) | Code im `ProgressLab/`-Subfolder, Doku am Root | Accepted |
+| [0007](0007-service-worker-network-only-fuer-api.md) | Service Worker: `network-only` für API und HTML | Accepted |
 
 ## Vorlage
 
