@@ -7,6 +7,8 @@
 
 	let { data }: { data: PageData } = $props();
 
+	const readOnlyDemoAdmin = $derived(data.readOnlyDemoAdmin);
+
 	let form = $state({
 		name: '',
 		category: 'push' as ExerciseDTO['category'],
@@ -21,6 +23,10 @@
 	async function create(e: SubmitEvent) {
 		e.preventDefault();
 		formError = '';
+		if (readOnlyDemoAdmin) {
+			formError = 'Der öffentliche Demo-Admin ist in der Live-App read-only.';
+			return;
+		}
 		if (!form.name.trim()) {
 			formError = 'Name erforderlich';
 			return;
@@ -53,6 +59,10 @@
 	}
 
 	async function remove(ex: ExerciseDTO) {
+		if (readOnlyDemoAdmin) {
+			showToast('Der öffentliche Demo-Admin ist read-only', 'error');
+			return;
+		}
 		if (!confirm(`Übung "${ex.name}" wirklich löschen?`)) return;
 		const res = await fetch(`/api/exercises/${ex.id}`, { method: 'DELETE' });
 		if (!res.ok) {
@@ -78,72 +88,80 @@
 
 <section class="card">
 	<h2>Neue Übung anlegen</h2>
-	<form onsubmit={create} class="form">
-		<div class="grid">
-			<div>
-				<label for="ex-name" class="label">Name</label>
-				<input
-					id="ex-name"
-					class="input"
-					bind:value={form.name}
-					required
-					maxlength="80"
-					placeholder="z. B. Hip Thrust"
-				/>
-			</div>
-			<div>
-				<label for="ex-cat" class="label">Kategorie</label>
-				<select id="ex-cat" class="select" bind:value={form.category}>
-					<option value="push">Push</option>
-					<option value="pull">Pull</option>
-					<option value="legs">Legs</option>
-				</select>
-			</div>
-			<div>
-				<label for="ex-mg" class="label">Muskelgruppe</label>
-				<input
-					id="ex-mg"
-					class="input"
-					bind:value={form.muscleGroup}
-					maxlength="80"
-					placeholder="z. B. Glutes"
-				/>
-			</div>
-			<div class="check">
-				<label for="ex-bw">
-					<input id="ex-bw" type="checkbox" bind:checked={form.isBodyweight} />
-					Bodyweight-Übung
-				</label>
-			</div>
-			<div>
-				<label for="ex-reps" class="label">Default Reps</label>
-				<input
-					id="ex-reps"
-					class="input"
-					type="number"
-					min="1"
-					max="50"
-					bind:value={form.defaultRepTarget}
-				/>
-			</div>
-			<div>
-				<label for="ex-rpe" class="label">Default RPE</label>
-				<input
-					id="ex-rpe"
-					class="input"
-					type="number"
-					min="1"
-					max="10"
-					bind:value={form.defaultRpeTarget}
-				/>
-			</div>
+	{#if readOnlyDemoAdmin}
+		<div class="info-banner" role="status">
+			Live-Demo: Der öffentliche Admin ist read-only. Lokal nach <code>npm run seed</code>
+			kann der Admin-CRUD vollständig getestet werden.
 		</div>
+	{/if}
+	<form onsubmit={create} class="form">
+		<fieldset class="form-fields" disabled={readOnlyDemoAdmin || creating}>
+			<div class="grid">
+				<div>
+					<label for="ex-name" class="label">Name</label>
+					<input
+						id="ex-name"
+						class="input"
+						bind:value={form.name}
+						required
+						maxlength="80"
+						placeholder="z. B. Hip Thrust"
+					/>
+				</div>
+				<div>
+					<label for="ex-cat" class="label">Kategorie</label>
+					<select id="ex-cat" class="select" bind:value={form.category}>
+						<option value="push">Push</option>
+						<option value="pull">Pull</option>
+						<option value="legs">Legs</option>
+					</select>
+				</div>
+				<div>
+					<label for="ex-mg" class="label">Muskelgruppe</label>
+					<input
+						id="ex-mg"
+						class="input"
+						bind:value={form.muscleGroup}
+						maxlength="80"
+						placeholder="z. B. Glutes"
+					/>
+				</div>
+				<div class="check">
+					<label for="ex-bw">
+						<input id="ex-bw" type="checkbox" bind:checked={form.isBodyweight} />
+						Bodyweight-Übung
+					</label>
+				</div>
+				<div>
+					<label for="ex-reps" class="label">Default Reps</label>
+					<input
+						id="ex-reps"
+						class="input"
+						type="number"
+						min="1"
+						max="50"
+						bind:value={form.defaultRepTarget}
+					/>
+				</div>
+				<div>
+					<label for="ex-rpe" class="label">Default RPE</label>
+					<input
+						id="ex-rpe"
+						class="input"
+						type="number"
+						min="1"
+						max="10"
+						bind:value={form.defaultRpeTarget}
+					/>
+				</div>
+			</div>
+		</fieldset>
 
 		{#if formError}
 			<div class="error-banner" role="alert">{formError}</div>
 		{/if}
 
-		<button class="btn" type="submit" disabled={creating}>
+		<button class="btn" type="submit" disabled={creating || readOnlyDemoAdmin}>
 			{#if creating}<Spinner />{/if}
 			Übung anlegen
 		</button>
@@ -166,7 +184,12 @@
 						· Default {ex.defaultRepTarget} Reps @ RPE {ex.defaultRpeTarget}
 					</div>
 				</div>
-				<button type="button" class="btn btn-danger small" onclick={() => remove(ex)}>
+				<button
+					type="button"
+					class="btn btn-danger small"
+					onclick={() => remove(ex)}
+					disabled={readOnlyDemoAdmin}
+				>
 					Löschen
 				</button>
 			</li>
@@ -183,6 +206,25 @@
 		flex-direction: column;
 		gap: 14px;
 		margin-top: 12px;
+	}
+	.form-fields {
+		border: 0;
+		padding: 0;
+		margin: 0;
+		min-inline-size: 0;
+	}
+	.info-banner {
+		margin-top: 12px;
+		padding: 12px 14px;
+		border-radius: var(--radius-md);
+		border: 1px solid color-mix(in srgb, var(--c-accent) 28%, var(--c-border));
+		background: color-mix(in srgb, var(--c-accent) 9%, var(--c-surface));
+		color: var(--c-text);
+		font-size: 13px;
+		line-height: 1.5;
+	}
+	.info-banner code {
+		font-size: 12px;
 	}
 	.grid {
 		display: grid;

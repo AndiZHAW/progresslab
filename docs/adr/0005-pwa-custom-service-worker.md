@@ -17,8 +17,10 @@ Anforderungen für den Prototyp:
 
 - Statische Assets (HTML-Shell, JS-Bundles, CSS, Icons) sollen im
   Cache-First-Modus geliefert werden.
-- API-Anfragen sollen **network-first mit Cache-Fallback** funktionieren —
-  damit der User offline noch die zuletzt geladenen Daten sieht.
+- API- und HTML-Anfragen wurden ursprünglich als **network-first mit Cache-
+  Fallback** geplant. Diese Annahme wurde später aus Sicherheitsgründen
+  revidiert; die aktuelle verbindliche Strategie steht in [ADR-0007](0007-service-worker-network-only-fuer-api.md):
+  API- und HTML-Routen bleiben `network-only`.
 - Beim Wechsel der App-Version müssen alte Caches gelöscht werden.
 - Service Worker und Manifest müssen mit `adapter-netlify` deployt werden
   (Pfad-Auflösung im Build).
@@ -50,14 +52,16 @@ Anforderungen für den Prototyp:
 - SvelteKit's eingebaute Auflösung von `$service-worker` (mit `build`,
   `files`, `version` aus `@sveltejs/kit`) ist ausreichend.
 
-**Network-First für API:**
+**Warum API/HTML später auf `network-only` geändert wurden:**
 
-- API-Daten ändern sich häufig (jede neue Session ändert Empfehlungen).
-- Cache-First mit kurzem TTL würde die Komplexität erhöhen, ohne im
-  Prototyp-Use-Case einen klaren Gewinn zu liefern.
-- Im Offline-Fall liefert der RUNTIME-Cache die letzte erfolgreiche Antwort,
-  was für eine Trainings-App völlig ausreicht ("ich sehe meinen letzten
-  bekannten Stand, kann aber nichts loggen, bis ich wieder online bin").
+- API-Daten sind user-spezifisch und ändern sich häufig (jede neue Session
+  ändert Empfehlungen).
+- Ein Runtime-Cache könnte auf geteilten Geräten stale oder fremde Trainings-
+  Daten nach Logout/Login anzeigen.
+- Die App ist ein Prototyp ohne Offline-Sync-Queue; deshalb ist eine klare
+  503-Offline-Meldung sicherer und nachvollziehbarer als ein alter Lesestand.
+- Details und Trade-offs sind in [ADR-0007](0007-service-worker-network-only-fuer-api.md)
+  dokumentiert.
 
 **Manifest hand-written:**
 

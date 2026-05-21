@@ -3,9 +3,10 @@ import type { RequestHandler } from './$types';
 import { connectDB } from '$lib/server/db';
 import { User } from '$lib/server/models/User';
 import { hashPassword, createSession, SESSION_COOKIE } from '$lib/server/auth';
+import { checkRateLimit } from '$lib/server/rate-limit';
 import { dev } from '$app/environment';
 
-export const POST: RequestHandler = async ({ request, cookies }) => {
+export const POST: RequestHandler = async ({ request, cookies, getClientAddress }) => {
 	const body = await request.json().catch(() => null);
 	if (!body || typeof body.username !== 'string' || typeof body.password !== 'string') {
 		throw error(400, 'username und password erforderlich');
@@ -18,6 +19,10 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 	}
 	if (password.length < 6) {
 		throw error(400, 'Passwort muss mindestens 6 Zeichen haben');
+	}
+	const limit = checkRateLimit(`register:${getClientAddress()}`, 3, 60_000);
+	if (!limit.ok) {
+		throw error(429, `Zu viele Registrierungen. Bitte ${limit.retryAfter}s warten.`);
 	}
 
 	await connectDB();

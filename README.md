@@ -28,11 +28,11 @@ Werte vor. Highlights:
 1. [Ausgangslage](#1-ausgangslage)
 2. [Lösungsidee](#2-lösungsidee)
 3. [Vorgehen & Artefakte](#3-vorgehen--artefakte)
-    1. [Understand & Define](#31-understand--define)
-    2. [Sketch](#32-sketch)
-    3. [Decide](#33-decide)
-    4. [Prototype](#34-prototype)
-    5. [Validate](#35-validate)
+   1. [Understand & Define](#31-understand--define)
+   2. [Sketch](#32-sketch)
+   3. [Decide](#33-decide)
+   4. [Prototype](#34-prototype)
+   5. [Validate](#35-validate)
 4. [Erweiterungen](#4-erweiterungen)
 5. [Projektorganisation](#5-projektorganisation)
 6. [KI-Deklaration](#6-ki-deklaration)
@@ -614,14 +614,14 @@ Für Netlify: Repository verbinden, im Dashboard die folgenden Environment-Varia
 
 ## 9. MongoDB-Schema
 
-| Collection | Felder |
-|---|---|
-| **users** | `username` (uniq, lowercase, 3–32 Zeichen, regex), `passwordHash` (bcrypt), `role` (`user`\|`admin`), Timestamps |
-| **sessiontokens** | `token` (32-byte hex), `userId`, `expiresAt` (30 Tage TTL) |
-| **exercises** | `name` (uniq), `category` (`push`\|`pull`\|`legs`), `muscleGroup`, `isBodyweight`, `defaultRepTarget` (1–50), `defaultRpeTarget` (1–10), Timestamps |
-| **sessions** | `userId`, `exerciseId`, `date`, `sets: [{weight, reps, rpe}]` (≥ 1 Satz), `note` (≤ 500 Zeichen), Timestamps. Index: `(userId, exerciseId, date desc)` |
-| **templates** | `userId`, `name`, `description`, `source` (`manual`\|`generated`), `planKey`, `exerciseIds: ObjectId[]` (≥ 1, geordnet), Timestamps. Unique-Index: `(userId, name)` |
-| **profiles** | `userId` (uniq), `heightCm`, `bodyWeightKg`, `experience`, `goal`, `trainingDays`, `splitPreference`, `equipment`, `limitations`, Timestamps |
+| Collection        | Felder                                                                                                                                                              |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **users**         | `username` (uniq, lowercase, 3–32 Zeichen, regex), `passwordHash` (bcrypt), `role` (`user`\|`admin`), Timestamps                                                    |
+| **sessiontokens** | `token` (32-byte hex), `userId`, `expiresAt` (30 Tage TTL)                                                                                                          |
+| **exercises**     | `name` (uniq), `category` (`push`\|`pull`\|`legs`), `muscleGroup`, `isBodyweight`, `defaultRepTarget` (1–50), `defaultRpeTarget` (1–10), Timestamps                 |
+| **sessions**      | `userId`, `exerciseId`, `date`, `sets: [{weight, reps, rpe}]` (≥ 1 Satz), `note` (≤ 500 Zeichen), Timestamps. Index: `(userId, exerciseId, date desc)`              |
+| **templates**     | `userId`, `name`, `description`, `source` (`manual`\|`generated`), `planKey`, `exerciseIds: ObjectId[]` (≥ 1, geordnet), Timestamps. Unique-Index: `(userId, name)` |
+| **profiles**      | `userId` (uniq), `heightCm`, `bodyWeightKg`, `experience`, `goal`, `trainingDays`, `splitPreference`, `equipment`, `limitations`, Timestamps                        |
 
 ## 10. Tests
 
@@ -629,10 +629,15 @@ Für Netlify: Repository verbinden, im Dashboard die folgenden Environment-Varia
 cd ProgressLab
 npm run test:unit      # Unit-Tests für die Recommendation-Engine
 npm run test:e2e       # 20 Tests: 12 Main-Flow + 8 axe-core-A11y-Checks
+npm run test:e2e:local # sicherer lokaler Lauf: seedet mongodb://127.0.0.1:27017/progresslab_e2e
 npm run test:e2e:ui    # Playwright UI mit Time-Travel-Debugging
 ```
 
 Voraussetzung: Vor dem ersten Lauf einmal `npx playwright install chromium` ausführen.
+Für lokale E2E-Läufe ist `npm run test:e2e:local` die sichere Variante: Das Skript blockiert
+nicht-lokale MongoDB-URIs und seedet nur die lokale Testdatenbank. `npm run test:e2e` nutzt
+die aktuell gesetzte `MONGODB_URI` und ist deshalb primär für CI oder bewusst konfigurierte
+Testumgebungen gedacht.
 
 ## 11. Methodische Artefakte
 
@@ -645,14 +650,14 @@ Reviewer den Entscheid nachvollziehen können.
 
 Übersicht: [`docs/adr/`](docs/adr/README.md)
 
-| Nr. | Titel |
-|---|---|
-| [0001](docs/adr/0001-sveltekit-typescript.md) | SvelteKit + TypeScript als Tech-Stack |
-| [0002](docs/adr/0002-mongodb-mongoose.md) | MongoDB Atlas + Mongoose statt relationaler DB |
-| [0003](docs/adr/0003-eigene-session-auth.md) | Eigene Session-Cookie-Auth statt Lucia/Better-Auth |
-| [0004](docs/adr/0004-recommendation-pure-function.md) | Recommendation-Engine als reine Funktion |
-| [0005](docs/adr/0005-pwa-custom-service-worker.md) | PWA mit Custom Service Worker statt Plugin |
-| [0006](docs/adr/0006-repo-struktur-progresslab-subfolder.md) | Code im `ProgressLab/`-Subfolder, Doku am Root |
+| Nr.                                                           | Titel                                                             |
+| ------------------------------------------------------------- | ----------------------------------------------------------------- |
+| [0001](docs/adr/0001-sveltekit-typescript.md)                 | SvelteKit + TypeScript als Tech-Stack                             |
+| [0002](docs/adr/0002-mongodb-mongoose.md)                     | MongoDB Atlas + Mongoose statt relationaler DB                    |
+| [0003](docs/adr/0003-eigene-session-auth.md)                  | Eigene Session-Cookie-Auth statt Lucia/Better-Auth                |
+| [0004](docs/adr/0004-recommendation-pure-function.md)         | Recommendation-Engine als reine Funktion                          |
+| [0005](docs/adr/0005-pwa-custom-service-worker.md)            | PWA mit Custom Service Worker statt Plugin                        |
+| [0006](docs/adr/0006-repo-struktur-progresslab-subfolder.md)  | Code im `ProgressLab/`-Subfolder, Doku am Root                    |
 | [0007](docs/adr/0007-service-worker-network-only-fuer-api.md) | Service Worker: `network-only` für API und HTML (verfeinert 0005) |
 
 ### 11.2 Usability-Evaluation-Material
