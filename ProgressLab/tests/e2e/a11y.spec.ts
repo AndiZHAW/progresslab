@@ -19,6 +19,7 @@ const PAGES_AUTHED = [
 	{ name: 'Stats', url: '/stats' },
 	{ name: 'Records', url: '/records' },
 	{ name: 'Templates', url: '/templates' },
+	{ name: 'Profile', url: '/profile' },
 	{ name: 'Sessions', url: '/sessions' }
 ];
 

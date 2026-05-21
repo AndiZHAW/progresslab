@@ -98,6 +98,7 @@
 						{primaryTemplate.name}
 					</a>
 				{/if}
+				<a class="btn btn-dark-ghost big" href="/profile">Coach-ID</a>
 			</div>
 		</div>
 

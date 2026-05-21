@@ -117,6 +117,7 @@
   - `/records` – persönliche Bestwerte je Übung
   - `/templates` – Routinen erstellen und starten
   - `/workouts/[id]` – geführter Workout-Modus für eine Routine
+  - `/profile` – Coach-ID mit Ziel, Erfahrung, Trainingsfrequenz und Plan-Generator
   - `/admin/exercises` – Admin-only: Übungen anlegen/löschen
 - **User Interface Design:** iOS-inspirierte App-Optik mit neutralem Hintergrund, glasigem Header,
   Mobile-Bottom-Tab-Bar, klaren Cards, Segmented Controls und grossen Touch-Zielen. Das Dashboard
@@ -145,14 +146,15 @@
     `ExerciseTile`, `FilterTabs`, `RecommendationCard`, `ProgressChart`, `SessionList`,
     `SetLoggerTable`, `Nav`, `Toaster`, `Spinner`
   - Server-Logik in `src/lib/server/`: `db.ts` (Mongoose-Connection-Singleton),
-    `models/`, `auth.ts`, `recommendation.ts`, `exercise-service.ts`, `dto.ts`
+    `models/`, `auth.ts`, `recommendation.ts`, `profile-service.ts`, `exercise-service.ts`, `dto.ts`
   - Globaler Toast-State über `src/lib/toast.svelte.ts` (Svelte 5 Rune)
-- **Daten & Schnittstellen:** MongoDB mit fünf Collections (Schema-Übersicht weiter unten).
+- **Daten & Schnittstellen:** MongoDB mit sechs Collections (Schema-Übersicht weiter unten).
   REST-artige API-Routes:
   - `POST /api/auth/{login,register,logout}`
   - `GET/POST /api/exercises` · `GET/PUT/DELETE /api/exercises/[id]`
   - `GET/POST /api/sessions` · `GET/PUT/DELETE /api/sessions/[id]` · `GET /api/sessions/export`
   - `GET/POST /api/templates` · `GET/PUT/DELETE /api/templates/[id]`
+  - `GET/PUT /api/profile` · `POST /api/plan/generate`
 - **Deployment:** <https://progresslab.netlify.app/> (Netlify, automatischer Build aus dem `main`-Branch via `netlify.toml` mit `base = "ProgressLab"`)
 - **Besondere Entscheidungen:**
   - Eigenes minimales Auth statt Lucia/Better-Auth, weil der Scope das nicht rechtfertigt.
@@ -373,13 +375,29 @@
   - `ProgressLab/src/lib/components/InstallPrompt.svelte` für den eigenen Install-Hinweis,
     eingebunden im Layout
 
-### 4.16 End-to-End-Tests mit Playwright
+### 4.16 Coach-ID und personalisierte Plan-Generierung
 
-- **Beschreibung & Nutzen:** 11 automatisierte Main-Flow-Tests decken den Hauptworkflow ab: Auth-Redirect,
+- **Beschreibung & Nutzen:** User kann eine Coach-ID mit Körperdaten, Ziel (`Hypertrophy`, `Kraft`,
+  `Balanced`), Erfahrung, Trainingsfrequenz, Split-Präferenz, Equipment und optionalen
+  Einschränkungen speichern. Daraus erzeugt die App automatisch passende Routinen als echte
+  Templates. Hypertrophy-Pläne setzen stärker auf Volumen und 8–15 Reps, Kraft-Pläne auf
+  Grundübungen und niedrigere Rep-Ranges, Balanced-Pläne mischen beides.
+- **Wo umgesetzt:**
+  - **Backend:** `ProgressLab/src/lib/server/models/Profile.ts`, `profile-service.ts`,
+    API-Endpoints `ProgressLab/src/routes/api/profile/` und `ProgressLab/src/routes/api/plan/generate/`
+  - **Frontend:** `ProgressLab/src/routes/profile/`, CTA auf dem Dashboard und in `/templates`,
+    Coach-Badge für automatisch generierte Routinen
+  - **Datenbank:** Collection `profiles`; generierte Routinen werden in `templates` mit
+    `source = "generated"` und `planKey` gespeichert
+
+### 4.17 End-to-End-Tests mit Playwright
+
+- **Beschreibung & Nutzen:** 12 automatisierte Main-Flow-Tests decken den Hauptworkflow ab: Auth-Redirect,
   Login, Dashboard, Übungs-Detail (inkl. Chart-Rendering), Stats-Page (mit Heatmap-Sektion),
-  Records, Routinen, vollständiger Session-Workflow (Picker → Logger → Confirmation), Logout.
+  Records, Routinen, Coach-ID-Plan-Generierung, vollständiger Session-Workflow (Picker → Logger →
+  Confirmation), Logout.
   Zusätzlich prüfen sie die mobile Bottom-Tab-Bar, die RPE-Hilfe, die Next-Step-Führung im
-  Workout-Modus und das Undo beim Löschen von Sessions. Weitere 7 axe-core-Checks prüfen die
+  Workout-Modus und das Undo beim Löschen von Sessions. Weitere 8 axe-core-Checks prüfen die
   Hauptseiten auf WCAG-AA-Verstösse.
   Tests starten den Dev-Server selbständig via `webServer`-Config.
 - **Wo umgesetzt:** `ProgressLab/playwright.config.ts`,
@@ -513,14 +531,15 @@ Für Netlify: Repository verbinden, im Dashboard die folgenden Environment-Varia
 | **sessiontokens** | `token` (32-byte hex), `userId`, `expiresAt` (30 Tage TTL) |
 | **exercises** | `name` (uniq), `category` (`push`\|`pull`\|`legs`), `muscleGroup`, `isBodyweight`, `defaultRepTarget` (1–50), `defaultRpeTarget` (1–10), Timestamps |
 | **sessions** | `userId`, `exerciseId`, `date`, `sets: [{weight, reps, rpe}]` (≥ 1 Satz), `note` (≤ 500 Zeichen), Timestamps. Index: `(userId, exerciseId, date desc)` |
-| **templates** | `userId`, `name`, `description`, `exerciseIds: ObjectId[]` (≥ 1, geordnet), Timestamps. Unique-Index: `(userId, name)` |
+| **templates** | `userId`, `name`, `description`, `source` (`manual`\|`generated`), `planKey`, `exerciseIds: ObjectId[]` (≥ 1, geordnet), Timestamps. Unique-Index: `(userId, name)` |
+| **profiles** | `userId` (uniq), `heightCm`, `bodyWeightKg`, `experience`, `goal`, `trainingDays`, `splitPreference`, `equipment`, `limitations`, Timestamps |
 
 ## 10. Tests
 
 ```bash
 cd ProgressLab
 npm run test:unit      # Unit-Tests für die Recommendation-Engine
-npm run test:e2e       # 18 Tests: 11 Main-Flow + 7 axe-core-A11y-Checks
+npm run test:e2e       # 20 Tests: 12 Main-Flow + 8 axe-core-A11y-Checks
 npm run test:e2e:ui    # Playwright UI mit Time-Travel-Debugging
 ```
 

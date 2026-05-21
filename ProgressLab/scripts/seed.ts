@@ -5,6 +5,7 @@ import { Exercise } from '../src/lib/server/models/Exercise.js';
 import { Session } from '../src/lib/server/models/Session.js';
 import { User, SessionToken } from '../src/lib/server/models/User.js';
 import { Template } from '../src/lib/server/models/Template.js';
+import { Profile } from '../src/lib/server/models/Profile.js';
 
 const MONGODB_URI = process.env.MONGODB_URI;
 if (!MONGODB_URI) {
@@ -226,7 +227,8 @@ async function main() {
 		Session.deleteMany({}),
 		User.deleteMany({}),
 		SessionToken.deleteMany({}),
-		Template.deleteMany({})
+		Template.deleteMany({}),
+		Profile.deleteMany({})
 	]);
 	console.log('✓ Collections geleert');
 
@@ -609,6 +611,19 @@ async function main() {
 		}
 	}
 	console.log(`✓ ${totalSessions} Demo-Sessions für demo-User erstellt`);
+
+	await Profile.create({
+		userId: demoUser._id,
+		heightCm: 178,
+		bodyWeightKg: 82,
+		experience: 'intermediate',
+		goal: 'balanced',
+		trainingDays: 4,
+		splitPreference: 'auto',
+		equipment: 'gym',
+		limitations: ''
+	});
+	console.log('✓ Coach-ID für demo-User erstellt');
 
 	const templateSeed = [
 		{

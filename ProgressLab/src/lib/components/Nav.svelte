@@ -79,6 +79,9 @@
 					class:active={isActive('/templates') || isActive('/workouts')}
 					onclick={() => (mobileOpen = false)}>Routinen</a
 				>
+				<a href="/profile" class:active={isActive('/profile')} onclick={() => (mobileOpen = false)}
+					>Coach-ID</a
+				>
 				<a href="/stats" class:active={isActive('/stats')} onclick={() => (mobileOpen = false)}
 					>Statistik</a
 				>
@@ -268,11 +271,7 @@
 			</svg>
 			<span>Stats</span>
 		</a>
-		<a
-			href="/sessions"
-			class:active={isActive('/sessions') && !isActive('/sessions/new')}
-			onclick={() => (mobileOpen = false)}
-		>
+		<a href="/profile" class:active={isActive('/profile')} onclick={() => (mobileOpen = false)}>
 			<svg
 				viewBox="0 0 24 24"
 				width="21"
@@ -284,11 +283,10 @@
 				stroke-linejoin="round"
 				aria-hidden="true"
 			>
-				<path d="M7 3v3M17 3v3" />
-				<path d="M4 8h16" />
-				<rect x="4" y="5" width="16" height="16" rx="3" />
+				<circle cx="12" cy="8" r="4" />
+				<path d="M5 21a7 7 0 0 1 14 0" />
 			</svg>
-			<span>Sessions</span>
+			<span>Profil</span>
 		</a>
 	</nav>
 {/if}

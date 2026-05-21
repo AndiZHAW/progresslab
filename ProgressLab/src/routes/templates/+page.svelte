@@ -80,9 +80,12 @@
 			Training-App.
 		</p>
 	</div>
-	{#if !creating}
-		<button class="btn btn-primary" onclick={() => (creating = true)}>+ Neue Routine</button>
-	{/if}
+	<div class="head-actions">
+		<a class="btn btn-secondary" href="/profile">Plan generieren</a>
+		{#if !creating}
+			<button class="btn btn-primary" onclick={() => (creating = true)}>+ Neue Routine</button>
+		{/if}
+	</div>
 </div>
 
 {#if creating}
@@ -185,7 +188,12 @@
 					<span class="line line-b"></span>
 				</div>
 				<header>
-					<h3>{t.name}</h3>
+					<div>
+						{#if t.source === 'generated'}
+							<span class="source-badge">Coach</span>
+						{/if}
+						<h3>{t.name}</h3>
+					</div>
 					<button
 						type="button"
 						class="btn btn-ghost icon-btn"
@@ -240,6 +248,11 @@
 	.head .muted {
 		max-width: 48ch;
 		margin-top: 8px;
+	}
+	.head-actions {
+		display: flex;
+		gap: 8px;
+		flex-wrap: wrap;
 	}
 	.create-form {
 		margin-bottom: 22px;
@@ -373,6 +386,18 @@
 		font-weight: 900;
 		line-height: 0.98;
 		max-width: 8ch;
+	}
+	.source-badge {
+		display: inline-flex;
+		margin-bottom: 6px;
+		padding: 4px 8px;
+		border-radius: 999px;
+		background: var(--c-accent-soft);
+		color: var(--c-accent);
+		font-size: 10px;
+		font-weight: 900;
+		letter-spacing: 0.07em;
+		text-transform: uppercase;
 	}
 	.t-card > .muted {
 		padding: 0 18px;

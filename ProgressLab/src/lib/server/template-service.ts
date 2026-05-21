@@ -9,6 +9,8 @@ export type TemplateDTO = {
 	id: string;
 	name: string;
 	description: string;
+	source: 'manual' | 'generated';
+	planKey: string;
 	exercises: ExerciseDTO[];
 };
 
@@ -28,6 +30,8 @@ export async function listTemplates(userId: string): Promise<TemplateDTO[]> {
 		id: String(d._id),
 		name: d.name,
 		description: d.description ?? '',
+		source: d.source === 'generated' ? 'generated' : 'manual',
+		planKey: d.planKey ?? '',
 		exercises: d.exerciseIds
 			.map((id) => map.get(String(id)))
 			.filter((x): x is ExerciseDTO => Boolean(x))
@@ -49,6 +53,8 @@ export async function getTemplate(userId: string, templateId: string): Promise<T
 		id: String(doc._id),
 		name: doc.name,
 		description: doc.description ?? '',
+		source: doc.source === 'generated' ? 'generated' : 'manual',
+		planKey: doc.planKey ?? '',
 		exercises: ordered
 	};
 }

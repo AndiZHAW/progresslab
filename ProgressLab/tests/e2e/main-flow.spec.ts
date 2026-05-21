@@ -65,6 +65,24 @@ test.describe('ProgressLab Hauptworkflow', () => {
 		await expect(page.getByRole('heading', { name: 'Push Day' })).toBeVisible();
 	});
 
+	test('Coach-ID generiert personalisierte Routinen', async ({ page }) => {
+		await login(page);
+		await page
+			.getByRole('navigation', { name: 'Hauptnavigation', exact: true })
+			.getByRole('link', { name: 'Coach-ID', exact: true })
+			.click();
+		await expect(page).toHaveURL('/profile');
+
+		await page.locator('.choice-grid label').filter({ hasText: 'Kraft' }).click();
+		await page.getByLabel('Trainingstage pro Woche').selectOption('4');
+		await page.getByRole('button', { name: /Plan generieren/i }).click();
+
+		await expect(page.getByText('Coach Strength Upper A')).toBeVisible();
+		await page.getByRole('button', { name: 'Routinen ansehen' }).click();
+		await expect(page).toHaveURL('/templates');
+		await expect(page.getByRole('heading', { name: 'Coach Strength Upper A' })).toBeVisible();
+	});
+
 	test('Workout-Modus hebt die nächste offene Übung hervor', async ({ page }) => {
 		await login(page);
 		await page.getByRole('link', { name: 'Routinen', exact: true }).click();
