@@ -73,10 +73,11 @@
 
 <div class="head">
 	<div>
+		<span class="eyebrow">Workouts</span>
 		<h1>Routinen</h1>
 		<p class="muted">
-			Speichere deine Lieblings-Workouts als Routine. Beim Loggen kannst du sie in einem Schritt
-			starten.
+			Speichere deine Lieblings-Workouts als geführte Einheiten und starte sie wie in einer
+			Training-App.
 		</p>
 	</div>
 	{#if !creating}
@@ -178,6 +179,11 @@
 	<div class="grid">
 		{#each data.templates as t (t.id)}
 			<article class="t-card">
+				<div class="visual" aria-hidden="true">
+					<span class="disc"></span>
+					<span class="line line-a"></span>
+					<span class="line line-b"></span>
+				</div>
 				<header>
 					<h3>{t.name}</h3>
 					<button
@@ -202,7 +208,7 @@
 					{/each}
 				</ul>
 				<footer>
-					<a class="btn btn-primary small" href={`/workouts/${t.id}`}> Workout starten → </a>
+					<a class="btn start-btn small" href={`/workouts/${t.id}`}>Workout starten</a>
 				</footer>
 			</article>
 		{/each}
@@ -215,8 +221,25 @@
 		justify-content: space-between;
 		align-items: flex-start;
 		gap: 14px;
-		margin-bottom: 22px;
+		margin-bottom: 24px;
 		flex-wrap: wrap;
+	}
+	.eyebrow {
+		display: inline-flex;
+		font-size: 11px;
+		font-weight: 900;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		color: var(--c-text-subtle);
+		margin-bottom: 4px;
+	}
+	.head h1 {
+		font-size: 42px;
+		line-height: 0.98;
+	}
+	.head .muted {
+		max-width: 48ch;
+		margin-top: 8px;
 	}
 	.create-form {
 		margin-bottom: 22px;
@@ -293,27 +316,66 @@
 	.grid {
 		display: grid;
 		grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-		gap: 14px;
+		gap: 16px;
 	}
 	.t-card {
+		position: relative;
+		overflow: hidden;
 		background: var(--c-surface);
-		border: 1px solid var(--c-border);
-		border-radius: var(--radius-lg);
-		padding: 18px;
+		border: 1px solid color-mix(in srgb, var(--c-border) 72%, transparent);
+		border-radius: 26px;
+		padding: 0;
 		display: flex;
 		flex-direction: column;
-		gap: 10px;
-		box-shadow: var(--shadow-xs);
+		box-shadow: var(--shadow-card);
+		min-height: 366px;
+	}
+	.visual {
+		position: relative;
+		height: 132px;
+		background: linear-gradient(135deg, rgba(17, 19, 24, 0.98), rgba(45, 49, 55, 0.92));
+		overflow: hidden;
+	}
+	.disc {
+		position: absolute;
+		right: -20px;
+		bottom: -42px;
+		width: 132px;
+		height: 132px;
+		border-radius: 50%;
+		border: 22px solid rgba(255, 255, 255, 0.12);
+	}
+	.line {
+		position: absolute;
+		right: -30px;
+		width: 220px;
+		height: 10px;
+		border-radius: 999px;
+		background: rgba(255, 255, 255, 0.16);
+		transform: rotate(-28deg);
+	}
+	.line-a {
+		top: 52px;
+	}
+	.line-b {
+		top: 82px;
+		background: rgba(202, 255, 65, 0.28);
 	}
 	.t-card header {
 		display: flex;
 		justify-content: space-between;
 		align-items: flex-start;
 		gap: 8px;
+		padding: 18px 18px 0;
 	}
 	.t-card h3 {
-		font-size: 16px;
-		font-weight: 700;
+		font-size: 26px;
+		font-weight: 900;
+		line-height: 0.98;
+		max-width: 8ch;
+	}
+	.t-card > .muted {
+		padding: 0 18px;
 	}
 	.icon-btn {
 		font-size: 18px;
@@ -327,27 +389,32 @@
 	}
 	.ex-list {
 		list-style: none;
-		padding: 0;
-		margin: 4px 0;
+		padding: 0 18px;
+		margin: 12px 0 0;
 		display: flex;
 		flex-direction: column;
 		gap: 6px;
+		flex: 1;
 	}
 	.ex-list li {
 		display: grid;
 		grid-template-columns: 22px 1fr auto;
 		gap: 8px;
 		align-items: center;
-		padding: 6px 8px;
-		border-radius: var(--radius-sm);
-		background: var(--c-surface-alt);
+		padding: 5px 0;
 		font-size: 13px;
 	}
 	.num {
+		width: 22px;
+		height: 22px;
+		border-radius: 50%;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		background: var(--c-accent);
+		color: var(--c-accent-fg);
 		font-size: 11px;
-		color: var(--c-text-subtle);
 		font-weight: 700;
-		text-align: center;
 	}
 	.ex-list-name {
 		font-weight: 500;
@@ -360,10 +427,13 @@
 	}
 	.t-card footer {
 		margin-top: auto;
-		padding-top: 8px;
+		padding: 16px 18px 18px;
 	}
-	.t-card footer .btn {
+	.start-btn {
 		width: 100%;
+		background: var(--c-text);
+		color: var(--c-bg);
+		box-shadow: none;
 	}
 	.btn.small {
 		padding: 8px 14px;

@@ -22,12 +22,14 @@
 <style>
 	.toaster {
 		position: fixed;
-		top: 16px;
+		top: calc(78px + env(safe-area-inset-top));
 		left: 50%;
 		transform: translateX(-50%);
 		display: flex;
 		flex-direction: column;
 		gap: 8px;
+		width: min(420px, calc(100vw - 32px));
+		align-items: center;
 		z-index: 1000;
 		pointer-events: none;
 	}
@@ -38,7 +40,8 @@
 		background: #1b7a2f;
 		color: #fff;
 		padding: 10px 16px;
-		border-radius: 10px;
+		max-width: 100%;
+		border-radius: 999px;
 		font-size: 13px;
 		font-weight: 600;
 		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
@@ -69,6 +72,21 @@
 		to {
 			opacity: 1;
 			transform: translateY(0);
+		}
+	}
+	@media (max-width: 760px) {
+		.toaster {
+			top: calc(66px + env(safe-area-inset-top));
+			right: 12px;
+			left: auto;
+			width: min(300px, calc(100vw - 24px));
+			align-items: flex-end;
+			transform: none;
+		}
+		.toast {
+			width: fit-content;
+			padding: 9px 13px;
+			border-radius: 999px;
 		}
 	}
 </style>

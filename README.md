@@ -119,7 +119,9 @@
   - `/workouts/[id]` – geführter Workout-Modus für eine Routine
   - `/admin/exercises` – Admin-only: Übungen anlegen/löschen
 - **User Interface Design:** iOS-inspirierte App-Optik mit neutralem Hintergrund, glasigem Header,
-  Mobile-Bottom-Tab-Bar, klaren Cards, Segmented Controls und grossen Touch-Zielen. Die
+  Mobile-Bottom-Tab-Bar, klaren Cards, Segmented Controls und grossen Touch-Zielen. Das Dashboard
+  wurde zusätzlich stärker in Richtung moderner Trainings-App gestaltet: dunkler "Heute trainieren"-
+  Hero, horizontale Workout-Cards, visuelle Übungskarten und reduzierte, ruhige Flächen. Die
   Empfehlungs-Karte bleibt das zentrale Element; Sparklines und Chart.js-Verlaufscharts übernehmen
   die visuelle Idee aus dem Mockup.
 - **Designentscheidungen:**
@@ -314,17 +316,20 @@
 - **Wo umgesetzt:** `ProgressLab/src/routes/api/sessions/export/+server.ts` (eigener Endpoint mit
   korrektem `content-disposition`-Header), Download-Button im Stats-Header und der Sessions-Liste.
 
-### 4.12 Cleaneres Visual-Design (iOS-inspirierte App-Optik)
+### 4.12 Cleaneres Visual-Design (iOS-/Training-App-inspirierte Optik)
 
 - **Beschreibung & Nutzen:** Vollständiges Re-Design mit neutraler App-Hintergrundfläche,
   iOS-inspirierter Mobile-Bottom-Tab-Bar, glasigem Sticky-Header, weicheren Multi-Layer-Shadows,
   grösseren Touch-Zielen, Segmented Controls, nativer wirkenden Inputs und Inter/SF-kompatibler
-  System-Font-Stack. Die App fühlt sich dadurch auf Mobile stärker wie eine installierte PWA an,
-  bleibt aber auf Desktop weiterhin sauber nutzbar.
+  System-Font-Stack. Ergänzt wurde ein stärkerer Premium-Trainings-Look mit dunklem Dashboard-Hero,
+  kompakten Workout-Rails, visuellen Exercise-Cards und ruhigerem Feedback unterhalb der Navigation.
+  Die App fühlt sich dadurch auf Mobile stärker wie eine installierte PWA an, bleibt aber auf Desktop
+  weiterhin sauber nutzbar.
 - **Wo umgesetzt:** `ProgressLab/src/app.css` (Design-Tokens, Light + Dark, Controls),
   `ProgressLab/src/lib/components/Nav.svelte` (Mobile Tab-Bar + Header),
   `ProgressLab/src/lib/components/FilterTabs.svelte`, `ExerciseTile.svelte`,
-  `SetLoggerTable.svelte`, Dashboard-FAB-Anpassung in `ProgressLab/src/routes/+page.svelte`.
+  `SetLoggerTable.svelte`, `Toaster.svelte`, Dashboard-FAB und Trainings-Hero in
+  `ProgressLab/src/routes/+page.svelte`, Routine-Cards in `ProgressLab/src/routes/templates/+page.svelte`.
 
 ### 4.13 Workout-Routinen (Templates) mit geführtem Workout-Modus
 

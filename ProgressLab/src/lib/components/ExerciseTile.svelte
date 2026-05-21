@@ -19,6 +19,7 @@
 				: 'Trend stabil'
 	);
 	const trendClass = $derived('trend-' + exercise.recommendation.trend);
+	const categoryClass = $derived(`cat-${exercise.category}`);
 
 	const sparkPath = $derived.by(() => {
 		const xs = exercise.sparkline;
@@ -42,185 +43,271 @@
 	});
 </script>
 
-<a class="tile" href={`/exercises/${exercise.id}`} aria-label={`Übung ${exercise.name}`}>
-	<div class="tile-head">
-		<div class="tile-name">
-			{exercise.name}
-			{#if exercise.hasPR}
-				<span
-					class="pr-badge"
-					title="Persönliche Bestleistung in den letzten 7 Tagen"
-					aria-label="Neuer Personal Record in den letzten 7 Tagen">PR</span
-				>
-			{/if}
+<a
+	class={`tile ${categoryClass}`}
+	href={`/exercises/${exercise.id}`}
+	aria-label={`Übung ${exercise.name}`}
+>
+	<div class="visual">
+		<div class="visual-top">
+			<span class="cat">{exercise.category}</span>
+			<div class="trend {trendClass}" role="img" aria-label={trendLabel}>
+				<span aria-hidden="true">{arrow}</span>
+			</div>
 		</div>
-		<div class="trend {trendClass}" role="img" aria-label={trendLabel}>
-			<span aria-hidden="true">{arrow}</span>
-		</div>
-	</div>
-
-	<div class="meta">
-		<span class="cat">{exercise.category}</span>
-		{#if exercise.muscleGroup}
-			<span class="dot">·</span>
-			<span>{exercise.muscleGroup}</span>
+		<span class="disc disc-a"></span>
+		<span class="disc disc-b"></span>
+		<span class="slash slash-a"></span>
+		<span class="slash slash-b"></span>
+		{#if exercise.hasPR}
+			<span
+				class="pr-badge"
+				title="Persönliche Bestleistung in den letzten 7 Tagen"
+				aria-label="Neuer Personal Record in den letzten 7 Tagen">PR</span
+			>
 		{/if}
 	</div>
 
-	{#if exercise.sparkline.length > 0}
-		<svg class="spark" viewBox="0 0 100 36" preserveAspectRatio="none" aria-hidden="true">
-			<path d={sparkPath.area} class="spark-area" />
-			<path d={sparkPath.line} class="spark-line" />
-		</svg>
-	{:else}
-		<div class="spark-empty">Noch keine Daten</div>
-	{/if}
-
-	<div class="rec">
-		<div class="rec-value">{formatRecommendation(exercise.recommendation)}</div>
-		<div class="rec-why">{exercise.recommendation.reason}</div>
-	</div>
-
-	{#if exercise.recommendation.estimated1RM !== null && exercise.recommendation.estimated1RM > 0}
-		<div class="e1rm">
-			<span class="e1rm-lbl">e1RM</span>
-			<span class="e1rm-val">{exercise.recommendation.estimated1RM} kg</span>
+	<div class="body">
+		<div class="title-row">
+			<div>
+				<h3>{exercise.name}</h3>
+				<div class="meta">
+					{#if exercise.muscleGroup}
+						<span>{exercise.muscleGroup}</span>
+					{:else}
+						<span>Training</span>
+					{/if}
+					<span>·</span>
+					<span>{exercise.sessionCount} Sessions</span>
+				</div>
+			</div>
 		</div>
-	{/if}
+
+		<div class="rec">
+			<span>Coach</span>
+			<strong>{formatRecommendation(exercise.recommendation)}</strong>
+			<small>{exercise.recommendation.reason}</small>
+		</div>
+
+		{#if exercise.sparkline.length > 0}
+			<svg class="spark" viewBox="0 0 100 36" preserveAspectRatio="none" aria-hidden="true">
+				<path d={sparkPath.area} class="spark-area" />
+				<path d={sparkPath.line} class="spark-line" />
+			</svg>
+		{:else}
+			<div class="spark-empty">Noch keine Daten</div>
+		{/if}
+	</div>
 </a>
 
 <style>
 	.tile {
 		background: var(--c-surface);
-		border: 1px solid color-mix(in srgb, var(--c-border) 84%, transparent);
-		border-radius: var(--radius-lg);
-		padding: 17px 17px 15px;
-		display: flex;
-		flex-direction: column;
-		gap: 6px;
+		border: 1px solid color-mix(in srgb, var(--c-border) 70%, transparent);
+		border-radius: 24px;
+		display: grid;
+		grid-template-rows: 118px 1fr;
 		text-decoration: none;
 		color: var(--c-text);
+		overflow: hidden;
+		box-shadow: var(--shadow-card);
 		transition:
 			transform 160ms var(--ease),
 			box-shadow 160ms var(--ease),
-			border-color 160ms var(--ease),
-			background 160ms var(--ease);
-		position: relative;
-		min-height: 168px;
-		box-shadow: var(--shadow-card);
+			border-color 160ms var(--ease);
+		min-height: 284px;
 	}
 	.tile:hover {
+		transform: translateY(-3px);
 		box-shadow: var(--shadow-lg);
 		border-color: var(--c-border-strong);
-		transform: translateY(-2px);
 	}
 	.tile:active {
 		transform: translateY(0);
 	}
-	.tile-head {
+	.visual {
+		position: relative;
+		overflow: hidden;
+		padding: 14px;
+		color: #ffffff;
+		background: #15171d;
+	}
+	.cat-push .visual {
+		background: linear-gradient(135deg, #171316 0%, #6f2722 100%);
+	}
+	.cat-pull .visual {
+		background: linear-gradient(135deg, #10141b 0%, #1f496f 100%);
+	}
+	.cat-legs .visual {
+		background: linear-gradient(135deg, #111710 0%, #3f643a 100%);
+	}
+	.visual-top {
+		position: relative;
+		z-index: 2;
 		display: flex;
 		justify-content: space-between;
 		align-items: flex-start;
-		gap: 10px;
 	}
-	.tile-name {
-		font-weight: 600;
-		font-size: 15px;
-		letter-spacing: 0;
+	.cat {
 		display: inline-flex;
-		gap: 6px;
+		padding: 6px 10px;
+		border-radius: 999px;
+		background: rgba(255, 255, 255, 0.14);
+		font-size: 10px;
+		font-weight: 900;
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+		backdrop-filter: blur(10px);
+	}
+	.trend {
+		width: 34px;
+		height: 34px;
+		border-radius: 50%;
+		display: inline-flex;
 		align-items: center;
-		flex-wrap: wrap;
+		justify-content: center;
+		background: rgba(255, 255, 255, 0.14);
+		font-size: 18px;
+		font-weight: 900;
+		backdrop-filter: blur(10px);
+	}
+	.trend-up {
+		color: var(--c-volt);
+	}
+	.trend-flat {
+		color: rgba(255, 255, 255, 0.78);
+	}
+	.trend-down {
+		color: #fecaca;
+	}
+	.disc,
+	.slash {
+		position: absolute;
+		pointer-events: none;
+	}
+	.disc {
+		border-radius: 50%;
+		border: 18px solid rgba(255, 255, 255, 0.12);
+	}
+	.disc-a {
+		width: 112px;
+		height: 112px;
+		right: -22px;
+		bottom: -36px;
+	}
+	.disc-b {
+		width: 52px;
+		height: 52px;
+		right: 8px;
+		bottom: -6px;
+		border-width: 10px;
+		border-color: rgba(202, 255, 65, 0.34);
+	}
+	.slash {
+		width: 180px;
+		height: 9px;
+		border-radius: 999px;
+		background: rgba(255, 255, 255, 0.16);
+		transform: rotate(-28deg);
+		right: -30px;
+	}
+	.slash-a {
+		top: 54px;
+	}
+	.slash-b {
+		top: 78px;
+		background: rgba(255, 255, 255, 0.08);
 	}
 	.pr-badge {
+		position: absolute;
+		left: 14px;
+		bottom: 14px;
+		z-index: 2;
 		display: inline-flex;
 		align-items: center;
-		font-size: 9px;
-		font-weight: 800;
+		font-size: 10px;
+		font-weight: 900;
 		letter-spacing: 0.08em;
-		background: var(--c-warning-bg);
-		color: var(--c-warning);
-		padding: 2px 6px;
+		background: var(--c-volt);
+		color: #10131a;
+		padding: 5px 9px;
 		border-radius: var(--radius-pill);
 		text-transform: uppercase;
 	}
-	.trend {
-		font-size: 16px;
-		font-weight: 700;
-		line-height: 1;
-		padding-top: 2px;
+	.body {
+		padding: 16px;
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
 	}
-	.trend-up {
-		color: var(--c-trend-up);
-	}
-	.trend-flat {
-		color: var(--c-trend-flat);
-	}
-	.trend-down {
-		color: var(--c-trend-down);
+	h3 {
+		font-size: 18px;
+		line-height: 1.08;
+		max-width: 14ch;
 	}
 	.meta {
+		margin-top: 5px;
 		display: flex;
-		gap: 4px;
+		flex-wrap: wrap;
+		gap: 5px;
 		align-items: center;
 		font-size: 11px;
 		color: var(--c-text-subtle);
 		text-transform: uppercase;
 		letter-spacing: 0.04em;
 	}
-	.dot {
-		opacity: 0.5;
+	.rec {
+		display: grid;
+		gap: 2px;
+		margin-top: auto;
+	}
+	.rec span {
+		font-size: 10px;
+		font-weight: 900;
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+		color: var(--c-text-subtle);
+	}
+	.rec strong {
+		font-size: 18px;
+		line-height: 1.1;
+	}
+	.rec small {
+		color: var(--c-text-muted);
+		font-size: 12px;
+		line-height: 1.35;
 	}
 	.spark {
 		width: 100%;
-		height: 36px;
-		margin: 4px 0 6px;
+		height: 34px;
+		margin-top: 2px;
 		display: block;
 	}
 	.spark-line {
 		fill: none;
-		stroke: var(--c-accent);
-		stroke-width: 1.5;
+		stroke: var(--c-text);
+		stroke-width: 1.7;
 		vector-effect: non-scaling-stroke;
 		stroke-linecap: round;
 		stroke-linejoin: round;
 	}
 	.spark-area {
-		fill: var(--c-accent);
-		opacity: 0.1;
+		fill: var(--c-text);
+		opacity: 0.06;
 	}
 	.spark-empty {
-		font-size: 11px;
+		font-size: 12px;
 		color: var(--c-text-subtle);
-		padding: 12px 0;
-		text-align: center;
+		padding: 9px 0 2px;
 	}
-	.rec {
-		margin-top: auto;
-	}
-	.rec-value {
-		font-size: 14px;
-		font-weight: 700;
-	}
-	.rec-why {
-		font-size: 11px;
-		color: var(--c-text-muted);
-		margin-top: 2px;
-		line-height: 1.4;
-	}
-	.e1rm {
-		position: absolute;
-		top: 14px;
-		right: 14px;
-		font-size: 10px;
-		display: none;
-	}
-	.e1rm-lbl {
-		color: var(--c-text-subtle);
-		margin-right: 3px;
-	}
-	.e1rm-val {
-		font-weight: 700;
-		color: var(--c-text-muted);
+	@media (max-width: 640px) {
+		.tile {
+			grid-template-rows: 112px 1fr;
+			min-height: 268px;
+		}
+		h3 {
+			max-width: 18ch;
+		}
 	}
 </style>

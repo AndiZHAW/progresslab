@@ -4,22 +4,23 @@
 	--font-sans:
 		-apple-system, BlinkMacSystemFont, 'Inter Variable', 'Segoe UI', system-ui, sans-serif;
 
-	/* Light theme — warm cream */
-	--c-bg: #f6f7fb;
-	--c-bg-alt: #edf1f6;
+	/* Light theme — soft training app neutral */
+	--c-bg: #f4f5f1;
+	--c-bg-alt: #ebeee7;
 	--c-surface: #ffffff;
-	--c-surface-alt: #f9fbfd;
+	--c-surface-alt: #f8f9f5;
 	--c-glass: rgba(255, 255, 255, 0.78);
 	--c-text: #10131a;
 	--c-text-muted: #4b5565;
 	--c-text-subtle: #5f6876;
-	--c-border: #dfe5ed;
-	--c-border-strong: #c7d1dd;
-	--c-accent: #066f68;
-	--c-accent-hover: #055f59;
-	--c-accent-soft: #d8f4ef;
-	--c-accent-strong: #055f59;
+	--c-border: #e1e5dc;
+	--c-border-strong: #cbd2c5;
+	--c-accent: #111318;
+	--c-accent-hover: #2a2f36;
+	--c-accent-soft: #e9f6d2;
+	--c-accent-strong: #050607;
 	--c-accent-fg: #ffffff;
+	--c-volt: #caff41;
 	--c-on-dark: #ffffff;
 	--c-success: #0d8a52;
 	--c-success-bg: #d6f3e1;
@@ -64,6 +65,7 @@
 	--c-accent-hover: #5eead4;
 	--c-accent-soft: #134e4a;
 	--c-accent-fg: #042a26;
+	--c-volt: #d7ff5a;
 	--c-on-dark: #f5f4f1;
 	--c-success: #4ade80;
 	--c-success-bg: #14532d;
