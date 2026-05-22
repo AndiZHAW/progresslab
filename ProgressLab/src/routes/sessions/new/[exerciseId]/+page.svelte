@@ -98,6 +98,13 @@
 
 <RecommendationCard recommendation={data.recommendation} variant="light" label="Empfehlung" />
 
+{#if data.plannedRecommendation}
+	<div class="planned-note" role="status">
+		<strong>Geplante Empfehlung übernommen</strong>
+		<span>Diese Werte wurden auf der Detailseite akzeptiert oder angepasst.</span>
+	</div>
+{/if}
+
 <section class="rpe-help" aria-labelledby="rpe-help-title">
 	<div>
 		<h2 id="rpe-help-title">RPE kurz erklärt</h2>
@@ -187,6 +194,22 @@
 		border: 1px solid var(--c-border);
 		border-radius: var(--radius-md);
 		background: var(--c-surface);
+	}
+	.planned-note {
+		display: grid;
+		gap: 3px;
+		margin-top: 12px;
+		padding: 12px 14px;
+		border: 1px solid color-mix(in srgb, var(--c-accent) 30%, var(--c-border));
+		border-radius: var(--radius-md);
+		background: var(--c-accent-soft);
+	}
+	.planned-note strong {
+		font-size: 13px;
+	}
+	.planned-note span {
+		color: var(--c-text-muted);
+		font-size: 12px;
 	}
 	.rpe-help h2 {
 		margin: 0 0 3px;

@@ -21,6 +21,18 @@ export type SessionDTO = {
 	note: string;
 };
 
+export type PlannedRecommendationDTO = {
+	id: string;
+	exerciseId: string;
+	weight: number | null;
+	reps: number;
+	rpeTarget: number;
+	reason: string;
+	source: 'coach' | 'manual';
+	createdAt: string;
+	updatedAt: string;
+};
+
 export type ExerciseWithRecDTO = ExerciseDTO & {
 	recommendation: Recommendation;
 	lastSession: SessionDTO | null;

@@ -35,7 +35,7 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 
 	await connectDB();
 	const doc = await Exercise.findByIdAndUpdate(params.id, update, {
-		new: true,
+		returnDocument: 'after',
 		runValidators: true
 	});
 	if (!doc) throw error(404, 'Übung nicht gefunden');

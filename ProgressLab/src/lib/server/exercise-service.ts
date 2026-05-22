@@ -3,6 +3,7 @@ import { connectDB } from './db';
 import { Exercise } from './models/Exercise';
 import { Session } from './models/Session';
 import { buildRecommendation, computePR, isPRSession } from './recommendation';
+import { getPlannedRecommendation } from './planned-recommendation-service';
 import { toExerciseDTO, toSessionDTO } from './dto';
 import type { ExerciseWithRecDTO } from '../types';
 
@@ -67,6 +68,7 @@ export async function getExerciseDetail(userId: string, exerciseId: string) {
 	if (!ex) return null;
 
 	const sessions = await Session.find({ userId, exerciseId }).sort({ date: -1 }).lean();
+	const plannedRecommendation = await getPlannedRecommendation(userId, exerciseId);
 	const rec = buildRecommendation(sessions, {
 		isBodyweight: !!ex.isBodyweight,
 		defaultRepTarget: ex.defaultRepTarget ?? 5,
@@ -80,6 +82,7 @@ export async function getExerciseDetail(userId: string, exerciseId: string) {
 	return {
 		exercise: toExerciseDTO(ex as unknown as Parameters<typeof toExerciseDTO>[0]),
 		recommendation: rec,
+		plannedRecommendation,
 		pr,
 		sessions: sessions.map((s) =>
 			toSessionDTO(s as unknown as Parameters<typeof toSessionDTO>[0], ex.name)

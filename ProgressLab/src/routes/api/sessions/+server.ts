@@ -5,6 +5,7 @@ import { connectDB } from '$lib/server/db';
 import { Session } from '$lib/server/models/Session';
 import { Exercise } from '$lib/server/models/Exercise';
 import { toSessionDTO } from '$lib/server/dto';
+import { completePlannedRecommendation } from '$lib/server/planned-recommendation-service';
 import { parseListLimit, parseSessionSets } from '$lib/server/validation';
 
 export const GET: RequestHandler = async ({ url, locals }) => {
@@ -60,6 +61,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		sets: cleanSets,
 		note: typeof note === 'string' ? note.slice(0, 500) : ''
 	});
+	await completePlannedRecommendation(locals.user.id, exerciseId);
 
 	return json(toSessionDTO(doc as unknown as Parameters<typeof toSessionDTO>[0], exercise.name), {
 		status: 201

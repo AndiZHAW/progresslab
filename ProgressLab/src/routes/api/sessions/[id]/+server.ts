@@ -38,7 +38,7 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 
 	await connectDB();
 	const doc = await Session.findOneAndUpdate({ _id: params.id, userId: locals.user.id }, update, {
-		new: true,
+		returnDocument: 'after',
 		runValidators: true
 	}).lean();
 	if (!doc) throw error(404, 'Session nicht gefunden');

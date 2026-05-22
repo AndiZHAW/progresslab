@@ -12,6 +12,12 @@
 	let description = $state('');
 	let selectedIds = $state<Set<string>>(new Set());
 	let saving = $state(false);
+	let editingId = $state<string | null>(null);
+	let editName = $state('');
+	let editDescription = $state('');
+	let editSelectedIds = $state<Set<string>>(new Set());
+	let editError = $state('');
+	let updating = $state(false);
 
 	function toggleSelected(id: string) {
 		const next = new Set(selectedIds);
@@ -20,11 +26,41 @@
 		selectedIds = next;
 	}
 
+	function toggleEditSelected(id: string) {
+		const next = new Set(editSelectedIds);
+		if (next.has(id)) next.delete(id);
+		else next.add(id);
+		editSelectedIds = next;
+	}
+
+	function resetCreate() {
+		creating = false;
+		name = '';
+		description = '';
+		selectedIds = new Set();
+		formError = '';
+	}
+
+	function startEdit(template: PageData['templates'][number]) {
+		resetCreate();
+		editingId = template.id;
+		editName = template.name;
+		editDescription = template.description;
+		editSelectedIds = new Set(template.exercises.map((ex) => ex.id));
+		editError = '';
+	}
+
+	function cancelEdit() {
+		editingId = null;
+		editError = '';
+		editSelectedIds = new Set();
+	}
+
 	async function create(e: SubmitEvent) {
 		e.preventDefault();
 		formError = '';
 		if (!name.trim() || selectedIds.size === 0) {
-			formError = 'Name und mindestens eine Übung erforderlich';
+			formError = 'Name und mindestens eine Uebung erforderlich';
 			return;
 		}
 		saving = true;
@@ -44,31 +80,60 @@
 				return;
 			}
 			showToast('Routine angelegt');
-			name = '';
-			description = '';
-			selectedIds = new Set();
-			creating = false;
+			resetCreate();
 			await invalidateAll();
 		} finally {
 			saving = false;
 		}
 	}
 
+	async function update(e: SubmitEvent) {
+		e.preventDefault();
+		editError = '';
+		if (!editingId) return;
+		if (!editName.trim() || editSelectedIds.size === 0) {
+			editError = 'Name und mindestens eine Uebung erforderlich';
+			return;
+		}
+		updating = true;
+		try {
+			const res = await fetch(`/api/templates/${editingId}`, {
+				method: 'PUT',
+				headers: { 'content-type': 'application/json' },
+				body: JSON.stringify({
+					name: editName,
+					description: editDescription,
+					exerciseIds: [...editSelectedIds]
+				})
+			});
+			if (!res.ok) {
+				const body = await res.json().catch(() => ({}));
+				editError = body.message ?? 'Speichern fehlgeschlagen';
+				return;
+			}
+			showToast('Routine aktualisiert');
+			cancelEdit();
+			await invalidateAll();
+		} finally {
+			updating = false;
+		}
+	}
+
 	async function remove(id: string, templateName: string) {
-		if (!confirm(`Routine "${templateName}" löschen?`)) return;
+		if (!confirm(`Routine "${templateName}" loeschen?`)) return;
 		const res = await fetch(`/api/templates/${id}`, { method: 'DELETE' });
 		if (!res.ok) {
 			const body = await res.json().catch(() => ({}));
-			showToast(body.message ?? 'Löschen fehlgeschlagen', 'error');
+			showToast(body.message ?? 'Loeschen fehlgeschlagen', 'error');
 			return;
 		}
-		showToast('Routine gelöscht', 'info');
+		showToast('Routine geloescht', 'info');
 		await invalidateAll();
 	}
 </script>
 
 <svelte:head>
-	<title>Routinen · ProgressLab</title>
+	<title>Routinen - ProgressLab</title>
 </svelte:head>
 
 <div class="head">
@@ -76,14 +141,22 @@
 		<span class="eyebrow">Workouts</span>
 		<h1>Routinen</h1>
 		<p class="muted">
-			Speichere deine Lieblings-Workouts als geführte Einheiten und starte sie wie in einer
+			Speichere deine Lieblings-Workouts als gefuehrte Einheiten und starte sie wie in einer
 			Training-App.
 		</p>
 	</div>
 	<div class="head-actions">
 		<a class="btn btn-secondary" href="/profile">Plan generieren</a>
 		{#if !creating}
-			<button class="btn btn-primary" onclick={() => (creating = true)}>+ Neue Routine</button>
+			<button
+				class="btn btn-primary"
+				onclick={() => {
+					cancelEdit();
+					creating = true;
+				}}
+			>
+				+ Neue Routine
+			</button>
 		{/if}
 	</div>
 </div>
@@ -111,12 +184,12 @@
 					class="input"
 					bind:value={description}
 					maxlength="300"
-					placeholder="z. B. Brust + Schulter, mittlere Intensität"
+					placeholder="z. B. Brust + Schulter, mittlere Intensitaet"
 				/>
 			</div>
 
 			<div>
-				<div class="label">Übungen ({selectedIds.size} ausgewählt)</div>
+				<div class="label">Uebungen ({selectedIds.size} ausgewaehlt)</div>
 				<div class="ex-grid">
 					{#each data.exercises as ex (ex.id)}
 						<button
@@ -138,19 +211,7 @@
 			{/if}
 
 			<div class="actions">
-				<button
-					type="button"
-					class="btn btn-secondary"
-					onclick={() => {
-						creating = false;
-						name = '';
-						description = '';
-						selectedIds = new Set();
-						formError = '';
-					}}
-				>
-					Abbrechen
-				</button>
+				<button type="button" class="btn btn-secondary" onclick={resetCreate}>Abbrechen</button>
 				<button
 					class="btn btn-primary"
 					type="submit"
@@ -158,6 +219,59 @@
 				>
 					{#if saving}<Spinner />{/if}
 					Routine speichern
+				</button>
+			</div>
+		</form>
+	</section>
+{/if}
+
+{#if editingId}
+	<section class="card create-form">
+		<h2>Routine bearbeiten</h2>
+		<form onsubmit={update}>
+			<div>
+				<label for="edit-t-name" class="label">Name</label>
+				<input id="edit-t-name" class="input" bind:value={editName} required maxlength="80" />
+			</div>
+
+			<div>
+				<label for="edit-t-desc" class="label">Beschreibung (optional)</label>
+				<input id="edit-t-desc" class="input" bind:value={editDescription} maxlength="300" />
+			</div>
+
+			<div>
+				<div class="label">Uebungen ({editSelectedIds.size} ausgewaehlt)</div>
+				<div class="ex-grid">
+					{#each data.exercises as ex (ex.id)}
+						<button
+							type="button"
+							class="ex-chip"
+							class:active={editSelectedIds.has(ex.id)}
+							onclick={() => toggleEditSelected(ex.id)}
+						>
+							<span class="dot" aria-hidden="true">{editSelectedIds.has(ex.id) ? '✓' : '+'}</span>
+							<span class="ex-name">{ex.name}</span>
+							<span class="ex-cat">{ex.category}</span>
+						</button>
+					{/each}
+				</div>
+			</div>
+
+			{#if editError}
+				<div class="error-banner" role="alert">{editError}</div>
+			{/if}
+
+			<div class="actions">
+				<button type="button" class="btn btn-secondary" onclick={cancelEdit} disabled={updating}>
+					Abbrechen
+				</button>
+				<button
+					class="btn btn-primary"
+					type="submit"
+					disabled={updating || !editName.trim() || editSelectedIds.size === 0}
+				>
+					{#if updating}<Spinner />{/if}
+					Aenderungen speichern
 				</button>
 			</div>
 		</form>
@@ -194,14 +308,24 @@
 						{/if}
 						<h3>{t.name}</h3>
 					</div>
-					<button
-						type="button"
-						class="btn btn-ghost icon-btn"
-						aria-label="Routine löschen"
-						onclick={() => remove(t.id, t.name)}
-					>
-						×
-					</button>
+					<div class="card-actions">
+						<button
+							type="button"
+							class="btn btn-ghost text-btn"
+							onclick={() => startEdit(t)}
+							aria-label="Routine bearbeiten"
+						>
+							Edit
+						</button>
+						<button
+							type="button"
+							class="btn btn-ghost icon-btn"
+							aria-label="Routine loeschen"
+							onclick={() => remove(t.id, t.name)}
+						>
+							×
+						</button>
+					</div>
 				</header>
 				{#if t.description}
 					<p class="muted small">{t.description}</p>
@@ -325,6 +449,7 @@
 		display: flex;
 		gap: 8px;
 		justify-content: flex-end;
+		flex-wrap: wrap;
 	}
 	.grid {
 		display: grid;
@@ -402,12 +527,27 @@
 	.t-card > .muted {
 		padding: 0 18px;
 	}
+	.card-actions {
+		display: flex;
+		gap: 6px;
+		align-items: center;
+	}
+	.icon-btn,
+	.text-btn {
+		box-shadow: none;
+		color: var(--c-text-subtle);
+	}
 	.icon-btn {
 		font-size: 18px;
 		padding: 4px 10px;
 		line-height: 1;
-		color: var(--c-text-subtle);
-		box-shadow: none;
+	}
+	.text-btn {
+		padding: 5px 9px;
+		font-size: 11px;
+		font-weight: 800;
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
 	}
 	.icon-btn:hover {
 		color: var(--c-danger);
@@ -473,5 +613,11 @@
 	}
 	.small {
 		font-size: 12px;
+	}
+	@media (max-width: 640px) {
+		.actions .btn,
+		.head-actions .btn {
+			flex: 1 1 100%;
+		}
 	}
 </style>

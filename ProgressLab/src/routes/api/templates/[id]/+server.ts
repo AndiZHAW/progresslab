@@ -22,10 +22,17 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 
 	await connectDB();
 	if (Array.isArray(update.exerciseIds)) await assertExercisesExist(update.exerciseIds as string[]);
-	const doc = await Template.findOneAndUpdate({ _id: params.id, userId: locals.user.id }, update, {
-		new: true,
-		runValidators: true
-	});
+	let doc;
+	try {
+		doc = await Template.findOneAndUpdate({ _id: params.id, userId: locals.user.id }, update, {
+			returnDocument: 'after',
+			runValidators: true
+		});
+	} catch (e) {
+		const err = e as { code?: number; message?: string };
+		if (err.code === 11000) throw error(409, 'Template mit diesem Namen existiert bereits');
+		throw error(400, err.message ?? 'Fehler beim Speichern');
+	}
 	if (!doc) throw error(404, 'Template nicht gefunden');
 	return json({ ok: true });
 };

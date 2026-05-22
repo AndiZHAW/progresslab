@@ -21,7 +21,7 @@ Werte vor. Highlights:
 - **Personal Records** inklusive Epley-1RM-Schätzung
 - **Coach-ID** generiert personalisierte Pläne aus Ziel/Erfahrung/Equipment/Einschränkungen
 - **iOS-inspirierte UI**, Dark-Mode, PWA-installierbar, WCAG 2.1 AA verifiziert
-- **17 Erweiterungen** (siehe §4), **20 E2E-Tests + 6 Unit-Tests** grün im CI
+- **18 Erweiterungen** (siehe §4), **27 E2E-Tests + 6 Unit-Tests** grün im CI
 
 ## Inhaltsverzeichnis
 
@@ -57,8 +57,8 @@ Werte vor. Highlights:
   - Übersicht der gesamten Übungspalette mit Trend-Anzeige (steigend/stagniert/fallend).
   - Vollständiger CRUD-Workflow auf Übungen (Admin) und Sessions (User), persistiert in MongoDB.
   - Niederschwellige Bedienung: Eine Session inkl. drei Sätzen ist in unter einer Minute eingetragen.
-- **Primäre Zielgruppe:** Hobby-Kraftsportler:innen mit 2–4 Trainings pro Woche, die strukturierter
-  vorgehen möchten als nach Bauchgefühl, aber kein Personal Coaching haben.
+- **Primäre Zielgruppe:** ambitionierte Kraftsportler:innen und Hybrid-Athlet:innen mit 3–5 Trainings
+  pro Woche, die strukturierter vorgehen möchten als nach Bauchgefühl, aber kein Personal Coaching haben.
 - **Weitere Stakeholder:**
   - Anfänger:innen, die durch klare Empfehlungen Sicherheit bei der Steigerung gewinnen.
   - Dozierende des Moduls Prototyping als Bewertende.
@@ -90,7 +90,7 @@ Werte vor. Highlights:
 
 ### 3.1 Understand & Define
 
-- **Zielgruppenverständnis:** Hobby-Kraftsportler:in trainiert 2–4×/Woche, kennt RPE als Konzept, möchte
+- **Zielgruppenverständnis:** Ambitionierte:r Kraftsportler:in trainiert 3–5×/Woche, kennt RPE als Konzept, möchte
   kontinuierlich progredieren, scheitert aber an der Frage „soll ich heute mehr Gewicht ansetzen?".
   Bestehende Apps (Strong, Hevy, FitNotes) loggen, beraten aber nicht.
 
@@ -141,7 +141,7 @@ Werte vor. Highlights:
   - `/templates` – Routinen erstellen und starten
   - `/workouts/[id]` – geführter Workout-Modus für eine Routine
   - `/profile` – Coach-ID mit Ziel, Erfahrung, Trainingsfrequenz und Plan-Generator
-  - `/admin/exercises` – Admin-only: Übungen anlegen/löschen
+  - `/admin/exercises` – Admin-only: Übungen anlegen, bearbeiten und löschen
 - **User Interface Design:** iOS-inspirierte App-Optik mit neutralem Hintergrund, glasigem Header,
   Mobile-Bottom-Tab-Bar, klaren Cards, Segmented Controls und grossen Touch-Zielen. Das Dashboard
   wurde zusätzlich stärker in Richtung moderner Trainings-App gestaltet: dunkler "Heute trainieren"-
@@ -171,23 +171,25 @@ Werte vor. Highlights:
   - Server-Logik in `src/lib/server/`: `db.ts` (Mongoose-Connection-Singleton),
     `models/`, `auth.ts`, `recommendation.ts`, `profile-service.ts`, `exercise-service.ts`, `dto.ts`
   - Globaler Toast-State über `src/lib/toast.svelte.ts` (Svelte 5 Rune)
-- **Daten & Schnittstellen:** MongoDB mit sechs Collections (Schema-Übersicht weiter unten).
+- **Daten & Schnittstellen:** MongoDB mit sieben Collections (Schema-Übersicht weiter unten).
   REST-artige API-Routes:
   - `POST /api/auth/{login,register,logout}`
   - `GET/POST /api/exercises` · `GET/PUT/DELETE /api/exercises/[id]`
   - `GET/POST /api/sessions` · `GET/PUT/DELETE /api/sessions/[id]` · `GET /api/sessions/export`
   - `GET/POST /api/templates` · `GET/PUT/DELETE /api/templates/[id]`
   - `GET/PUT /api/profile` · `POST /api/plan/generate`
+  - `POST /api/planned-recommendations` · `DELETE /api/planned-recommendations/[exerciseId]`
 - **Deployment:** <https://progresslab.netlify.app/> (Netlify, automatischer Build aus dem `main`-Branch via `netlify.toml` mit `base = "ProgressLab"`)
 - **Besondere Entscheidungen:**
   - Eigenes minimales Auth statt Lucia/Better-Auth, weil der Scope das nicht rechtfertigt.
-  - Recommendation als reine Funktion (`buildRecommendation`) ohne eigene Collection – wird on-the-fly
-    aus Sessions berechnet, damit keine inkonsistente Cache-Pflege nötig ist.
+  - Recommendation als reine Funktion (`buildRecommendation`) – wird on-the-fly aus Sessions berechnet,
+    damit keine inkonsistente Cache-Pflege nötig ist. Akzeptierte oder manuell angepasste Next-Session-
+    Pläne werden separat als `plannedrecommendations` gespeichert und nach dem Logging verbraucht.
 
 ### 3.5 Validate
 
-- **URL der getesteten Version:** <https://progresslab.netlify.app/> (Stand 20.05.2026,
-  aktuelle `main`-Version plus nachfolgende Review-Härtungen).
+- **URL der getesteten Version:** lokal auf `main` mit `npm run dev` als primäre Review-Version;
+  <https://progresslab.netlify.app/> dient bis zum freigegebenen nächsten Deploy nur als öffentliche Referenz.
   Screenshots der getesteten Version liegen unter
   [`docs/evaluation/screenshots/`](docs/evaluation/screenshots/README.md).
 
@@ -205,7 +207,8 @@ Werte vor. Highlights:
 
 - **Stichprobe:** 2 Testpersonen aus dem IT-Studium, beide mit grundlegender Web-App-Erfahrung
   und unterschiedlicher Nähe zu Krafttraining. Durchführung am 20.05.2026 im moderierten
-  Think-Aloud-Setting mit Laptop/Chrome.
+  Think-Aloud-Setting mit Laptop/Chrome. Einschränkung: Die Stichprobe ist für Usability geeignet,
+  aber keine vollständige Domänenvalidierung mit erfahrenen Hybrid-Athlet:innen.
 
 - **Aufgaben/Szenarien:** 4 szenario-basierte Aufgaben mit steigender Komplexität,
   alle in neutraler Sprache ohne UI-Begriffe formuliert. Vollständiger Text:
@@ -231,6 +234,8 @@ Werte vor. Highlights:
   deutlichere „Nächste Übung"-Block im Workout-Modus, die prominente Mobile-Tab-Bar mit
   Loggen-Aktion sowie das cleanere iOS-inspirierte Design priorisiert umgesetzt. Weitere
   Ideen wie Pausentimer, Kalenderansicht und Onboarding bleiben als spätere Erweiterungen offen.
+  Zusätzlich wurden nach dem strengen Review persistente akzeptierte Empfehlungen, Edit-Workflows
+  für Übungen/Routinen und zusätzliche Playwright-Checks ergänzt.
 
 ## 4. Erweiterungen
 
@@ -419,13 +424,29 @@ Werte vor. Highlights:
   Login, Dashboard, Übungs-Detail (inkl. Chart-Rendering), Stats-Page (mit Heatmap-Sektion),
   Records, Routinen, Coach-ID-Plan-Generierung, vollständiger Session-Workflow (Picker → Logger →
   Confirmation), Logout.
-  Zusätzlich prüfen sie die mobile Bottom-Tab-Bar, die RPE-Hilfe, die Next-Step-Führung im
-  Workout-Modus und das Undo beim Löschen von Sessions. Weitere 8 axe-core-Checks prüfen die
-  Hauptseiten auf WCAG-AA-Verstösse.
-  Tests starten den Dev-Server selbständig via `webServer`-Config.
+  Weitere 7 UI-Feedback-/CRUD-Tests prüfen Fehlermeldungen, Toasts, Profile-Buttons, den persistenten
+  Next-Session-Plan, Routine-Edit und lokalen Admin-Exercise-CRUD. Zusätzlich prüfen 8 axe-core-Checks
+  die Hauptseiten auf WCAG-AA-Verstösse. Tests starten den Dev-Server selbständig via `webServer`-Config.
 - **Wo umgesetzt:** `ProgressLab/playwright.config.ts`,
-  `ProgressLab/tests/e2e/main-flow.spec.ts`. Ausführen: `npm run test:e2e` (CLI) oder
+  `ProgressLab/tests/e2e/main-flow.spec.ts`, `ProgressLab/tests/e2e/ui-feedback.spec.ts`,
+  `ProgressLab/tests/e2e/a11y.spec.ts`. Ausführen: `npm run test:e2e` (CLI) oder
   `npm run test:e2e:ui` (Playwright UI mit Time-Travel-Debugger).
+
+### 4.18 Persistente Next-Session-Planung
+
+- **Beschreibung & Nutzen:** Eine Coach-Empfehlung kann aktiv akzeptiert oder kontrolliert manuell
+  angepasst werden. Die App speichert diesen Plan pro User und Übung, übernimmt ihn beim nächsten Logger
+  automatisch als Startwerte und markiert ihn nach erfolgreichem Session-Speichern als erledigt. Dadurch
+  ist Workflow A ein echter End-to-End-Ablauf: Empfehlung verstehen → akzeptieren/anpassen → nächste
+  Session mit diesen Werten loggen → neue Empfehlung sehen.
+- **Wo umgesetzt:**
+  - **Backend:** `ProgressLab/src/lib/server/models/PlannedRecommendation.ts`,
+    `ProgressLab/src/lib/server/planned-recommendation-service.ts`,
+    API-Endpoints `ProgressLab/src/routes/api/planned-recommendations/*`
+  - **Frontend:** `ProgressLab/src/routes/exercises/[id]/+page.svelte` und
+    `ProgressLab/src/routes/sessions/new/[exerciseId]/+page.svelte`
+  - **Datenbank:** Collection `plannedrecommendations` mit Unique-Index auf
+    `(userId, exerciseId, status = planned)`
 
 ## 5. Projektorganisation
 
@@ -516,7 +537,7 @@ mit sprechenden Messages (Conventional Prefixes).
   Function-Recommendation ohne Cache-Collection (ADR-0004), Service-Worker
   `network-only` für API/HTML statt `network-first` (ADR-0007) — jeweils Trade-offs
   abgewogen und im ADR begründet.
-- **Auswahl/Reihenfolge der 17 Erweiterungen:** Welche reinkommen, welche bewusst
+- **Auswahl/Reihenfolge der 18 Erweiterungen:** Welche reinkommen, welche bewusst
   weggelassen werden (z. B. kein Pausentimer, kein Onboarding-Tutorial im
   Prototyp-Scope), und welche zu Note 6 beitragen (A11y-Audit, ADRs, Plan-Generation).
 - **Issue-Triage in der Usability-Evaluation:** welche der 5 Findings mit welcher
@@ -622,13 +643,14 @@ Für Netlify: Repository verbinden, im Dashboard die folgenden Environment-Varia
 | **sessions**      | `userId`, `exerciseId`, `date`, `sets: [{weight, reps, rpe}]` (≥ 1 Satz), `note` (≤ 500 Zeichen), Timestamps. Index: `(userId, exerciseId, date desc)`              |
 | **templates**     | `userId`, `name`, `description`, `source` (`manual`\|`generated`), `planKey`, `exerciseIds: ObjectId[]` (≥ 1, geordnet), Timestamps. Unique-Index: `(userId, name)` |
 | **profiles**      | `userId` (uniq), `heightCm`, `bodyWeightKg`, `experience`, `goal`, `trainingDays`, `splitPreference`, `equipment`, `limitations`, Timestamps                        |
+| **plannedrecommendations** | `userId`, `exerciseId`, `weight`, `reps`, `rpeTarget`, `reason`, `source` (`coach`\|`manual`), `status` (`planned`\|`completed`), Timestamps. Unique planned Index: `(userId, exerciseId, status)` |
 
 ## 10. Tests
 
 ```bash
 cd ProgressLab
 npm run test:unit      # Unit-Tests für die Recommendation-Engine
-npm run test:e2e       # 20 Tests: 12 Main-Flow + 8 axe-core-A11y-Checks
+npm run test:e2e       # 27 Tests: 12 Main-Flow + 7 UI-Feedback/CRUD/Planungs-Checks + 8 axe-core-A11y-Checks
 npm run test:e2e:local # sicherer lokaler Lauf: seedet mongodb://127.0.0.1:27017/progresslab_e2e
 npm run test:e2e:ui    # Playwright UI mit Time-Travel-Debugging
 ```

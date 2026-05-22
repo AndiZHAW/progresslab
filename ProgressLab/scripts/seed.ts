@@ -6,6 +6,7 @@ import { Session } from '../src/lib/server/models/Session.js';
 import { User, SessionToken } from '../src/lib/server/models/User.js';
 import { Template } from '../src/lib/server/models/Template.js';
 import { Profile } from '../src/lib/server/models/Profile.js';
+import { PlannedRecommendation } from '../src/lib/server/models/PlannedRecommendation.js';
 
 const MONGODB_URI = process.env.MONGODB_URI;
 if (!MONGODB_URI) {
@@ -222,7 +223,9 @@ async function main() {
 	console.log('');
 	console.log('⚠️  ProgressLab Seed-Script');
 	console.log('   Dieses Skript LÖSCHT alle Daten ALLER User in der Ziel-DB');
-	console.log('   (Exercises, Sessions, Users, SessionTokens, Templates, Profiles)');
+	console.log(
+		'   (Exercises, Sessions, Users, SessionTokens, Templates, Profiles, PlannedRecommendations)'
+	);
 	console.log('   und stellt anschliessend die Demo-Daten her.');
 	console.log('   Nur in Demo-/Test-Umgebungen ausführen – niemals gegen Produktivdaten.');
 	console.log('');
@@ -250,7 +253,8 @@ async function main() {
 		User.deleteMany({}),
 		SessionToken.deleteMany({}),
 		Template.deleteMany({}),
-		Profile.deleteMany({})
+		Profile.deleteMany({}),
+		PlannedRecommendation.deleteMany({})
 	]);
 	console.log('✓ Collections geleert');
 

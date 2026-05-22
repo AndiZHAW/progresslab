@@ -2,6 +2,7 @@ import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import mongoose from 'mongoose';
 import { getExerciseDetail } from '$lib/server/exercise-service';
+import { applyPlannedRecommendation } from '$lib/server/planned-recommendation-service';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	if (!locals.user) throw redirect(303, '/login');
@@ -12,6 +13,10 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 
 	return {
 		exercise: detail.exercise,
-		recommendation: detail.recommendation
+		recommendation: applyPlannedRecommendation(
+			detail.recommendation,
+			detail.plannedRecommendation ?? null
+		),
+		plannedRecommendation: detail.plannedRecommendation
 	};
 };
