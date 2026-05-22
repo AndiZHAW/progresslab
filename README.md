@@ -190,8 +190,10 @@ Werte vor. Highlights:
 
 - **URL der getesteten Version:** lokal auf `main` mit `npm run dev` als primäre Review-Version;
   <https://progresslab.netlify.app/> dient bis zum freigegebenen nächsten Deploy nur als öffentliche Referenz.
-  Screenshots der getesteten Version liegen unter
-  [`docs/evaluation/screenshots/`](docs/evaluation/screenshots/README.md).
+  Screenshots der Usability-Evaluation liegen unter
+  [`docs/evaluation/screenshots/`](docs/evaluation/screenshots/README.md); aktuelle lokale
+  Final-Screenshots vor dem gebündelten Deploy liegen unter
+  [`docs/evaluation/screenshots-final-local/`](docs/evaluation/screenshots-final-local/README.md).
 
 - **Ziele der Evaluation:**
   - Verstehen Nutzer:innen die Coach-Empfehlung intuitiv (Wert + Begründung)?
@@ -207,8 +209,8 @@ Werte vor. Highlights:
 
 - **Stichprobe:** 2 Testpersonen aus dem IT-Studium, beide mit grundlegender Web-App-Erfahrung
   und unterschiedlicher Nähe zu Krafttraining. Durchführung am 20.05.2026 im moderierten
-  Think-Aloud-Setting mit Laptop/Chrome. Einschränkung: Die Stichprobe ist für Usability geeignet,
-  aber keine vollständige Domänenvalidierung mit erfahrenen Hybrid-Athlet:innen.
+  Think-Aloud-Setting mit Laptop/Chrome. Die Stichprobe entspricht der Übungsvorgabe für die
+  gegenseitige Usability-Evaluation mit zwei Studierenden.
 
 - **Aufgaben/Szenarien:** 4 szenario-basierte Aufgaben mit steigender Komplexität,
   alle in neutraler Sprache ohne UI-Begriffe formuliert. Vollständiger Text:

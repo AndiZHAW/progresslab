@@ -2,7 +2,7 @@
 
 Stand: 20.05.2026  
 Methode: moderiert, on-site, Think-Aloud, Laptop/Chrome  
-Stichprobe: 2 IT-Studierende
+Stichprobe: 2 IT-Studierende (entspricht der Übungsvorgabe für das gegenseitige Testing)
 
 ## Ergebnis pro Aufgabe
 

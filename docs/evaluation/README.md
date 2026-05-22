@@ -3,6 +3,10 @@
 Material für den Usability-Test im Rahmen der Übung „Usability Evaluation"
 (Prototyping FS 2026).
 
+Die Durchführung mit **2 IT-Studierenden** entspricht der Übungsvorgabe für das
+gegenseitige Testen im Modul. Die Tests sind deshalb als Usability-Evaluation
+des Prototyps dokumentiert, nicht als repräsentative Marktforschung.
+
 ## Vor dem Test
 
 | Datei | Zweck |
@@ -20,6 +24,11 @@ Pro Testperson ein ausgefülltes Feedback-Grid in `protokolle/` ablegen
 liegen als `feedback-TP01-AdiLama.docx` und `feedback-TP02-DonartImeri.docx`
 vor. Die zusammengeführten Erkenntnisse stehen in [`issue-map.md`](issue-map.md)
 und sind in README Phase 3.5 verdichtet.
+
+Zusätzlich liegen aktuelle lokale Final-Screenshots unter
+[`screenshots-final-local/`](screenshots-final-local/README.md). Die ursprünglichen
+Screenshots unter [`screenshots/`](screenshots/README.md) dokumentieren den Stand
+der live getesteten Version am Evaluationstag.
 
 ## Vorgehen am Test-Tag
 

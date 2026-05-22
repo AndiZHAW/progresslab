@@ -351,8 +351,8 @@ Checkliste:
 ### M. Usability-Evaluation (`docs/evaluation/`)
 
 - Testaufgaben formuliert.
-- Feedback-Grid ausgefüllt (≥ 3 Testpersonen ist üblich für ZHAW; falls weniger:
-  begründen).
+- Feedback-Grid ausgefüllt (für diese Übung sind 2 Studierende als gegenseitige
+  Usability-Tests vorgesehen; sauber dokumentieren).
 - Protokolle vorhanden.
 - Issue-Map: gefundene Issues → tatsächlich in Code/Doku zurückgeflossen?
 - Nachfragen / offene Punkte aus `nachfragen.md` adressiert.

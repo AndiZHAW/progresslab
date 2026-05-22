@@ -2,6 +2,10 @@
 
 Diese Screenshots dokumentieren den Stand der live deployten App unter
 `https://progresslab.netlify.app/` zum Zeitpunkt der Usability-Evaluation.
+Sie bleiben als historischer Beleg für die getestete Version erhalten.
+
+Aktuelle lokale Screenshots des finalen Pre-Deploy-Stands liegen separat unter
+[`../screenshots-final-local/`](../screenshots-final-local/README.md).
 
 Die Screenshots wurden mit Playwright automatisiert aufgenommen. Login erfolgte mit
 dem Demo-Account `demo / demo1234`.
