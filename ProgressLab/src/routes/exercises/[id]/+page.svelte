@@ -51,7 +51,7 @@
 			rpeTarget: source === 'manual' ? Number(manualRpe) : data.recommendation.rpeTarget,
 			reason:
 				source === 'manual'
-					? 'Vom User fuer die naechste Session angepasst'
+					? 'Vom User für die nächste Session angepasst'
 					: data.recommendation.reason,
 			source
 		};
@@ -191,7 +191,7 @@
 {#if plannedRecommendation}
 	<section class="plan-status" role="status">
 		<div>
-			<span class="eyebrow">Naechste Session geplant</span>
+			<span class="eyebrow">Nächste Session geplant</span>
 			<strong>
 				{#if plannedRecommendation.weight === null}
 					BW x {plannedRecommendation.reps} Reps
@@ -223,7 +223,7 @@
 			<span class="eyebrow">Kontrollierte Anpassung</span>
 			<h2 id="manual-plan-title">Empfehlung feinjustieren</h2>
 			<p class="muted small">
-				Nur Gewicht, Reps und RPE-Ziel werden fuer den naechsten Logger gespeichert.
+				Nur Gewicht, Reps und RPE-Ziel werden für den nächsten Logger gespeichert.
 			</p>
 		</div>
 		<div class="manual-grid">
@@ -315,7 +315,7 @@
 	<div class="card">
 		<SessionList
 			sessions={data.sessions.slice(0, 8)}
-			emptyText="Noch keine Sessions fuer diese Uebung."
+			emptyText="Noch keine Sessions für diese Übung."
 		/>
 	</div>
 </section>

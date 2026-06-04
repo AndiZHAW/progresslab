@@ -60,7 +60,7 @@
 		e.preventDefault();
 		formError = '';
 		if (!name.trim() || selectedIds.size === 0) {
-			formError = 'Name und mindestens eine Uebung erforderlich';
+			formError = 'Name und mindestens eine Übung erforderlich';
 			return;
 		}
 		saving = true;
@@ -92,7 +92,7 @@
 		editError = '';
 		if (!editingId) return;
 		if (!editName.trim() || editSelectedIds.size === 0) {
-			editError = 'Name und mindestens eine Uebung erforderlich';
+			editError = 'Name und mindestens eine Übung erforderlich';
 			return;
 		}
 		updating = true;
@@ -120,14 +120,14 @@
 	}
 
 	async function remove(id: string, templateName: string) {
-		if (!confirm(`Routine "${templateName}" loeschen?`)) return;
+		if (!confirm(`Routine "${templateName}" löschen?`)) return;
 		const res = await fetch(`/api/templates/${id}`, { method: 'DELETE' });
 		if (!res.ok) {
 			const body = await res.json().catch(() => ({}));
-			showToast(body.message ?? 'Loeschen fehlgeschlagen', 'error');
+			showToast(body.message ?? 'Löschen fehlgeschlagen', 'error');
 			return;
 		}
-		showToast('Routine geloescht', 'info');
+		showToast('Routine gelöscht', 'info');
 		await invalidateAll();
 	}
 </script>
@@ -141,7 +141,7 @@
 		<span class="eyebrow">Workouts</span>
 		<h1>Routinen</h1>
 		<p class="muted">
-			Speichere deine Lieblings-Workouts als gefuehrte Einheiten und starte sie wie in einer
+			Speichere deine Lieblings-Workouts als geführte Einheiten und starte sie wie in einer
 			Training-App.
 		</p>
 	</div>
@@ -184,12 +184,12 @@
 					class="input"
 					bind:value={description}
 					maxlength="300"
-					placeholder="z. B. Brust + Schulter, mittlere Intensitaet"
+					placeholder="z. B. Brust + Schulter, mittlere Intensität"
 				/>
 			</div>
 
 			<div>
-				<div class="label">Uebungen ({selectedIds.size} ausgewaehlt)</div>
+				<div class="label">Übungen ({selectedIds.size} ausgewählt)</div>
 				<div class="ex-grid">
 					{#each data.exercises as ex (ex.id)}
 						<button
@@ -240,7 +240,7 @@
 			</div>
 
 			<div>
-				<div class="label">Uebungen ({editSelectedIds.size} ausgewaehlt)</div>
+				<div class="label">Übungen ({editSelectedIds.size} ausgewählt)</div>
 				<div class="ex-grid">
 					{#each data.exercises as ex (ex.id)}
 						<button
@@ -271,7 +271,7 @@
 					disabled={updating || !editName.trim() || editSelectedIds.size === 0}
 				>
 					{#if updating}<Spinner />{/if}
-					Aenderungen speichern
+					Änderungen speichern
 				</button>
 			</div>
 		</form>
@@ -285,8 +285,12 @@
 			Erstelle deine erste Routine, um wiederkehrende Workouts mit einem Klick zu starten.
 		</p>
 		<button
+			type="button"
 			class="btn btn-primary"
-			onclick={() => (creating = true)}
+			onclick={() => {
+				cancelEdit();
+				creating = true;
+			}}
 			style="margin-top:8px; align-self:center;"
 		>
 			+ Erste Routine anlegen
@@ -320,7 +324,7 @@
 						<button
 							type="button"
 							class="btn btn-ghost icon-btn"
-							aria-label="Routine loeschen"
+							aria-label="Routine löschen"
 							onclick={() => remove(t.id, t.name)}
 						>
 							×

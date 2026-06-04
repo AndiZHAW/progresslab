@@ -58,11 +58,15 @@ test.describe('ProgressLab Hauptworkflow', () => {
 		await expect(page.getByText(/Geschätztes 1RM/i).first()).toBeVisible();
 	});
 
-	test('Routinen-Page zeigt seedete Templates', async ({ page }) => {
+	test('Routinen-Page zeigt nutzbare Routinen', async ({ page }) => {
 		await login(page);
 		await page.getByRole('link', { name: 'Routinen', exact: true }).click();
 		await expect(page).toHaveURL('/templates');
-		await expect(page.getByRole('heading', { name: 'Push Day' })).toBeVisible();
+		const firstRoutine = page.locator('article.t-card').first();
+		await expect(firstRoutine).toBeVisible();
+		await expect(firstRoutine.locator('h3')).not.toBeEmpty();
+		await expect(firstRoutine.locator('.ex-list li').first()).toBeVisible();
+		await expect(firstRoutine.getByRole('link', { name: 'Workout starten' })).toBeVisible();
 	});
 
 	test('Coach-ID generiert personalisierte Routinen', async ({ page }) => {
@@ -86,9 +90,13 @@ test.describe('ProgressLab Hauptworkflow', () => {
 	test('Workout-Modus hebt die nächste offene Übung hervor', async ({ page }) => {
 		await login(page);
 		await page.getByRole('link', { name: 'Routinen', exact: true }).click();
-		await page.locator('article:has(h3:has-text("Push Day")) a[href^="/workouts/"]').click();
+		const firstRoutine = page.locator('article.t-card').first();
+		await expect(firstRoutine).toBeVisible();
+		const routineName = await firstRoutine.locator('h3').innerText();
+		await firstRoutine.getByRole('link', { name: 'Workout starten' }).click();
 
 		await expect(page).toHaveURL(/\/workouts\/.+/);
+		await expect(page.getByRole('heading', { level: 1 })).toContainText(routineName);
 		await expect(page.getByText('Nächste Übung').first()).toBeVisible();
 		await expect(page.getByRole('link', { name: 'Weiter loggen' })).toBeVisible();
 	});

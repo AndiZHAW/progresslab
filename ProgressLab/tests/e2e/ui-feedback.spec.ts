@@ -15,6 +15,43 @@ async function login(page: Page, username = 'demo', password = 'demo1234') {
 }
 
 test.describe('UI feedback and button reactions', () => {
+	test('registration creates a persistent account that can log in again', async ({ page }) => {
+		const username = `codex_user_${Date.now()}`;
+		const password = 'strong1234';
+
+		await page.goto('/register');
+		await waitForApp(page);
+		await expect(page.getByRole('button', { name: 'Account erstellen' })).toBeDisabled();
+
+		await page.locator('#r-username').fill(username);
+		await page.locator('#r-password').fill(password);
+		await page.locator('#r-confirm').fill('does-not-match');
+		await expect(page.getByText(/Passwörter stimmen nicht überein/i)).toBeVisible();
+		await expect(page.getByRole('button', { name: 'Account erstellen' })).toBeDisabled();
+
+		await page.locator('#r-confirm').fill(password);
+		await page.getByRole('button', { name: 'Account erstellen' }).click();
+		await page.waitForURL('/');
+		await expect(page.getByRole('heading', { level: 1 })).toContainText(new RegExp(username, 'i'));
+
+		await page.locator('details summary').click();
+		await page.getByRole('button', { name: 'Abmelden' }).click();
+		await page.waitForURL('/login');
+
+		await login(page, username, password);
+		await expect(page.getByRole('heading', { level: 1 })).toContainText(new RegExp(username, 'i'));
+
+		await page.locator('details summary').click();
+		await page.getByRole('button', { name: 'Abmelden' }).click();
+		await page.waitForURL('/login');
+		await page.goto('/register');
+		await page.locator('#r-username').fill(username);
+		await page.locator('#r-password').fill(password);
+		await page.locator('#r-confirm').fill(password);
+		await page.getByRole('button', { name: 'Account erstellen' }).click();
+		await expect(page.getByRole('alert')).toContainText(/Username bereits vergeben/i);
+	});
+
 	test('login reacts to demo buttons, invalid credentials and success', async ({ page }) => {
 		await page.goto('/login');
 		await waitForApp(page);
@@ -89,7 +126,7 @@ test.describe('UI feedback and button reactions', () => {
 		await page.getByLabel('RPE-Ziel').fill('8');
 		await page.getByRole('button', { name: 'Anpassung speichern' }).click();
 		await expect(page.getByText('Plan angepasst')).toBeVisible();
-		await expect(page.getByText('Naechste Session geplant')).toBeVisible();
+		await expect(page.getByText('Nächste Session geplant')).toBeVisible();
 
 		await page.getByRole('link', { name: 'Jetzt loggen' }).click();
 		await expect(page.getByText(/Geplante Empfehlung/)).toBeVisible();
@@ -106,7 +143,7 @@ test.describe('UI feedback and button reactions', () => {
 			.getByRole('link', { name: /Bench Press/i })
 			.first()
 			.click();
-		await expect(page.getByText('Naechste Session geplant')).toHaveCount(0);
+		await expect(page.getByText('Nächste Session geplant')).toHaveCount(0);
 	});
 
 	test('routine form disables invalid save, then creates, edits and deletes with feedback', async ({
@@ -136,19 +173,19 @@ test.describe('UI feedback and button reactions', () => {
 		await createdRoutine.getByRole('button', { name: 'Routine bearbeiten' }).click();
 		await expect(page.getByRole('heading', { name: 'Routine bearbeiten' })).toBeVisible();
 		await page.locator('#edit-t-name').fill(editedRoutineName);
-		await page.locator('#edit-t-desc').fill('Bearbeitete Routine fuer Feedback-Test');
-		await page.getByRole('button', { name: 'Aenderungen speichern' }).click();
+		await page.locator('#edit-t-desc').fill('Bearbeitete Routine für Feedback-Test');
+		await page.getByRole('button', { name: 'Änderungen speichern' }).click();
 		await expect(page.getByText('Routine aktualisiert')).toBeVisible();
 		await expect(page.getByRole('heading', { name: editedRoutineName })).toBeVisible();
-		await expect(page.getByText('Bearbeitete Routine fuer Feedback-Test')).toBeVisible();
+		await expect(page.getByText('Bearbeitete Routine für Feedback-Test')).toBeVisible();
 
 		page.once('dialog', (dialog) => dialog.accept());
 		await page
 			.locator('article')
 			.filter({ has: page.getByRole('heading', { name: editedRoutineName }) })
-			.getByRole('button', { name: 'Routine loeschen' })
+			.getByRole('button', { name: 'Routine löschen' })
 			.click();
-		await expect(page.getByText('Routine geloescht')).toBeVisible();
+		await expect(page.getByText('Routine gelöscht')).toBeVisible();
 		await expect(page.getByRole('heading', { name: editedRoutineName })).toHaveCount(0);
 	});
 
@@ -165,8 +202,8 @@ test.describe('UI feedback and button reactions', () => {
 		await page.locator('#ex-mg').fill('Quads');
 		await page.locator('#ex-reps').fill('8');
 		await page.locator('#ex-rpe').fill('7');
-		await page.getByRole('button', { name: 'Uebung anlegen' }).click();
-		await expect(page.getByText('Uebung angelegt')).toBeVisible();
+		await page.getByRole('button', { name: 'Übung anlegen' }).click();
+		await expect(page.getByText('Übung angelegt')).toBeVisible();
 		await expect(page.getByText(exerciseName).first()).toBeVisible();
 
 		await page
@@ -175,13 +212,13 @@ test.describe('UI feedback and button reactions', () => {
 			.first()
 			.getByRole('button', { name: 'Bearbeiten' })
 			.click();
-		await expect(page.getByRole('heading', { name: 'Uebung bearbeiten' })).toBeVisible();
+		await expect(page.getByRole('heading', { name: 'Übung bearbeiten' })).toBeVisible();
 		await page.locator('#edit-name').fill(editedName);
 		await page.locator('#edit-mg').fill('Hamstrings');
 		await page.locator('#edit-reps').fill('10');
 		await page.locator('#edit-rpe').fill('8');
-		await page.getByRole('button', { name: 'Aenderungen speichern' }).click();
-		await expect(page.getByText('Uebung aktualisiert')).toBeVisible();
+		await page.getByRole('button', { name: 'Änderungen speichern' }).click();
+		await expect(page.getByText('Übung aktualisiert')).toBeVisible();
 		await expect(page.locator('li').filter({ hasText: editedName }).first()).toContainText(
 			'Default 10 Reps @ RPE 8'
 		);
@@ -191,9 +228,9 @@ test.describe('UI feedback and button reactions', () => {
 			.locator('li')
 			.filter({ hasText: editedName })
 			.first()
-			.getByRole('button', { name: 'Loeschen' })
+			.getByRole('button', { name: 'Löschen' })
 			.click();
-		await expect(page.getByText('Uebung geloescht')).toBeVisible();
+		await expect(page.getByText('Übung gelöscht')).toBeVisible();
 		await expect(page.locator('li').filter({ hasText: editedName })).toHaveCount(0);
 	});
 

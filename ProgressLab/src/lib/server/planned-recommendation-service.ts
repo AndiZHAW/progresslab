@@ -83,11 +83,11 @@ export async function savePlannedRecommendation(
 	input: PlannedRecommendationInput
 ): Promise<PlannedRecommendationDTO> {
 	const exerciseId = String(input.exerciseId);
-	if (!mongoose.isValidObjectId(exerciseId)) throw error(400, 'Ungueltige Uebungs-ID');
+	if (!mongoose.isValidObjectId(exerciseId)) throw error(400, 'Ungültige Übungs-ID');
 
 	await connectDB();
 	const exercise = await Exercise.findById(exerciseId).lean();
-	if (!exercise) throw error(404, 'Uebung nicht gefunden');
+	if (!exercise) throw error(404, 'Übung nicht gefunden');
 
 	const weight = cleanNumber(input.weight, 'Gewicht', 0, 1000, !!exercise.isBodyweight);
 	const reps = cleanInteger(input.reps, 'Reps', 1, 100);
@@ -95,7 +95,7 @@ export async function savePlannedRecommendation(
 	const reason =
 		typeof input.reason === 'string' && input.reason.trim()
 			? input.reason.trim().slice(0, 180)
-			: 'Fuer die naechste Session geplant';
+			: 'Für die nächste Session geplant';
 
 	const filter = {
 		userId,
@@ -140,7 +140,7 @@ export async function deletePlannedRecommendation(
 	userId: string,
 	exerciseId: string
 ): Promise<boolean> {
-	if (!mongoose.isValidObjectId(exerciseId)) throw error(400, 'Ungueltige Uebungs-ID');
+	if (!mongoose.isValidObjectId(exerciseId)) throw error(400, 'Ungültige Übungs-ID');
 	await connectDB();
 	const result = await PlannedRecommendation.deleteOne({ userId, exerciseId, status: 'planned' });
 	return result.deletedCount > 0;

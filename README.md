@@ -21,7 +21,7 @@ Werte vor. Highlights:
 - **Personal Records** inklusive Epley-1RM-Schätzung
 - **Coach-ID** generiert personalisierte Pläne aus Ziel/Erfahrung/Equipment/Einschränkungen
 - **iOS-inspirierte UI**, Dark-Mode, PWA-installierbar, WCAG 2.1 AA verifiziert
-- **18 Erweiterungen** (siehe §4), **27 E2E-Tests + 6 Unit-Tests** grün im CI
+- **18 Erweiterungen** (siehe §4), **37 E2E-Tests + 6 Unit-Tests** lokal abgesichert
 
 ## Inhaltsverzeichnis
 
@@ -426,12 +426,16 @@ Werte vor. Highlights:
   Login, Dashboard, Übungs-Detail (inkl. Chart-Rendering), Stats-Page (mit Heatmap-Sektion),
   Records, Routinen, Coach-ID-Plan-Generierung, vollständiger Session-Workflow (Picker → Logger →
   Confirmation), Logout.
-  Weitere 7 UI-Feedback-/CRUD-Tests prüfen Fehlermeldungen, Toasts, Profile-Buttons, den persistenten
-  Next-Session-Plan, Routine-Edit und lokalen Admin-Exercise-CRUD. Zusätzlich prüfen 8 axe-core-Checks
-  die Hauptseiten auf WCAG-AA-Verstösse. Tests starten den Dev-Server selbständig via `webServer`-Config.
+  Weitere 8 UI-Feedback-/CRUD-Tests prüfen Registrierung mit persistierendem Login, Fehlermeldungen,
+  Toasts, Profile-Buttons, den persistenten Next-Session-Plan, Routine-Edit und lokalen Admin-Exercise-CRUD.
+  Zusätzlich prüfen 9 Button-Audit-Tests Navigation, Theme, Filter, Suche, Sortierung, Detail-Aktionen,
+  Empty-State-CTAs, Mobile-Menü und sekundäre Cancel/Delete-Flows. Zusätzlich prüfen 8 axe-core-Checks
+  die Hauptseiten auf WCAG-AA-Verstösse. Tests starten den Dev-Server selbständig via `webServer`-Config
+  und sind gegen Remote-Datenbanken gesperrt, damit Demo-/Produktivdaten nicht versehentlich verändert werden.
 - **Wo umgesetzt:** `ProgressLab/playwright.config.ts`,
   `ProgressLab/tests/e2e/main-flow.spec.ts`, `ProgressLab/tests/e2e/ui-feedback.spec.ts`,
-  `ProgressLab/tests/e2e/a11y.spec.ts`. Ausführen: `npm run test:e2e` (CLI) oder
+  `ProgressLab/tests/e2e/button-audit.spec.ts`, `ProgressLab/tests/e2e/a11y.spec.ts`.
+  Ausführen: `npm run test:e2e` (CLI) oder
   `npm run test:e2e:ui` (Playwright UI mit Time-Travel-Debugger).
 
 ### 4.18 Persistente Next-Session-Planung
@@ -652,16 +656,16 @@ Für Netlify: Repository verbinden, im Dashboard die folgenden Environment-Varia
 ```bash
 cd ProgressLab
 npm run test:unit      # Unit-Tests für die Recommendation-Engine
-npm run test:e2e       # 27 Tests: 12 Main-Flow + 7 UI-Feedback/CRUD/Planungs-Checks + 8 axe-core-A11y-Checks
-npm run test:e2e:local # sicherer lokaler Lauf: seedet mongodb://127.0.0.1:27017/progresslab_e2e
-npm run test:e2e:ui    # Playwright UI mit Time-Travel-Debugging
+npm run test:e2e       # 37 sichere lokale E2E-Tests, seedet mongodb://127.0.0.1:27017/progresslab_e2e
+npm run test:e2e:local # Alias für denselben lokalen E2E-Lauf
+npm run test:e2e:ui    # gleicher lokaler Seed + Playwright UI mit Time-Travel-Debugging
 ```
 
 Voraussetzung: Vor dem ersten Lauf einmal `npx playwright install chromium` ausführen.
-Für lokale E2E-Läufe ist `npm run test:e2e:local` die sichere Variante: Das Skript blockiert
-nicht-lokale MongoDB-URIs und seedet nur die lokale Testdatenbank. `npm run test:e2e` nutzt
-die aktuell gesetzte `MONGODB_URI` und ist deshalb primär für CI oder bewusst konfigurierte
-Testumgebungen gedacht.
+Für lokale E2E-Läufe ist `npm run test:e2e` bewusst sicher konfiguriert: Das Skript blockiert
+nicht-lokale MongoDB-URIs und seedet nur die lokale Testdatenbank. Direkte Playwright-Läufe
+gegen Atlas oder andere Remote-Datenbanken sind standardmässig gesperrt und benötigen bewusst
+`PL_ALLOW_REMOTE_E2E=1` für eine explizit konfigurierte Testumgebung.
 
 ## 11. Methodische Artefakte
 

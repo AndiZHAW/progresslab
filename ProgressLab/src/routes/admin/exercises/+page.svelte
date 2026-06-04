@@ -30,7 +30,7 @@
 		e.preventDefault();
 		formError = '';
 		if (readOnlyDemoAdmin) {
-			formError = 'Der oeffentliche Demo-Admin ist in der Live-App read-only.';
+			formError = 'Der öffentliche Demo-Admin ist in der Live-App read-only.';
 			return;
 		}
 		if (!form.name.trim()) {
@@ -49,7 +49,7 @@
 				formError = body.message ?? 'Anlegen fehlgeschlagen';
 				return;
 			}
-			showToast('Uebung angelegt');
+			showToast('Übung angelegt');
 			form = { ...emptyExerciseForm };
 			await invalidateAll();
 		} finally {
@@ -80,7 +80,7 @@
 		editError = '';
 		if (!editingId) return;
 		if (readOnlyDemoAdmin) {
-			editError = 'Der oeffentliche Demo-Admin ist in der Live-App read-only.';
+			editError = 'Der öffentliche Demo-Admin ist in der Live-App read-only.';
 			return;
 		}
 		if (!editForm.name.trim()) {
@@ -99,7 +99,7 @@
 				editError = body.message ?? 'Speichern fehlgeschlagen';
 				return;
 			}
-			showToast('Uebung aktualisiert');
+			showToast('Übung aktualisiert');
 			editingId = null;
 			await invalidateAll();
 		} finally {
@@ -109,37 +109,37 @@
 
 	async function remove(ex: ExerciseDTO) {
 		if (readOnlyDemoAdmin) {
-			showToast('Der oeffentliche Demo-Admin ist read-only', 'error');
+			showToast('Der öffentliche Demo-Admin ist read-only', 'error');
 			return;
 		}
-		if (!confirm(`Uebung "${ex.name}" wirklich loeschen?`)) return;
+		if (!confirm(`Übung "${ex.name}" wirklich löschen?`)) return;
 		const res = await fetch(`/api/exercises/${ex.id}`, { method: 'DELETE' });
 		if (!res.ok) {
 			const body = await res.json().catch(() => ({}));
-			showToast(body.message ?? 'Loeschen fehlgeschlagen', 'error');
+			showToast(body.message ?? 'Löschen fehlgeschlagen', 'error');
 			return;
 		}
-		showToast('Uebung geloescht');
+		showToast('Übung gelöscht');
 		await invalidateAll();
 	}
 </script>
 
 <svelte:head>
-	<title>Uebungen verwalten - ProgressLab</title>
+	<title>Übungen verwalten - ProgressLab</title>
 </svelte:head>
 
 <div class="head">
 	<div>
-		<h1>Uebungen verwalten</h1>
-		<p class="muted">Admin-Bereich - Uebungen anlegen, bearbeiten oder loeschen</p>
+		<h1>Übungen verwalten</h1>
+		<p class="muted">Admin-Bereich - Übungen anlegen, bearbeiten oder löschen</p>
 	</div>
 </div>
 
 <section class="card">
-	<h2>Neue Uebung anlegen</h2>
+	<h2>Neue Übung anlegen</h2>
 	{#if readOnlyDemoAdmin}
 		<div class="info-banner" role="status">
-			Live-Demo: Der oeffentliche Admin ist read-only. Lokal nach <code>npm run seed</code>
+			Live-Demo: Der öffentliche Admin ist read-only. Lokal nach <code>npm run seed</code>
 			kann der Admin-CRUD vollstaendig getestet werden.
 		</div>
 	{/if}
@@ -178,7 +178,7 @@
 				<div class="check">
 					<label for="ex-bw">
 						<input id="ex-bw" type="checkbox" bind:checked={form.isBodyweight} />
-						Bodyweight-Uebung
+						Bodyweight-Übung
 					</label>
 				</div>
 				<div>
@@ -212,14 +212,14 @@
 
 		<button class="btn" type="submit" disabled={creating || readOnlyDemoAdmin}>
 			{#if creating}<Spinner />{/if}
-			Uebung anlegen
+			Übung anlegen
 		</button>
 	</form>
 </section>
 
 {#if editingId}
 	<section class="card edit-card">
-		<h2>Uebung bearbeiten</h2>
+		<h2>Übung bearbeiten</h2>
 		<form onsubmit={update} class="form">
 			<fieldset class="form-fields" disabled={readOnlyDemoAdmin || editing}>
 				<div class="grid">
@@ -248,7 +248,7 @@
 					<div class="check">
 						<label for="edit-bw">
 							<input id="edit-bw" type="checkbox" bind:checked={editForm.isBodyweight} />
-							Bodyweight-Uebung
+							Bodyweight-Übung
 						</label>
 					</div>
 					<div>
@@ -286,7 +286,7 @@
 				</button>
 				<button class="btn btn-primary" type="submit" disabled={editing || readOnlyDemoAdmin}>
 					{#if editing}<Spinner />{/if}
-					Aenderungen speichern
+					Änderungen speichern
 				</button>
 			</div>
 		</form>
@@ -294,7 +294,7 @@
 {/if}
 
 <section style="margin-top:24px;">
-	<h2>Vorhandene Uebungen ({data.exercises.length})</h2>
+	<h2>Vorhandene Übungen ({data.exercises.length})</h2>
 	<ul class="list">
 		{#each data.exercises as ex (ex.id)}
 			<li>
@@ -326,7 +326,7 @@
 						onclick={() => remove(ex)}
 						disabled={readOnlyDemoAdmin}
 					>
-						Loeschen
+						Löschen
 					</button>
 				</div>
 			</li>
