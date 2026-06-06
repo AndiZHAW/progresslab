@@ -9,7 +9,7 @@
 > **Demo-Login zum Ausprobieren:** `demo` / `demo1234`. Der Demo-Admin `admin` / `admin1234`
 > ist lokal nach `npm run seed` voll nutzbar; auf der Live-App ist er aus Sicherheitsgründen read-only.
 
-## TL;DR — Was zeigt diese App?
+**Kurzüberblick:** Was zeigt diese App?
 
 ProgressLab ist ein Web-Trainings-Coach: jeder Krafttraining-Satz wird mit Gewicht, Reps und
 RPE (Anstrengungs-Skala 1–10) erfasst, und die App schlägt für die nächste Session konkrete
@@ -37,10 +37,11 @@ Werte vor. Highlights:
 5. [Projektorganisation](#5-projektorganisation)
 6. [KI-Deklaration](#6-ki-deklaration)
 7. [Anhang](#7-anhang)
-8. [Setup-Anleitung](#8-setup-anleitung)
-9. [MongoDB-Schema](#9-mongodb-schema)
-10. [Tests](#10-tests)
-11. [Methodische Artefakte](#11-methodische-artefakte)
+   1. [Quellen](#71-quellen)
+   2. [Setup-Anleitung](#72-setup-anleitung)
+   3. [MongoDB-Schema](#73-mongodb-schema)
+   4. [Tests](#74-tests)
+   5. [Methodische Artefakte](#75-methodische-artefakte)
 
 > **Hinweis:** Massgeblich sind die im **Unterricht** und auf **Moodle** kommunizierten Anforderungen.
 
@@ -581,18 +582,20 @@ jedem Push, sodass Regressionen früh erkannt werden.
 
 ## 7. Anhang
 
+### 7.1 Quellen
+
 - **Quellen:** Mockup [`ProgressLab_Prototyp.html`](ProgressLab_Prototyp.html) und [`docs/artefakte/Woche10_UI-Prototyping_Andi_Kadolli.pdf`](docs/artefakte/Woche10_UI-Prototyping_Andi_Kadolli.pdf)
   (eigenständig erstellt). Empfehlungs-Heuristik basierend auf gängigen RPE-basierten
   Auto-Regulations-Schemata (z. B. Rippetoe, Helms).
 
-## 8. Setup-Anleitung
+### 7.2 Setup-Anleitung
 
-### Voraussetzungen
+#### Voraussetzungen
 
 - Node.js ≥ 20 (entwickelt mit 24)
 - MongoDB Atlas Cluster (Free Tier reicht) oder lokale MongoDB
 
-### Lokal starten
+#### Lokal starten
 
 Alle SvelteKit-Befehle laufen aus dem `ProgressLab/`-Verzeichnis:
 
@@ -619,7 +622,7 @@ npm run dev
 
 App läuft auf <http://localhost:5173>.
 
-### Demo-Login
+#### Demo-Login
 
 - **User:** `demo` / `demo1234`
 - **Admin:** `admin` / `admin1234`
@@ -627,7 +630,7 @@ App läuft auf <http://localhost:5173>.
 Hinweis: Der öffentliche Demo-Admin ist auf der Live-App read-only. Lokal nach `npm run seed`
 kann der Admin-CRUD vollständig getestet werden.
 
-### Build & Deployment
+#### Build & Deployment
 
 ```bash
 npm run build      # Netlify-Build (adapter-netlify)
@@ -640,7 +643,7 @@ Für Netlify: Repository verbinden, im Dashboard die folgenden Environment-Varia
 
 `netlify.toml` ist im Repo enthalten.
 
-## 9. MongoDB-Schema
+### 7.3 MongoDB-Schema
 
 | Collection        | Felder                                                                                                                                                              |
 | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -652,7 +655,7 @@ Für Netlify: Repository verbinden, im Dashboard die folgenden Environment-Varia
 | **profiles**      | `userId` (uniq), `heightCm`, `bodyWeightKg`, `experience`, `goal`, `trainingDays`, `splitPreference`, `equipment`, `limitations`, Timestamps                        |
 | **plannedrecommendations** | `userId`, `exerciseId`, `weight`, `reps`, `rpeTarget`, `reason`, `source` (`coach`\|`manual`), `status` (`planned`\|`completed`), Timestamps. Unique planned Index: `(userId, exerciseId, status)` |
 
-## 10. Tests
+### 7.4 Tests
 
 ```bash
 cd ProgressLab
@@ -668,9 +671,9 @@ nicht-lokale MongoDB-URIs und seedet nur die lokale Testdatenbank. Direkte Playw
 gegen Atlas oder andere Remote-Datenbanken sind standardmässig gesperrt und benötigen bewusst
 `PL_ALLOW_REMOTE_E2E=1` für eine explizit konfigurierte Testumgebung.
 
-## 11. Methodische Artefakte
+### 7.5 Methodische Artefakte
 
-### 11.1 Architecture Decision Records (ADR)
+#### 7.5.1 Architecture Decision Records (ADR)
 
 Über den Mindestumfang hinaus dokumentieren wir die wichtigsten Architektur-
 Entscheide als **ADR** nach dem Format von Michael Nygard. Jeder ADR hält
@@ -689,7 +692,7 @@ Reviewer den Entscheid nachvollziehen können.
 | [0006](docs/adr/0006-repo-struktur-progresslab-subfolder.md)  | Code im `ProgressLab/`-Subfolder, Doku am Root                    |
 | [0007](docs/adr/0007-service-worker-network-only-fuer-api.md) | Service Worker: `network-only` für API und HTML (verfeinert 0005) |
 
-### 11.2 Usability-Evaluation-Material
+#### 7.5.2 Usability-Evaluation-Material
 
 Testaufgaben (szenario-basiert), Feedback-Grid-Vorlage und strukturierte
 Nachfragen liegen vorbereitet unter
@@ -697,7 +700,7 @@ Nachfragen liegen vorbereitet unter
 landen pro Testperson in `docs/evaluation/protokolle/` und werden in der
 Issue Map zusammengeführt.
 
-### 11.3 Phasen-Artefakte aus Wochen 8–10
+#### 7.5.3 Phasen-Artefakte aus Wochen 8–10
 
 Eigene Arbeiten aus den vorgelagerten Übungen liegen unter
 [`docs/artefakte/`](docs/artefakte/README.md). Aufgabenstellungen,
@@ -705,7 +708,7 @@ Bewertungs-Rubrik und Walkthrough-Video sind **nicht** im Repo — sie wurden
 in den jeweiligen Moodle-Übungen abgegeben und sind den Dozierenden direkt
 zugänglich.
 
-### 11.4 Accessibility-Audit (WCAG 2.1 AA)
+#### 7.5.4 Accessibility-Audit (WCAG 2.1 AA)
 
 Vollständiger A11y-Audit mit **axe-core** über alle 8 Hauptseiten — Bericht in
 [`docs/a11y-audit.md`](docs/a11y-audit.md). Ergebnis: **0 Violations** auf WCAG
