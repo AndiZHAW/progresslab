@@ -90,14 +90,14 @@ Werte vor. Highlights:
 
 ### 3.1 Understand & Define
 
-- **Zielgruppenverständnis:** Ambitionierte:r Kraftsportler:in trainiert 3–5×/Woche, kennt RPE als Konzept, möchte
+- **Zielgruppenverständnis:** Ambitionierte:r Kraftsportler:in trainiert 4–6×/Woche, kennt RPE als Konzept, möchte
   kontinuierlich progredieren, scheitert aber an der Frage „soll ich heute mehr Gewicht ansetzen?".
   Bestehende Apps (Strong, Hevy, FitNotes) loggen, beraten aber nicht.
 
 - **Proto-Persona Marc, 27:**
-  Marketing-Angestellter, trainiert 3×/Woche im Quartier-Studio (Mo/Mi/Fr abends, je 60–75 min).
-  Aktuelle Bestwerte: Bench Press 80 kg × 5, Squat 100 kg × 5, Deadlift 130 kg × 5. Ziel: in
-  6 Monaten 100 kg Bench, ohne sich kaputt zu machen. Frustriert davon, dass er nach 3 Monaten
+  Marketing-Angestellter, trainiert 5×/Woche im Quartier-Studio (Push/Pull/Legs + Upper/Lower,
+  je 60–85 min). Aktuelle Bestwerte: Bench Press 90 kg × 5, Squat 125 kg × 5, Deadlift
+  165 kg × 5. Ziel: in 6 Monaten 100 kg Bench, ohne sich kaputt zu machen. Frustriert davon, dass er nach 3 Monaten
   „5×5"-Programm bei Bench stagniert und nicht weiss, ob er pushen oder runterfahren soll.
   Will im Training schnell tippen, **vor und nach jedem Satz** die Hände frei haben (Hantel-Griff,
   Magnesium) und nicht 2 Min durch eine UI scrollen.

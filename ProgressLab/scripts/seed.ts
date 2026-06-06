@@ -621,8 +621,80 @@ async function main() {
 		}
 	];
 
+	type DemoSet = { w: number; r: number; rpe: number };
+
+	function straightSets(w: number, r: number, rpe: number, count = 3): DemoSet[] {
+		return Array.from({ length: count }, () => ({ w, r, rpe }));
+	}
+
+	function fatigueSets(w: number, r: number, rpe: number, count = 3): DemoSet[] {
+		return Array.from({ length: count }, (_, index) => ({
+			w,
+			r: Math.max(1, r - (index === count - 1 ? 1 : 0)),
+			rpe: +Math.min(10, rpe + index * 0.5).toFixed(1)
+		}));
+	}
+
+	const advancedHistory = new Map<string, { d: number; sets: DemoSet[] }[]>();
+	function logAdvanced(ex: string, d: number, sets: DemoSet[]) {
+		const sessions = advancedHistory.get(ex) ?? [];
+		sessions.push({ d, sets });
+		advancedHistory.set(ex, sessions);
+	}
+
+	const advancedWeeks = [
+		[48, 47, 45, 43],
+		[40, 39, 37, 34],
+		[32, 31, 29, 27],
+		[25, 24, 22, 20],
+		[17, 16, 12, 11],
+		[6, 5, 3, 1]
+	] as const;
+
+	for (const [week, [pushDay, pullDay, legDay, accessoryDay]] of advancedWeeks.entries()) {
+		const isLastWeek = week === advancedWeeks.length - 1;
+
+		logAdvanced('Bench Press', pushDay, straightSets(77.5 + week * 2.5, 5, 7));
+		logAdvanced(
+			'Overhead Press',
+			pushDay,
+			fatigueSets(50 + week * 2.5, isLastWeek ? 5 : 6, isLastWeek ? 9 : 7.5)
+		);
+		logAdvanced('Incline DB Press', pushDay, fatigueSets(24 + week, 10, 7.5));
+		logAdvanced('Lateral Raise', pushDay, fatigueSets(10 + Math.floor(week / 2), 14, 8));
+		logAdvanced('Triceps Pushdown', pushDay, fatigueSets(30 + week * 1.5, 12, 7.5));
+
+		logAdvanced('Deadlift', pullDay, fatigueSets(Math.min(165, 145 + week * 5), 5, 8, 2));
+		logAdvanced('Pull-up', pullDay, fatigueSets(0, 8 + week, 7.5));
+		logAdvanced('Barbell Row', pullDay, fatigueSets(67.5 + week * 2.5, 8, 7.5));
+		logAdvanced('Lat Pulldown', pullDay, fatigueSets(65 + week * 2.5, 10, 7.5));
+		logAdvanced('Barbell Curl', pullDay, fatigueSets(32.5 + week * 1.5, 10, 8));
+
+		logAdvanced('Back Squat', legDay, straightSets(112.5 + week * 2.5, 5, 7));
+		logAdvanced('Romanian Deadlift', legDay, fatigueSets(95 + week * 4, 8, 7.5));
+		logAdvanced('Leg Press', legDay, fatigueSets(205 + week * 7.5, 10, 7.5));
+		logAdvanced('Leg Curl', legDay, fatigueSets(37.5 + week * 1.5, 12, 8));
+		logAdvanced('Standing Calf Raise', legDay, fatigueSets(85 + week * 5, 12, 8));
+
+		if (week % 2 === 0) {
+			logAdvanced('Incline Bench Press', accessoryDay, fatigueSets(62.5 + week * 2.5, 6, 7.5));
+			logAdvanced('Cable Row', accessoryDay, fatigueSets(62.5 + week * 2.5, 10, 7.5));
+			logAdvanced('Dips', accessoryDay, fatigueSets(0, 10 + week, 8));
+			logAdvanced('Hammer Curl', accessoryDay, fatigueSets(22.5 + week, 12, 8));
+			logAdvanced('Face Pull', accessoryDay, fatigueSets(22.5 + week, 15, 7));
+		} else {
+			logAdvanced('Front Squat', accessoryDay, fatigueSets(80 + week * 2.5, 6, 7.5));
+			logAdvanced('Hip Thrust', accessoryDay, fatigueSets(120 + week * 6, 8, 8));
+			logAdvanced('Walking Lunge', accessoryDay, fatigueSets(22.5 + week, 10, 8));
+			logAdvanced('Close-Grip Bench Press', accessoryDay, fatigueSets(62.5 + week * 2.5, 8, 8));
+			logAdvanced('Face Pull', accessoryDay, fatigueSets(22.5 + week, 15, 7));
+		}
+	}
+
+	const advancedBlocks = [...advancedHistory.entries()].map(([ex, sessions]) => ({ ex, sessions }));
+
 	let totalSessions = 0;
-	for (const block of history) {
+	for (const block of [...history, ...advancedBlocks]) {
 		const exercise = byName[block.ex];
 		if (!exercise) continue;
 		for (const s of block.sessions) {
@@ -642,10 +714,10 @@ async function main() {
 		userId: demoUser._id,
 		heightCm: 178,
 		bodyWeightKg: 82,
-		experience: 'intermediate',
-		goal: 'balanced',
-		trainingDays: 4,
-		splitPreference: 'auto',
+		experience: 'advanced',
+		goal: 'hypertrophy',
+		trainingDays: 5,
+		splitPreference: 'push_pull_legs',
 		equipment: 'gym',
 		limitations: ''
 	});
