@@ -409,7 +409,8 @@ Werte vor. Highlights:
 
 - **Beschreibung & Nutzen:** User kann eine Coach-ID mit Körperdaten, Ziel (`Hypertrophy`, `Kraft`,
   `Balanced`), Erfahrung, Trainingsfrequenz, Split-Präferenz, Equipment und optionalen
-  Einschränkungen speichern. Daraus erzeugt die App automatisch passende Routinen als echte
+  Einschränkungs-Checkboxen (`Schulter`, `Knie`, `Rücken`, `Arm/Ellbogen/Handgelenk`) speichern.
+  Daraus erzeugt die App automatisch passende Routinen als echte
   Templates. Hypertrophy-Pläne setzen stärker auf Volumen und 8–15 Reps, Kraft-Pläne auf
   Grundübungen und niedrigere Rep-Ranges, Balanced-Pläne mischen beides.
 - **Wo umgesetzt:**

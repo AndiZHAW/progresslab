@@ -266,6 +266,19 @@ function filterForContext(names: readonly string[], profile: AthleteProfileDTO):
 		avoid.add('Deadlift');
 		avoid.add('Romanian Deadlift');
 	}
+	if (
+		lower.includes('arm') ||
+		lower.includes('ellbogen') ||
+		lower.includes('handgelenk') ||
+		lower.includes('hand') ||
+		lower.includes('wrist')
+	) {
+		avoid.add('Dips');
+		avoid.add('Pull-up');
+		avoid.add('Triceps Pushdown');
+		avoid.add('Barbell Curl');
+		avoid.add('Hammer Curl');
+	}
 	if (profile.equipment === 'bodyweight') {
 		return names.filter((name) => ['Pull-up', 'Dips', 'Walking Lunge'].includes(name));
 	}

@@ -186,6 +186,14 @@ test.describe('Button audit: reachable controls react correctly', () => {
 		await waitForApp(page);
 
 		await page.locator('.choice-grid label').filter({ hasText: 'Hypertrophy' }).click();
+		const armLimitation = page.getByLabel('Arm/Ellbogen/Handgelenk');
+		if (!(await armLimitation.isChecked())) {
+			await page
+				.locator('.restriction-grid label')
+				.filter({ hasText: 'Arm/Ellbogen/Handgelenk' })
+				.click();
+		}
+		await expect(armLimitation).toBeChecked();
 		await page.getByLabel('Erfahrung').selectOption('advanced');
 		await page.getByLabel('Trainingstage pro Woche').selectOption('5');
 		await page.getByLabel('Split').selectOption('upper_lower');

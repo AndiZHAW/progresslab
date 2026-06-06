@@ -18,13 +18,59 @@
 	let trainingDays = $state(initialProfile().trainingDays);
 	let splitPreference = $state(initialProfile().splitPreference);
 	let equipment = $state(initialProfile().equipment);
-	let limitations = $state(initialProfile().limitations);
 	let saving = $state(false);
 	let generating = $state(false);
 	let formError = $state('');
 	let successMessage = $state('');
 	let resultPanel: HTMLElement | undefined = $state();
 	let generatedTemplates = $state<Array<{ id: string; name: string; exerciseCount: number }>>([]);
+
+	const LIMITATION_OPTIONS = [
+		{
+			key: 'shoulder',
+			label: 'Schulter',
+			text: 'reduziert Overhead- und Dip-lastige Übungen',
+			keywords: ['schulter']
+		},
+		{
+			key: 'knee',
+			label: 'Knie',
+			text: 'reduziert Ausfallschritte und knielastige Varianten',
+			keywords: ['knie']
+		},
+		{
+			key: 'back',
+			label: 'Rücken',
+			text: 'reduziert schwere Hip-Hinge-Belastung',
+			keywords: ['rücken', 'ruecken']
+		},
+		{
+			key: 'arm',
+			label: 'Arm/Ellbogen/Handgelenk',
+			text: 'reduziert direkte Arm- und Griffbelastung',
+			keywords: ['arm', 'ellbogen', 'handgelenk', 'hand', 'wrist']
+		}
+	] as const;
+
+	type LimitationKey = (typeof LIMITATION_OPTIONS)[number]['key'];
+
+	function limitationKeysFromText(text: string): LimitationKey[] {
+		const lower = text.toLowerCase();
+		return LIMITATION_OPTIONS.filter((option) =>
+			option.keywords.some((keyword) => lower.includes(keyword))
+		).map((option) => option.key);
+	}
+
+	let selectedLimitations = $state<LimitationKey[]>(
+		limitationKeysFromText(initialProfile().limitations)
+	);
+
+	const limitations = $derived(
+		selectedLimitations
+			.map((key) => LIMITATION_OPTIONS.find((option) => option.key === key)?.label ?? '')
+			.filter(Boolean)
+			.join('; ')
+	);
 
 	const goalCopy = $derived(
 		{
@@ -273,15 +319,27 @@
 			</label>
 		</div>
 
-		<label>
+		<div class="limitations-field">
 			<span class="label">Einschränkungen (optional)</span>
-			<textarea
-				class="input textarea"
-				bind:value={limitations}
-				maxlength="300"
-				placeholder="z. B. Schulter, Knie oder Rücken vorsichtig planen"
-			></textarea>
-		</label>
+			<div class="restriction-grid" role="group" aria-label="Einschränkungen">
+				{#each LIMITATION_OPTIONS as option (option.key)}
+					<label class:active={selectedLimitations.includes(option.key)}>
+						<input type="checkbox" value={option.key} bind:group={selectedLimitations} />
+						<span class="check" aria-hidden="true">
+							{selectedLimitations.includes(option.key) ? '✓' : '+'}
+						</span>
+						<span>
+							<strong>{option.label}</strong>
+							<small>{option.text}</small>
+						</span>
+					</label>
+				{/each}
+			</div>
+			<p class="help">
+				Akute Verletzungen ärztlich abklären. ProgressLab reduziert nur belastende Übungen im
+				Prototyp.
+			</p>
+		</div>
 
 		{#if formError}
 			<div class="error-banner" role="alert">{formError}</div>
@@ -317,6 +375,11 @@
 				<li><strong>{trainingDays} Trainingstage</strong><span>bestimmen Anzahl Routinen</span></li>
 				<li><strong>{splitPreference}</strong><span>wählt Split-Struktur</span></li>
 				<li><strong>{equipment}</strong><span>filtert Übungsauswahl</span></li>
+				<li>
+					<strong
+						>{selectedLimitations.length ? `${selectedLimitations.length} aktiv` : 'Keine'}</strong
+					><span>steuert sensible Übungen</span>
+				</li>
 			</ul>
 		</div>
 
@@ -502,9 +565,76 @@
 		color: var(--c-text-muted);
 		font-size: 12px;
 	}
-	.textarea {
-		min-height: 92px;
-		resize: vertical;
+	.limitations-field {
+		display: grid;
+		gap: 8px;
+	}
+	.restriction-grid {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 8px;
+	}
+	.restriction-grid label {
+		display: grid;
+		grid-template-columns: 28px 1fr;
+		align-items: flex-start;
+		gap: 10px;
+		padding: 13px;
+		border: 1px solid var(--c-border);
+		border-radius: 18px;
+		background: var(--c-surface);
+		cursor: pointer;
+		transition:
+			border-color 140ms var(--ease),
+			background 140ms var(--ease),
+			transform 140ms var(--ease);
+	}
+	.restriction-grid label:hover {
+		transform: translateY(-1px);
+		border-color: var(--c-border-strong);
+	}
+	.restriction-grid label.active {
+		border-color: var(--c-accent);
+		background: var(--c-accent-soft);
+	}
+	.restriction-grid input {
+		position: absolute;
+		opacity: 0;
+		pointer-events: none;
+	}
+	.restriction-grid .check {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 28px;
+		height: 28px;
+		border-radius: 50%;
+		border: 1px solid var(--c-border-strong);
+		color: var(--c-text-muted);
+		font-weight: 900;
+	}
+	.restriction-grid label.active .check {
+		border-color: var(--c-accent);
+		background: var(--c-accent);
+		color: var(--c-accent-fg);
+	}
+	.restriction-grid strong,
+	.restriction-grid small {
+		display: block;
+	}
+	.restriction-grid strong {
+		font-size: 14px;
+	}
+	.restriction-grid small {
+		margin-top: 4px;
+		color: var(--c-text-muted);
+		font-size: 12px;
+		line-height: 1.35;
+	}
+	.help {
+		color: var(--c-text-subtle);
+		font-size: 12px;
+		line-height: 1.45;
 	}
 	.actions {
 		display: flex;
@@ -571,7 +701,8 @@
 		}
 		.hero-metrics,
 		.field-grid.two,
-		.choice-grid {
+		.choice-grid,
+		.restriction-grid {
 			grid-template-columns: 1fr;
 		}
 		.actions .btn {

@@ -80,12 +80,26 @@ test.describe('UI feedback and button reactions', () => {
 		await expect(page.getByRole('alert')).toContainText(/120 und 230/i);
 
 		await page.getByLabel(/Gr.sse/i).fill('178');
+		const armLimitation = page.getByLabel('Arm/Ellbogen/Handgelenk');
+		if (!(await armLimitation.isChecked())) {
+			await page
+				.locator('.restriction-grid label')
+				.filter({ hasText: 'Arm/Ellbogen/Handgelenk' })
+				.click();
+		}
+		await expect(armLimitation).toBeChecked();
 		await page.getByRole('button', { name: /Profil speichern/i }).click();
 		await expect(page.getByRole('status').filter({ hasText: /Profil gespeichert/i })).toBeVisible();
 
 		await page.getByRole('button', { name: /Plan generieren/i }).click();
 		await expect(page.getByText(/Coach-Routinen erstellt\. Du findest sie jetzt/i)).toBeVisible();
 		await expect(page.getByRole('heading', { name: 'Generiert' })).toBeVisible();
+		await page.getByRole('button', { name: 'Routinen ansehen' }).click();
+		await expect(page).toHaveURL('/templates');
+		const generatedRoutineText = (
+			await page.locator('article.t-card').filter({ hasText: 'Coach' }).allInnerTexts()
+		).join('\n');
+		expect(generatedRoutineText).not.toMatch(/Barbell Curl|Triceps Pushdown|Dips|Pull-up/);
 	});
 
 	test('session logger validates bad input and confirms a successful save', async ({ page }) => {
